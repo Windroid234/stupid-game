@@ -1,1092 +1,253 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNAKE? | TOXIC WASTE EDITION</title>
+    <title>About Me</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&display=swap');
+
+        :root {
+            --primary: #ff0055;
+            --secondary: #00ffaa;
+            --bg: #050505;
+            --card-bg: #111;
+            --text: #fff;
+        }
 
         body {
-            background-color: #0a0a0a;
-            color: #0f0;
-            font-family: 'Comic Neue', 'Comic Sans MS', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            user-select: none;
-            transition: transform 0.5s ease-in-out, filter 0.2s;
-            cursor: none; 
         }
 
-        #game-container {
-            position: relative;
-            border: 4px solid #ff0055;
-            box-shadow: 0 0 20px #ff0055, inset 0 0 20px #ff0055;
-            animation: pulseBorder 2s infinite;
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-        }
-
-        canvas {
-            display: block;
-            background-color: #000;
-            transition: filter 0.1s;
-        }
-
-        #crt-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 2px, 3px 100%;
+        .bg-grid {
+            position: fixed;
+            top: -50vh;
+            left: -50vw;
+            width: 200vw;
+            height: 200vh;
+            background-image:
+                linear-gradient(rgba(255, 0, 85, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 85, 0.5) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px);
+            animation: gridMove 20s linear infinite;
+            z-index: -1;
             pointer-events: none;
+        }
+
+        @keyframes gridMove {
+            0% {
+                transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px);
+            }
+
+            100% {
+                transform: perspective(500px) rotateX(60deg) translateY(50px) translateZ(-200px);
+            }
+        }
+
+        .container {
+            text-align: center;
+            max-width: 800px;
+            padding: 2rem;
+            background: rgba(17, 17, 17, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid #333;
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
             z-index: 10;
         }
 
-        #ui-layer {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 24px;
-            z-index: 20;
-            text-shadow: 2px 2px #ff0055;
-            pointer-events: none;
+        h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin: 0 0 1rem 0;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            filter: drop-shadow(0 0 20px rgba(255, 0, 85, 0.5));
+            animation: glow 3s ease-in-out infinite alternate;
         }
 
-        #insult-box {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #fff;
-            font-size: 48px;
-            text-align: center;
-            text-shadow: 4px 4px #000;
-            opacity: 0;
-            transition: opacity 0.2s;
-            pointer-events: none;
-            z-index: 30;
-            white-space: nowrap;
+        p {
+            font-size: 1.2rem;
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 2rem;
         }
 
-        /* Popups */
-        .chaos-popup {
-            position: absolute;
-            background: #e0e0e0;
-            color: black;
-            border: 2px solid #000;
-            box-shadow: 5px 5px 0px #000;
-            padding: 10px;
-            width: 250px;
-            z-index: 40;
-            display: none;
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-        .chaos-popup h3 { margin-top: 0; background: blue; color: white; padding: 5px; font-size: 14px; }
-        .chaos-popup p { font-size: 12px; margin: 10px 0; }
-        .chaos-popup button { margin-top: 5px; padding: 5px 10px; cursor: pointer; }
-        
-        #paywall-popup { top: 50%; left: 50%; transform: translate(-50%, -50%); }
-        #paywall-popup h3 { background: #00aa00; }
-
-        #update-popup { top: 20%; left: 20%; width: 300px; z-index: 45; }
-        #update-bar-bg { width: 100%; background: #ccc; height: 20px; border: 1px solid #999; }
-        #update-bar-fill { width: 0%; background: #00aa00; height: 100%; transition: width 0.5s; }
-
-        #captcha-popup {
-            top: 40%; left: 50%; transform: translate(-50%, -50%);
-            width: 280px; z-index: 50;
-            background: #fff;
-            border: 1px solid #ccc;
-        }
-        #captcha-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 10px; }
-        #captcha-grid button { height: 40px; font-size: 10px; }
-        
-        #tos-popup {
-            top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 300px; height: 350px;
-            display: none; flex-direction: column;
-            z-index: 55;
-        }
-        #tos-content {
-            flex: 1; overflow-y: scroll; background: white; padding: 5px; 
-            font-size: 11px; border: 1px solid #999; margin-bottom: 5px; text-align: left;
-        }
-        #tos-btn:disabled { background: #ccc; cursor: not-allowed; }
-
-        #helper-popup {
-            bottom: 20px; right: 20px;
-            width: 150px;
-            background: #ffffe0;
-            border: 1px solid #aaa;
-            border-radius: 10px 10px 0 10px;
-            padding: 10px;
-            z-index: 45;
-            display: none;
-            animation: bounce 1s infinite;
-        }
-        #helper-popup::after {
-            content: ''; position: absolute; bottom: -10px; right: 0;
-            border-width: 10px 10px 0 0; border-style: solid; border-color: #ffffe0 transparent transparent transparent;
-        }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-
-        #chat-box {
-            position: absolute;
-            bottom: 5px; left: 5px;
-            width: 200px; height: 150px;
-            background: rgba(0,0,0,0.5);
+        .btn {
+            display: inline-block;
+            padding: 1rem 3rem;
+            background: var(--primary);
             color: white;
-            font-size: 12px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 5px;
-            pointer-events: none;
-            z-index: 15;
-            font-family: Arial, sans-serif;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            margin-top: 1rem;
         }
-        .chat-msg { margin-bottom: 2px; text-shadow: 1px 1px 0 #000; }
-        .chat-name { color: #ffff00; font-weight: bold; }
 
-        #call-popup {
-            position: absolute; top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 95; display: none;
-            flex-direction: column; align-items: center; justify-content: center;
-            color: white;
+        .btn:hover {
+            background: var(--secondary);
+            color: #000;
+            box-shadow: 0 0 30px var(--secondary);
+            transform: scale(1.05);
         }
-        #call-popup h1 { animation: pulse 0.5s infinite; font-size: 40px; margin: 0 0 20px 0; }
 
-        #flashbang {
+        @keyframes glow {
+            from {
+                filter: drop-shadow(0 0 10px rgba(255, 0, 85, 0.3));
+            }
+
+            to {
+                filter: drop-shadow(0 0 30px rgba(255, 0, 85, 0.6));
+            }
+        }
+
+        .particle {
             position: absolute;
-            top: 0; left: 0; width: 100vw; height: 100vh;
+            width: 4px;
+            height: 4px;
             background: white;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 999;
-            transition: opacity 0.1s;
-        }
-        
-        #bsod {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #0000aa;
-            color: white;
-            font-family: 'Courier New', Courier, monospace;
-            padding: 20px;
-            box-sizing: border-box;
-            display: none;
-            z-index: 90;
-            font-size: 14px;
+            border-radius: 50%;
+            animation: float 10s infinite linear;
+            opacity: 0.3;
         }
 
-        #game-over-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: none;
-            flex-direction: column;
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: translateY(-100px) translateX(50px);
+                opacity: 0;
+            }
+        }
+
+        .social-links {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .social-link {
+            color: #666;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .social-link:hover {
+            color: var(--secondary);
+        }
+
+        /* Toast Notification */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #00aa00;
+            color: #fff;
+            text-align: center;
+            border-radius: 50px;
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 17px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+            display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 100;
-            cursor: auto; 
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.5s, bottom 0.5s, visibility 0s linear 0.5s;
         }
 
-        h1 {
-            color: #ff0055;
-            font-size: 60px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            animation: shake 0.5s infinite;
-        }
-
-        #restart-btn {
-            padding: 15px 40px;
-            font-size: 24px;
-            background: #0f0;
-            border: none;
-            cursor: pointer;
-            font-family: inherit;
-            font-weight: bold;
-            position: relative;
-            transition: all 0.1s;
-            z-index: 101;
-        }
-        
-        #restart-btn:hover {
-            background: #ff0055;
-            color: white;
-        }
-        
-        .fake-cursor {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' stroke='black' stroke-width='2'%3E%3Cpath d='M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 50;
-        }
-
-        .inverted { filter: invert(1); }
-        .spin-left { transform: rotate(-90deg) !important; }
-        .spin-right { transform: rotate(90deg) !important; }
-        .spin-upside { transform: rotate(180deg) !important; }
-        .skew-madness { transform: skew(20deg, 10deg) scale(0.9) !important; }
-        
-        .shake-screen { animation: shake 0.2s; }
-        .extreme-shake { animation: shake 0.1s infinite; }
-
-        @keyframes pulseBorder {
-            0% { border-color: #ff0055; }
-            50% { border-color: #aaff00; }
-            100% { border-color: #ff0055; }
-        }
-        
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-
-        @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
-        }
-
-        .glitch-text { animation: glitch 1s linear infinite; }
-
-        @keyframes glitch {
-            2%, 64% { transform: translate(2px,0) skew(0deg); }
-            4%, 60% { transform: translate(-2px,0) skew(0deg); }
-            62% { transform: translate(0,0) skew(5deg); }
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+            transition: opacity 0.5s, bottom 0.5s, visibility 0s linear 0s;
         }
     </style>
 </head>
+
 <body>
 
-    <div id="flashbang"></div>
-    <div id="bsod">
-        <p>A problem has been detected and Windows has been shut down to prevent damage to your computer.</p>
-        <p>DRIVER_IRQL_NOT_LESS_OR_EQUAL</p>
-        <p>If this is the first time you've seen this stop error screen, restart your computer.</p>
-        <br>
-        <p>*** STOP: 0x000000D1 (0xF86B5A89)</p>
-    </div>
-
-    <div id="game-container">
-        <canvas id="gameCanvas" width="600" height="600"></canvas>
-        <div id="crt-overlay"></div>
-        
-        <div id="ui-layer">
-            <div id="score-display">Score: 0</div>
-            <div id="lag-indicator" style="color: yellow; opacity: 0;">ATTEMPTING TO RECONNECT...</div>
-        </div>
-        
-        <div id="chat-box"></div>
-
-        <!-- Popups -->
-        <div id="paywall-popup" class="chaos-popup">
-            <h3>TRIAL EXPIRED</h3>
-            <p>Please enter credit card.</p>
-            <button onclick="closePaywall()">Pay $499.99</button>
-            <button onclick="closePaywall()" style="font-size: 8px;">No thanks</button>
-        </div>
-
-        <div id="update-popup" class="chaos-popup">
-            <h3>CRITICAL UPDATE</h3>
-            <p>Installing RageOS 2.0...</p>
-            <div id="update-bar-bg"><div id="update-bar-fill"></div></div>
-            <p id="update-status">Downloading...</p>
-        </div>
-        
-        <div id="captcha-popup" class="chaos-popup">
-            <h3>VERIFICATION</h3>
-            <p>Select the squares with: <b>Traffic Lights</b></p>
-            <div id="captcha-grid">
-                <button onclick="failCaptcha()">Tree</button>
-                <button onclick="failCaptcha()">Car</button>
-                <button onclick="solveCaptcha()">Traffic Light</button>
-                <button onclick="failCaptcha()">Crosswalk</button>
-            </div>
-            <p style="font-size: 9px; color: red;">Game speed reduced to 10%.</p>
-        </div>
-        
-        <div id="tos-popup" class="chaos-popup">
-            <h3>TERMS OF SERVICE</h3>
-            <div id="tos-content">
-                <p>Welcome to Rage Snake.</p>
-                <p>1. You have no rights.</p>
-                <p>2. We own your soul.</p>
-                <p>3. Scoring is optional.</p>
-                <p>4. Lag is a feature.</p>
-                <p>5. No Refunds.</p>
-                <p>6. You admit skill issue.</p>
-                <p>7. We see you.</p>
-                <p>8. Don't look behind you.</p>
-                <p>9. Scroll more...</p>
-                <p>10. Keep going...</p>
-                <p>11. Almost there...</p>
-                <p>12. Just kidding.</p>
-                <p>13. Okay now for real.</p>
-                <p>14. By clicking agree you owe us $50.</p>
-                <p>15. End of agreement.</p>
-            </div>
-            <button id="tos-btn" disabled onclick="closeTos()">I Agree</button>
-        </div>
-
-        <div id="helper-popup">
-            <h4 style="margin:0">Hi there!</h4>
-            <p style="font-size: 11px;">You seem to be struggling. Need a tutorial?</p>
-            <button onclick="this.parentElement.style.display='none'">Go Away</button>
-        </div>
-        
-        <div id="generic-popup-1" class="chaos-popup" style="top: 30%; left: 60%;">
-            <h3>HOT SINGLES</h3>
-            <p>In your area!</p>
-            <button onclick="this.parentElement.style.display='none'">Chat Now</button>
-        </div>
-        
-        <div id="generic-popup-2" class="chaos-popup" style="top: 70%; left: 30%;">
-            <h3>VIRUS DETECTED</h3>
-            <p>Delete System32?</p>
-            <button onclick="this.parentElement.style.display='none'">Yes</button>
-            <button onclick="this.parentElement.style.display='none'">Definitely Yes</button>
-        </div>
-        
-        <div id="call-popup">
-            <h1>MOM IS CALLING...</h1>
-            <div style="display: flex; gap: 20px;">
-                <button style="background: green; padding: 20px; border:none; color: white; cursor: pointer;" onclick="failCall()">Answer</button>
-                <button style="background: red; padding: 20px; border:none; color: white; cursor: pointer;" onclick="closeCall()">Decline</button>
-            </div>
-        </div>
-
-        <div id="insult-box">SKILL ISSUE</div>
-
-        <div id="game-over-screen">
-            <h1 class="glitch-text">WASTED</h1>
-            <p id="final-insult" style="color: white; font-size: 20px; margin-bottom: 30px;">You tried.</p>
-            <button id="restart-btn">Try Again</button>
-        </div>
-    </div>
-    
-    <div id="cursor-container"></div>
+    <div class="bg-grid"></div>
 
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreEl = document.getElementById('score-display');
-        const insultBox = document.getElementById('insult-box');
-        const gameOverScreen = document.getElementById('game-over-screen');
-        const restartBtn = document.getElementById('restart-btn');
-        const finalInsult = document.getElementById('final-insult');
-        const lagIndicator = document.getElementById('lag-indicator');
-        const container = document.getElementById('game-container');
-        const paywallPopup = document.getElementById('paywall-popup');
-        const updatePopup = document.getElementById('update-popup');
-        const updateBarFill = document.getElementById('update-bar-fill');
-        const captchaPopup = document.getElementById('captcha-popup');
-        const tosPopup = document.getElementById('tos-popup');
-        const tosContent = document.getElementById('tos-content');
-        const tosBtn = document.getElementById('tos-btn');
-        const callPopup = document.getElementById('call-popup');
-        const helperPopup = document.getElementById('helper-popup');
-        const chatBox = document.getElementById('chat-box');
-        const bsod = document.getElementById('bsod');
-        const flashbang = document.getElementById('flashbang');
-        const body = document.body;
-        const cursorContainer = document.getElementById('cursor-container');
-
-        // Config
-        const gridSize = 20;
-        const tileCount = canvas.width / gridSize;
-        let baseSpeed = 7;
-        let currentSpeed = 7;
-        
-        // Game State
-        let velocityX = 0;
-        let velocityY = 0;
-        let snake = [];
-        let food = { x: 10, y: 10 };
-        let fakeFoods = []; 
-        let mines = [];
-        let randomWalls = [];
-        let deadPixels = []; // Persistent annoying blocks
-        let hunter = { x: 0, y: 0, active: false, moveTick: 0 };
-        let score = 0;
-        let gameLoop;
-        let chaosLoop;
-        let chatLoop;
-        let lagLoop;
-        let isGameOver = false;
-        let controlsInverted = false;
-        let controlsScrambled = false; 
-        let scrambleMap = {}; 
-        let lagSpikeActive = false;
-        let isInvisible = false;
-        let isCaptchaActive = false;
-        let isTosActive = false;
-        let isCallActive = false;
-        
-        // Rage Mechanics
-        let inputLagMs = 150; 
-        let slipperyFoodChance = 0.3; 
-        
-        const insults = [
-            "Lag?", "Did you sneeze?", "Embarrassing.", "My cat plays better.",
-            "Alt+F4 saves.", "Controller disconnected?", "Yikes.", "Refund this.",
-            "Buffering...", "Misclick?", "Nice try (not).", "Why are you like this?",
-            "Look at the screen.", "Input dropped.", "Are you okay?", "Panic?",
-            "Cringe.", "L + Ratio", "Touch grass."
-        ];
-
-        const deathInsults = [
-            "Have you tried turning it off and on again?", "Physics is hard.",
-            "Snake? Snake?! SNAAAAKE!", "Maybe Try Sudoku?", "Imagine losing.",
-            "Go touch grass.", "Gravity check failed.", "BSOD.", "Error 404: Skill Not Found",
-            "The hunter got you.", "Stepped on a mine.", "Failed verification.",
-            "Answered the phone? Really?", "Didn't read ToS."
-        ];
-        
-        const chatNames = ["xX_Slayer_Xx", "NoobHunter", "Admin", "YourMom", "ProGamer123", "Bot_42", "TTV_TTV", "ToxicAvenger"];
-        const chatMessages = [
-            "lol u suck", "uninstall pls", "my grandma plays faster", "is this easy mode?", 
-            "lag switching?", "reported", "ez", "git gud", "imagine dying there",
-            "bot movement", "clown fiesta", "so bad", "????", "why r u trying"
-        ];
-
-        // --- ToS Logic ---
-        tosContent.addEventListener('scroll', () => {
-            if(tosContent.scrollTop + tosContent.clientHeight >= tosContent.scrollHeight - 10) {
-                tosBtn.disabled = false;
-            }
-        });
-
-        // --- Chaos Events ---
-        function triggerInvert() {
-            container.classList.toggle('inverted');
-            showInsult("MY EYES!");
+        for (let i = 0; i < 20; i++) {
+            let p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.animationDelay = Math.random() * 5 + 's';
+            p.style.animationDuration = 5 + Math.random() * 10 + 's';
+            document.body.appendChild(p);
         }
-
-        function triggerSpin() {
-            const spins = ['spin-left', 'spin-right', 'spin-upside', 'skew-madness', ''];
-            container.classList.remove('spin-left', 'spin-right', 'spin-upside', 'skew-madness');
-            const choice = spins[Math.floor(Math.random() * spins.length)];
-            if(choice) container.classList.add(choice);
-            showInsult("Do a barrel roll!");
-        }
-
-        function triggerFoodStorm() {
-            for(let i=0; i<15; i++) {
-                fakeFoods.push({
-                    x: Math.floor(Math.random() * tileCount),
-                    y: Math.floor(Math.random() * tileCount),
-                    life: 100 
-                });
-            }
-            showInsult("FEEDING FRENZY");
-        }
-        
-        function triggerMines() {
-            for(let i=0; i<5; i++) {
-                mines.push({
-                    x: Math.floor(Math.random() * tileCount),
-                    y: Math.floor(Math.random() * tileCount),
-                    life: 300 
-                });
-            }
-            showInsult("WATCH YOUR STEP");
-        }
-        
-        function triggerRandomWalls() {
-            for(let i=0; i<8; i++) {
-                randomWalls.push({
-                    x: Math.floor(Math.random() * tileCount),
-                    y: Math.floor(Math.random() * tileCount),
-                    life: 60 // 1-2 seconds
-                });
-            }
-            showInsult("ROADBLOCK");
-        }
-        
-        function triggerDeadPixels() {
-            // Adds permanent dead pixels
-            for(let i=0; i<3; i++) {
-                deadPixels.push({
-                    x: Math.floor(Math.random() * tileCount),
-                    y: Math.floor(Math.random() * tileCount)
-                });
-            }
-            showInsult("Monitor Broken?");
-        }
-
-        function triggerInvisible() {
-            isInvisible = true;
-            showInsult("WHERE DID YOU GO?");
-            setTimeout(() => { isInvisible = false; }, 3000);
-        }
-
-        function triggerBSOD() {
-            bsod.style.display = 'block';
-            setTimeout(() => { bsod.style.display = 'none'; }, 200 + Math.random() * 300); 
-        }
-        
-        function triggerFakeCursors() {
-            for(let i=0; i<5; i++) {
-                const cursor = document.createElement('div');
-                cursor.className = 'fake-cursor';
-                cursor.style.left = Math.random() * window.innerWidth + 'px';
-                cursor.style.top = Math.random() * window.innerHeight + 'px';
-                cursorContainer.appendChild(cursor);
-                
-                const destX = Math.random() * window.innerWidth;
-                const destY = Math.random() * window.innerHeight;
-                
-                cursor.animate([
-                    { transform: `translate(0,0)` },
-                    { transform: `translate(${destX - parseFloat(cursor.style.left)}px, ${destY - parseFloat(cursor.style.top)}px)` }
-                ], {
-                    duration: 2000 + Math.random() * 2000,
-                    iterations: 1,
-                    fill: 'forwards'
-                }).onfinish = () => cursor.remove();
-            }
-            showInsult("Swarm!");
-        }
-
-        function triggerControlScramble() {
-            controlsScrambled = true;
-            const keys = [37, 38, 39, 40];
-            const shuffled = [...keys].sort(() => 0.5 - Math.random());
-            scrambleMap = { 37: shuffled[0], 38: shuffled[1], 39: shuffled[2], 40: shuffled[3] };
-            showInsult("CONTROLS SCRAMBLED!");
-            setTimeout(() => { controlsScrambled = false; }, 4000);
-        }
-
-        function triggerAdware() {
-            document.getElementById('generic-popup-1').style.display = 'block';
-            setTimeout(() => document.getElementById('generic-popup-2').style.display = 'block', 500);
-            showInsult("ADS ADS ADS");
-        }
-        
-        function triggerHelper() {
-            helperPopup.style.display = 'block';
-            helperPopup.style.top = Math.random() * 50 + '%';
-            helperPopup.style.left = Math.random() * 50 + '%';
-        }
-        
-        function triggerCaptcha() {
-            isCaptchaActive = true;
-            captchaPopup.style.display = 'block';
-            clearInterval(gameLoop);
-            gameLoop = setInterval(gameStep, 1000); // 1 FPS
-            showInsult("ARE YOU A ROBOT?");
-        }
-        
-        function triggerTos() {
-            isTosActive = true;
-            tosPopup.style.display = 'flex';
-            tosBtn.disabled = true;
-            tosContent.scrollTop = 0;
-            // Does not pause game, but extremely distracting
-            showInsult("READ THIS PLS");
-        }
-        
-        function triggerCall() {
-            isCallActive = true;
-            callPopup.style.display = 'flex';
-            showInsult("MOM IS CALLING");
-        }
-
-        window.solveCaptcha = function() {
-            isCaptchaActive = false;
-            captchaPopup.style.display = 'none';
-            clearInterval(gameLoop);
-            gameLoop = setInterval(gameStep, 1000 / currentSpeed);
-            showInsult("Verified Human");
-        }
-        
-        window.failCaptcha = function() { die("Bot detected."); }
-        window.closeTos = function() {
-            isTosActive = false;
-            tosPopup.style.display = 'none';
-        }
-        window.closeCall = function() {
-            isCallActive = false;
-            callPopup.style.display = 'none';
-        }
-        window.failCall = function() { die("Social Interaction Fatal."); }
-
-        function triggerUpdate() {
-            updatePopup.style.display = 'block';
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += Math.random() * 10;
-                if(progress > 100) progress = 100;
-                updateBarFill.style.width = `${progress}%`;
-                if(progress === 100) {
-                    clearInterval(interval);
-                    setTimeout(() => updatePopup.style.display = 'none', 500);
-                }
-            }, 200);
-            showInsult("Updating...");
-        }
-        
-        function triggerPaywall() {
-            paywallPopup.style.display = 'block';
-            showInsult("Pay up.");
-            setTimeout(() => { paywallPopup.style.display = 'none'; }, 3000);
-        }
-
-        function triggerFlashbang() {
-            flashbang.style.opacity = 1;
-            setTimeout(() => { flashbang.style.opacity = 0; }, 2000);
-            showInsult("Think Fast!");
-        }
-        
-        function addChatMessage() {
-            const name = chatNames[Math.floor(Math.random() * chatNames.length)];
-            const msg = chatMessages[Math.floor(Math.random() * chatMessages.length)];
-            const div = document.createElement('div');
-            div.className = 'chat-msg';
-            div.innerHTML = `<span class="chat-name">${name}:</span> ${msg}`;
-            chatBox.appendChild(div);
-            if(chatBox.children.length > 8) chatBox.removeChild(chatBox.firstChild);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        function randomChaos() {
-            if(isGameOver || isCaptchaActive || isTosActive || isCallActive) return;
-            const events = [
-                triggerInvert, triggerSpin, triggerFoodStorm, triggerMines, triggerInvisible, 
-                triggerBSOD, triggerFlashbang, triggerFakeCursors, triggerControlScramble,
-                triggerAdware, triggerUpdate, triggerPaywall, triggerHelper, triggerCaptcha,
-                triggerRandomWalls, triggerTos, triggerCall, triggerDeadPixels
-            ];
-            const event = events[Math.floor(Math.random() * events.length)];
-            event();
-        }
-
-        // --- Core Game ---
-
-        function initGame() {
-            snake = [{ x: 10, y: 10 }];
-            score = 0;
-            velocityX = 0;
-            velocityY = 0;
-            isGameOver = false;
-            isCaptchaActive = false;
-            isTosActive = false;
-            isCallActive = false;
-            controlsInverted = false;
-            controlsScrambled = false;
-            lagSpikeActive = false;
-            isInvisible = false;
-            fakeFoods = [];
-            mines = [];
-            randomWalls = [];
-            deadPixels = [];
-            currentSpeed = baseSpeed;
-            chatBox.innerHTML = '';
-            
-            hunter = { x: 0, y: 0, active: true, moveTick: 0 };
-            
-            // Reset visual states
-            body.style.transform = `translate(0px, 0px)`;
-            container.className = ''; 
-            paywallPopup.style.display = 'none';
-            updatePopup.style.display = 'none';
-            captchaPopup.style.display = 'none';
-            helperPopup.style.display = 'none';
-            tosPopup.style.display = 'none';
-            callPopup.style.display = 'none';
-            document.getElementById('generic-popup-1').style.display = 'none';
-            document.getElementById('generic-popup-2').style.display = 'none';
-            bsod.style.display = 'none';
-            flashbang.style.opacity = 0;
-            cursorContainer.innerHTML = '';
-            
-            scoreEl.innerText = "Score: 0";
-            gameOverScreen.style.display = 'none';
-            insultBox.style.opacity = '0';
-            
-            inputLagMs = Math.random() * 200 + 50;
-            
-            clearInterval(gameLoop);
-            clearInterval(chaosLoop);
-            clearInterval(chatLoop);
-            clearInterval(lagLoop);
-            
-            gameLoop = setInterval(gameStep, 1000 / currentSpeed);
-            chaosLoop = setInterval(randomChaos, 2000); 
-            chatLoop = setInterval(addChatMessage, 2000);
-            
-            // Lag fluctuations
-            lagLoop = setInterval(() => {
-                inputLagMs = Math.random() * 400 + 50; 
-            }, 1000);
-            
-            placeFood();
-        }
-
-        window.closePaywall = function() { paywallPopup.style.display = 'none'; };
-
-        document.addEventListener('keydown', (e) => {
-            if (isGameOver) return;
-            if (lagSpikeActive) return; 
-
-            if (Math.random() < 0.05) {
-                let k = e.keyCode;
-                if(k===37) k=39; else if(k===39) k=37; else if(k===38) k=40; else if(k===40) k=38;
-                handleInput(k);
-                showInsult("Slippery Keys");
-                return;
-            }
-
-            if (Math.random() < 0.02) {
-                showInsult("Input Ignored lol");
-                return;
-            }
-
-            setTimeout(() => {
-                handleInput(e.keyCode);
-            }, inputLagMs);
-        });
-
-        function handleInput(key) {
-            let actualKey = key;
-            
-            if (controlsScrambled && scrambleMap[key]) {
-                actualKey = scrambleMap[key];
-            } else if (Math.random() < 0.05 || controlsInverted) {
-                if (key === 37) actualKey = 39;
-                else if (key === 39) actualKey = 37;
-                else if (key === 38) actualKey = 40;
-                else if (key === 40) actualKey = 38;
-                if (!controlsInverted && !controlsScrambled) showInsult("Inverted!");
-            }
-
-            switch (actualKey) {
-                case 37: if (velocityX !== 1) { velocityX = -1; velocityY = 0; } break;
-                case 38: if (velocityY !== 1) { velocityX = 0; velocityY = -1; } break;
-                case 39: if (velocityX !== -1) { velocityX = 1; velocityY = 0; } break;
-                case 40: if (velocityY !== -1) { velocityX = 0; velocityY = 1; } break;
-            }
-        }
-
-        function gameStep() {
-            if (Math.random() < 0.01 && !lagSpikeActive && !isCaptchaActive) {
-                lagSpikeActive = true;
-                lagIndicator.style.opacity = 1;
-                let spikeDuration = Math.random() * 500 + 300;
-                setTimeout(() => {
-                    lagSpikeActive = false;
-                    lagIndicator.style.opacity = 0;
-                }, spikeDuration);
-                return; 
-            }
-            if (lagSpikeActive) return;
-
-            update();
-            draw();
-        }
-
-        function toRoman(num) {
-            if(num < 1) return "O";
-            const lookup = {M:1000,CM:900,D:500,CD:400,C:100,XC:90,L:50,XL:40,X:10,IX:9,V:5,IV:4,I:1};
-            let roman = '', i;
-            let n = Math.floor(Math.abs(num));
-            for ( i in lookup ) {
-                while ( n >= lookup[i] ) { roman += i; n -= lookup[i]; }
-            }
-            return roman;
-        }
-
-        function update() {
-            // Screen Runaway
-            if (Math.random() < 0.01) {
-                let randomX = (Math.random() - 0.5) * 400; 
-                let randomY = (Math.random() - 0.5) * 300;
-                body.style.transform = `translate(${randomX}px, ${randomY}px)`;
-                setTimeout(() => { body.style.transform = `translate(0px, 0px)`; }, 1500);
-            }
-
-            let headX = snake[0].x + velocityX;
-            let headY = snake[0].y + velocityY;
-
-            // Screen Wrap
-            if (headX < 0) headX = tileCount - 1;
-            if (headX >= tileCount) headX = 0;
-            if (headY < 0) headY = tileCount - 1;
-            if (headY >= tileCount) headY = 0;
-
-            // Self Collision
-            if (velocityX !== 0 || velocityY !== 0) {
-                for (let i = 0; i < snake.length; i++) {
-                    if (snake[i].x === headX && snake[i].y === headY) {
-                        die("You ate yourself.");
-                        return;
-                    }
-                }
-            }
-            
-            // Hunter
-            if(hunter.active) {
-                hunter.moveTick++;
-                if(hunter.moveTick > 5) {
-                    hunter.moveTick = 0;
-                    if(hunter.x < snake[0].x) hunter.x++;
-                    else if(hunter.x > snake[0].x) hunter.x--;
-                    
-                    if(hunter.y < snake[0].y) hunter.y++;
-                    else if(hunter.y > snake[0].y) hunter.y--;
-                }
-                if(headX === hunter.x && headY === hunter.y) {
-                    die("Hunted down.");
-                    return;
-                }
-            }
-
-            // Mines
-            for(let i=0; i<mines.length; i++) {
-                if(headX === mines[i].x && headY === mines[i].y) {
-                    die("Stepped on a mine.");
-                    return;
-                }
-            }
-            
-            // Random Walls
-            for(let w of randomWalls) {
-                if(headX === w.x && headY === w.y) {
-                    die("Ran into a wall.");
-                    return;
-                }
-            }
-            
-            // Slippery Food
-            const dist = Math.abs(headX - food.x) + Math.abs(headY - food.y);
-            if (dist === 1 && Math.random() < slipperyFoodChance) {
-                placeFood();
-                showInsult("Psych!");
-                return; 
-            }
-
-            snake.unshift({ x: headX, y: headY });
-
-            let ate = false;
-
-            // Eat Real Food
-            if (headX === food.x && headY === food.y) {
-                ate = true;
-                if (Math.random() < 0.1 && snake.length > 3) {
-                    snake.pop(); snake.pop();
-                    showInsult("Inflation.");
-                    score -= 5;
-                } else {
-                    let scoreAdd = (Math.random() * 10);
-                    score += scoreAdd;
-                }
-                placeFood();
-                container.classList.add('shake-screen');
-                setTimeout(()=>container.classList.remove('shake-screen'), 200);
-
-            } else {
-                // Check fake foods
-                for(let i=0; i<fakeFoods.length; i++) {
-                    if(headX === fakeFoods[i].x && headY === fakeFoods[i].y) {
-                        score -= 50;
-                        showInsult("BAD FOOD!");
-                        fakeFoods.splice(i, 1);
-                        ate = false; 
-                        break;
-                    }
-                }
-            }
-
-            if(!ate) {
-                snake.pop();
-            }
-
-            // Update Lifecycles
-            for(let i = fakeFoods.length - 1; i >= 0; i--) {
-                fakeFoods[i].life--;
-                if(fakeFoods[i].life <= 0) fakeFoods.splice(i, 1);
-            }
-            for(let i = mines.length - 1; i >= 0; i--) {
-                mines[i].life--;
-                if(mines[i].life <= 0) mines.splice(i, 1);
-            }
-            for(let i = randomWalls.length - 1; i >= 0; i--) {
-                randomWalls[i].life--;
-                if(randomWalls[i].life <= 0) randomWalls.splice(i, 1);
-            }
-
-            // Score Trolling
-            if(Math.random() < 0.05) {
-                const formats = [
-                    `Score: ${Math.floor(score)}`,
-                    `Score: ${toRoman(score)}`,
-                    `Score: ${score.toString(2)}`,
-                    `Score: ???`,
-                    `Score: NaN`,
-                    `Score: No`
-                ];
-                scoreEl.innerText = formats[Math.floor(Math.random() * formats.length)];
-            }
-        }
-
-        function draw() {
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            if(Math.random() < 0.1) {
-                ctx.strokeStyle = '#222';
-                for(let i=0; i<tileCount; i++) {
-                    ctx.beginPath();
-                    ctx.moveTo(i*gridSize, 0); ctx.lineTo(i*gridSize, canvas.height);
-                    ctx.stroke();
-                }
-            }
-
-            // Draw Snake
-            if(!isInvisible) {
-                for (let i = 0; i < snake.length; i++) {
-                    // 10% chance tail part is invisible for fade effect
-                    if(i > 0 && Math.random() < 0.1) continue;
-                    
-                    ctx.fillStyle = i === 0 ? '#fff' : `hsl(${120 + Math.random()*50}, 100%, 50%)`;
-                    let offsetX = (Math.random() - 0.5) * 4;
-                    let offsetY = (Math.random() - 0.5) * 4;
-                    ctx.fillRect(snake[i].x * gridSize + offsetX, snake[i].y * gridSize + offsetY, gridSize - 2, gridSize - 2);
-                }
-            } else {
-                if(Math.random() < 0.1 && snake.length > 0) {
-                    ctx.fillStyle = '#111';
-                    ctx.fillRect(snake[0].x * gridSize, snake[0].y * gridSize, gridSize, gridSize);
-                }
-            }
-            
-            // Hunter
-            ctx.fillStyle = '#aa0000';
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = 'red';
-            ctx.fillRect(hunter.x * gridSize, hunter.y * gridSize, gridSize, gridSize);
-            ctx.shadowBlur = 0;
-
-            // Mines
-            ctx.strokeStyle = 'red';
-            ctx.lineWidth = 2;
-            for(let m of mines) {
-                const x = m.x * gridSize;
-                const y = m.y * gridSize;
-                ctx.beginPath();
-                ctx.moveTo(x, y); ctx.lineTo(x+gridSize, y+gridSize);
-                ctx.moveTo(x+gridSize, y); ctx.lineTo(x, y+gridSize);
-                ctx.stroke();
-            }
-            
-            // Random Walls
-            ctx.fillStyle = '#444';
-            for(let w of randomWalls) {
-                ctx.fillRect(w.x * gridSize, w.y * gridSize, gridSize, gridSize);
-            }
-            
-            // Dead Pixels
-            ctx.fillStyle = '#000';
-            for(let p of deadPixels) {
-                ctx.fillRect(p.x * gridSize, p.y * gridSize, gridSize, gridSize);
-            }
-
-            // Real Food
-            ctx.fillStyle = '#ff0055';
-            let jitterX = (Math.random() - 0.5) * 4;
-            let jitterY = (Math.random() - 0.5) * 4;
-            ctx.fillRect(food.x * gridSize + jitterX, food.y * gridSize + jitterY, gridSize - 2, gridSize - 2);
-
-            // Fake Foods
-            ctx.fillStyle = '#cc0044'; 
-            for(let f of fakeFoods) {
-                ctx.fillRect(f.x * gridSize, f.y * gridSize, gridSize - 2, gridSize - 2);
-            }
-        }
-
-        function placeFood() {
-            food = {
-                x: Math.floor(Math.random() * tileCount),
-                y: Math.floor(Math.random() * tileCount)
-            };
-            for(let part of snake) {
-                if(part.x === food.x && part.y === food.y) placeFood();
-            }
-        }
-
-        function showInsult(text) {
-            insultBox.innerText = text || insults[Math.floor(Math.random() * insults.length)];
-            insultBox.style.opacity = 1;
-            insultBox.style.transform = `translate(-50%, -50%) rotate(${Math.random() * 40 - 20}deg) scale(${Math.random() * 0.5 + 1})`;
-            setTimeout(() => { insultBox.style.opacity = 0; }, 1000);
-        }
-
-        function die(reason) {
-            isGameOver = true;
-            clearInterval(gameLoop);
-            clearInterval(chaosLoop);
-            clearInterval(chatLoop);
-            clearInterval(lagLoop);
-            container.classList.remove('spin-left', 'spin-right', 'spin-upside', 'inverted', 'skew-madness');
-            container.classList.add('extreme-shake');
-            setTimeout(() => container.classList.remove('extreme-shake'), 500);
-            
-            finalInsult.innerText = `${reason} \n ${deathInsults[Math.floor(Math.random() * deathInsults.length)]}`;
-            gameOverScreen.style.display = 'flex';
-        }
-
-        restartBtn.addEventListener('mouseover', () => {
-            if (Math.random() > 0.1) moveButton(); 
-        });
-
-        function moveButton() {
-            const x = Math.random() * (window.innerWidth - 200);
-            const y = Math.random() * (window.innerHeight - 100);
-            
-            restartBtn.style.position = 'fixed';
-            restartBtn.style.left = `${Math.max(0, x)}px`;
-            restartBtn.style.top = `${Math.max(0, y)}px`;
-            
-            const btnTexts = ["Nope", "Too Slow", "Try Again", "Missed me", "Click here", "Skill issue"];
-            restartBtn.innerText = btnTexts[Math.floor(Math.random() * btnTexts.length)];
-        }
-
-        restartBtn.addEventListener('click', () => {
-            restartBtn.style.position = 'relative';
-            restartBtn.style.left = 'auto';
-            restartBtn.style.top = 'auto';
-            restartBtn.innerText = "Try Again";
-            initGame();
-        });
-
-        initGame();
-
     </script>
+
+    <div class="container">
+        <h1>Hi, I'm Windroid</h1>
+        <p>
+            I'm a teenager from the slums of Jordan and this is my website.
+            <br><br>
+            I am a full-stack developer. Enjoy my collection of digital suffering.
+        </p>
+
+        <a href="hub.html" class="btn">Games I made</a>
+
+        <div class="social-links">
+            <a href="https://x.com/Windroidd" class="social-link" target="_blank">Twitter</a>
+            <a href="#" class="social-link" onclick="copyDiscord()">Discord</a>
+        </div>
+    </div>
+
+    <div id="toast">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+        </svg>
+        Username Copied!
+    </div>
+
+    <script>
+        function copyDiscord() {
+            navigator.clipboard.writeText('masjid_al_aqsa');
+            const toast = document.getElementById("toast");
+            toast.className = "show";
+            setTimeout(function () { toast.className = toast.className.replace("show", ""); }, 2000);
+        }
+    </script>
+
 </body>
+
 </html>
