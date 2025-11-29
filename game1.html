@@ -540,17 +540,12 @@
             transform: translateY(-2px);
         }
     </style>
-    <script>
-        if (location.pathname.endsWith('.html')) {
-            history.replaceState(null, '', location.pathname.replace(/\.html$/, ''));
-        }
-    </script>
 </head>
 
 <body>
 
     <body>
-        <button id="exit-btn" onclick="window.location.href='hub.html'">EXIT TO HUB</button>
+        <button id="exit-btn" onclick="window.location.href='hub'">EXIT TO HUB</button>
         <div id="flashbang"></div>
         <div id="bsod">
             <p>A problem has been detected and Windows has been shut down to prevent damage to your computer.</p>

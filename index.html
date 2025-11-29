@@ -240,11 +240,6 @@
             transition: opacity 0.5s, bottom 0.5s, visibility 0s linear 0s;
         }
     </style>
-    <script>
-        if (location.pathname.endsWith('.html')) {
-            history.replaceState(null, '', location.pathname.replace(/\.html$/, ''));
-        }
-    </script>
 </head>
 
 <body>
@@ -270,7 +265,7 @@
             I am a full-stack developer. Enjoy my collection of digital suffering.
         </p>
 
-        <button onclick="window.location.href='hub.html'" class="btn">Games I made</button>
+        <button onclick="window.location.href='hub'" class="btn">Games I made</button>
 
         <div class="social-links">
             <button onclick="window.open('https://x.com/Windroidd', '_blank')" class="social-link">Twitter</button>
