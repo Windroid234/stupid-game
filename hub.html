@@ -28,6 +28,21 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            animation: fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+                filter: blur(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
         }
 
         .scroll-container {
@@ -110,19 +125,20 @@
         }
 
         .game-card {
-            background: var(--card-bg);
-            border: 1px solid #333;
-            border-radius: 20px;
-            padding: 2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2.5rem;
             position: relative;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
             cursor: pointer;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            height: 300px;
-            backdrop-filter: blur(10px);
+            height: 320px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .game-card::before {
@@ -132,70 +148,78 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-            transform: translateX(-100%);
-            transition: 0.5s;
+            background: radial-gradient(circle at top right, rgba(255, 0, 85, 0.15), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
 
         .game-card:hover::before {
-            transform: translateX(100%);
+            opacity: 1;
         }
 
         .game-card:hover {
             transform: translateY(-10px) scale(1.02);
-            border-color: var(--primary);
-            box-shadow: 0 10px 40px rgba(255, 0, 85, 0.2);
+            border-color: rgba(255, 0, 85, 0.5);
+            box-shadow: 0 20px 50px rgba(255, 0, 85, 0.2);
         }
 
         .game-title {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 800;
-            margin: 0;
+            margin: 0 0 1rem 0;
             color: #fff;
+            letter-spacing: -1px;
+            line-height: 1;
         }
 
         .game-desc {
-            color: #aaa;
-            font-size: 1rem;
-            line-height: 1.5;
-            margin-top: 1rem;
+            color: #ccc;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-top: 0;
+            font-weight: 300;
         }
 
         .play-btn {
             margin-top: auto;
-            padding: 1rem 2rem;
-            background: var(--primary);
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, var(--primary), #d40046);
             color: white;
             border: none;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 800;
+            border-radius: 100px;
+            font-size: 1.1rem;
+            font-weight: 700;
             text-transform: uppercase;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             text-decoration: none;
-            display: inline-block;
-            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             align-self: flex-start;
+            box-shadow: 0 10px 20px rgba(255, 0, 85, 0.3);
+            letter-spacing: 1px;
         }
 
         .play-btn:hover {
-            background: var(--secondary);
-            color: #000;
-            box-shadow: 0 0 20px var(--secondary);
-            transform: scale(1.05);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(255, 0, 85, 0.5);
+            background: linear-gradient(135deg, #ff1a6b, #ff0055);
         }
 
         .tag {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            color: var(--secondary);
-            border: 1px solid var(--secondary);
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(255, 0, 85, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            border: 1px solid rgba(255, 0, 85, 0.3);
+            letter-spacing: 1px;
+            backdrop-filter: blur(4px);
         }
 
         @keyframes glow {
@@ -241,11 +265,16 @@
             top: 20px;
             left: 20px;
             color: #666;
-            text-decoration: none;
+            background: none;
+            border: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
             font-weight: bold;
             text-transform: uppercase;
             transition: color 0.3s;
             z-index: 100;
+            padding: 0;
         }
 
         .back-btn:hover {
@@ -258,7 +287,7 @@
 
     <div class="bg-grid"></div>
 
-    <a href="index.html" class="back-btn">← Back to Home</a>
+    <button onclick="window.location.href='index.html'" class="back-btn">← Back to Home</button>
 
     <script>
         for (let i = 0; i < 20; i++) {
@@ -286,7 +315,7 @@
                         The classic snake game but it hates you
                     </p>
                 </div>
-                <a href="game1.html" class="play-btn">Play Now</a>
+                <button onclick="window.location.href='game1.html'" class="play-btn">Play Now</button>
             </div>
 
             <div class="game-card" style="opacity: 0.5; cursor: not-allowed; border-color: #333;">
