@@ -540,6 +540,11 @@
             transform: translateY(-2px);
         }
     </style>
+    <script>
+        if (location.pathname.endsWith('.html')) {
+            history.replaceState(null, '', location.pathname.replace(/\.html$/, ''));
+        }
+    </script>
 </head>
 
 <body>

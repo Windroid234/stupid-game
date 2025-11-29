@@ -281,6 +281,11 @@
             color: var(--primary);
         }
     </style>
+    <script>
+        if (location.pathname.endsWith('.html')) {
+            history.replaceState(null, '', location.pathname.replace(/\.html$/, ''));
+        }
+    </script>
 </head>
 
 <body>

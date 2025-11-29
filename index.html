@@ -240,6 +240,11 @@
             transition: opacity 0.5s, bottom 0.5s, visibility 0s linear 0s;
         }
     </style>
+    <script>
+        if (location.pathname.endsWith('.html')) {
+            history.replaceState(null, '', location.pathname.replace(/\.html$/, ''));
+        }
+    </script>
 </head>
 
 <body>
