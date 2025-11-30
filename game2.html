@@ -75,6 +75,7 @@
             margin: 0 0 20px 0;
             background: linear-gradient(to right, #00f2ff, #ff0055);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
             text-align: center;
@@ -153,7 +154,7 @@
             <div id="combo-display">x1</div>
         </div>
         <div class="hud-bottom">
-            ENERGY: <span id="energy-display">100%</span>
+            ENERGY: <span id="energy-meter">100%</span>
         </div>
     </div>
 
@@ -215,12 +216,14 @@
         const ctx = canvas.getContext('2d');
         const scoreEl = document.getElementById('score-display');
         const comboEl = document.getElementById('combo-display');
-        const energyEl = document.getElementById('energy-display');
+        const energyEl = document.getElementById('energy-meter');
         const finalScoreEl = document.getElementById('final-score');
         const startScreen = document.getElementById('start-screen');
         const gameOverScreen = document.getElementById('game-over-screen');
         const pauseScreen = document.getElementById('pause-screen');
 
+        const GAME_WIDTH = 1920;
+        const GAME_HEIGHT = 1080;
         let width, height;
         let animationId;
         let lastTime = 0;
@@ -253,24 +256,32 @@
         let grid = [];
 
         function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            player.x = Math.min(player.x, width);
-            player.y = Math.min(player.y, height);
+            const scale = Math.min(window.innerWidth / GAME_WIDTH, window.innerHeight / GAME_HEIGHT);
+
+            canvas.style.width = `${GAME_WIDTH * scale}px`;
+            canvas.style.height = `${GAME_HEIGHT * scale}px`;
+            canvas.style.position = 'absolute';
+            canvas.style.left = `${(window.innerWidth - GAME_WIDTH * scale) / 2}px`;
+            canvas.style.top = `${(window.innerHeight - GAME_HEIGHT * scale) / 2}px`;
+
+            width = canvas.width = GAME_WIDTH;
+            height = canvas.height = GAME_HEIGHT;
         }
         window.addEventListener('resize', resize);
         resize();
 
         window.addEventListener('mousemove', e => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = (e.clientX - rect.left) * (GAME_WIDTH / rect.width);
+            mouse.y = (e.clientY - rect.top) * (GAME_HEIGHT / rect.height);
             mouse.active = true;
         });
 
         window.addEventListener('touchmove', e => {
             e.preventDefault();
-            mouse.x = e.touches[0].clientX;
-            mouse.y = e.touches[0].clientY;
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = (e.touches[0].clientX - rect.left) * (GAME_WIDTH / rect.width);
+            mouse.y = (e.touches[0].clientY - rect.top) * (GAME_HEIGHT / rect.height);
             mouse.active = true;
         }, { passive: false });
 
@@ -463,7 +474,10 @@
             player.trail.push({ x: player.x, y: player.y });
             if (player.trail.length > 20) player.trail.shift();
 
-            if (player.energy < 100) player.energy += 0.1;
+            if (player.energy < 100) {
+                player.energy += 0.1;
+                if (player.energy > 100) player.energy = 100;
+            }
         }
 
         function checkCollisions() {
@@ -604,7 +618,11 @@
 
             scoreEl.innerText = `SCORE: ${Math.floor(score)}`;
             comboEl.innerText = `x${combo.toFixed(1)}`;
-            energyEl.innerText = `${Math.floor(player.energy)}%`;
+
+            let dispEnergy = Math.floor(player.energy);
+            if (dispEnergy > 100) dispEnergy = 100;
+            energyEl.innerText = `${dispEnergy}%`;
+
             energyEl.style.color = player.energy > 20 ? '#00f2ff' : '#ff0055';
         }
 
