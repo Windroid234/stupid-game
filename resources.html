@@ -16,6 +16,19 @@
             --text: #fff;
         }
 
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        html {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -88,32 +101,60 @@
             letter-spacing: -1px;
         }
 
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            width: 100%;
+            height: auto;
+            padding: 0 2rem 4rem 2rem;
+            box-sizing: border-box;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        .main-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-column {
+            flex: 1 1 300px;
+            min-width: 300px;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
         .section-title {
             font-family: 'Outfit', sans-serif;
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--secondary);
-            margin: 2rem 0 1rem 0;
-            width: 100%;
-            max-width: 800px;
-            text-align: left;
+            margin: 0;
             padding-left: 1rem;
             border-left: 4px solid var(--secondary);
+            position: sticky;
+            top: 0;
         }
 
         .resources-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            display: flex;
+            flex-direction: column;
             gap: 1.5rem;
-            max-width: 800px;
-            width: 90%;
-            margin-bottom: 2rem;
+            width: 100%;
+        }
+
+        .resources-grid::-webkit-scrollbar {
+            display: none;
         }
 
         .resource-card {
             background: var(--card-bg);
             border-radius: 20px;
-            padding: 2rem;
+            padding: 1.5rem;
+            width: 100%;
+            box-sizing: border-box;
             transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
             text-decoration: none;
@@ -195,20 +236,112 @@
         <h1>Resources</h1>
     </header>
 
-    <div class="section-title">System Utilities</div>
-    <div class="resources-grid">
-        <a href="https://github.com/ionuttbara/windows-defender-remover" target="_blank" class="resource-card">
-            <h2 class="resource-title">Windows Defender Remover</h2>
-            <p class="resource-desc">A tool to remove Windows Defender and other bloatware from your system.</p>
-        </a>
-    </div>
+    <div class="main-content">
+        <div class="category-column">
+            <div class="section-title">System Utilities</div>
+            <div class="resources-grid">
+                <a href="https://github.com/ionuttbara/windows-defender-remover" target="_blank" class="resource-card">
+                    <h2 class="resource-title">Windows Defender Remover</h2>
+                    <p class="resource-desc">A tool to remove Windows Defender and other bloatware from your system.</p>
+                </a>
+                <a href="https://www.bleachbit.org/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">BleachBit</h2>
+                    <p class="resource-desc">Free and open source disk space cleaner, privacy manager, and computer
+                        system
+                        optimizer.</p>
+                </a>
+                <a href="https://learn.microsoft.com/en-us/windows/powertoys/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">PowerToys</h2>
+                    <p class="resource-desc">A set of system utilities for power users to tune and streamline their
+                        Windows
+                        experience.</p>
+                </a>
+                <a href="https://www.7-zip.org/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">7-Zip</h2>
+                    <p class="resource-desc">A free and open-source file archiver with a high compression ratio.</p>
+                </a>
+            </div>
+        </div>
 
-    <div class="section-title">Operating Systems</div>
-    <div class="resources-grid">
-        <a href="https://atlasos.net/" target="_blank" class="resource-card">
-            <h2 class="resource-title">AtlasOS</h2>
-            <p class="resource-desc">An open-source modification of Windows designed for gamers and power users.</p>
-        </a>
+        <div class="category-column">
+            <div class="section-title">Operating Systems</div>
+            <div class="resources-grid">
+                <a href="https://atlasos.net/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">AtlasOS</h2>
+                    <p class="resource-desc">An open-source modification of Windows designed for gamers and power users.
+                    </p>
+                </a>
+                <a href="https://revios.no/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">ReviOS</h2>
+                    <p class="resource-desc">A capable, efficient, yet private and performant instance of Windows.</p>
+                </a>
+                <a href="https://linuxmint.com/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">Linux Mint</h2>
+                    <p class="resource-desc">A modern, elegant and comfortable operating system which is both powerful
+                        and easy
+                        to use.</p>
+                </a>
+                <a href="https://fedoraproject.org/spins/kde/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">Fedora KDE Plasma</h2>
+                    <p class="resource-desc">A powerful, customizable, and modern desktop experience built on the solid
+                        Fedora Linux foundation.</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="category-column">
+            <div class="section-title">Privacy & Security</div>
+            <div class="resources-grid">
+                <a href="https://ublockorigin.com/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">uBlock Origin</h2>
+                    <p class="resource-desc">A free and open-source, cross-platform browser extension for content
+                        filtering,
+                        including ad-blocking.</p>
+                </a>
+                <a href="https://protonvpn.com/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">ProtonVPN</h2>
+                    <p class="resource-desc">A high-speed Swiss VPN that safeguards your privacy.</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="category-column">
+            <div class="section-title">Creative Tools</div>
+            <div class="resources-grid">
+                <a href="https://obsproject.com/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">OBS Studio</h2>
+                    <p class="resource-desc">Free and open source software for video recording and live streaming.</p>
+                </a>
+                <a href="https://www.blender.org/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">Blender</h2>
+                    <p class="resource-desc">The free and open source 3D creation suite.</p>
+                </a>
+                <a href="https://www.gimp.org/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">GIMP</h2>
+                    <p class="resource-desc">A cross-platform image editor available for GNU/Linux, OS X, Windows and
+                        more.</p>
+                </a>
+                <a href="https://audacityteam.org/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">Audacity</h2>
+                    <p class="resource-desc">Free, open source, cross-platform audio software.</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="category-column">
+            <div class="section-title">Browsers</div>
+            <div class="resources-grid">
+                <a href="https://www.mozilla.org/en-US/firefox/new/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">Firefox</h2>
+                    <p class="resource-desc">Get the browser that protects what’s important. No shady privacy policies.
+                    </p>
+                </a>
+                <a href="https://brave.com/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">Brave</h2>
+                    <p class="resource-desc">Appearently the best privacy online.</p>
+                </a>
+            </div>
+        </div>
     </div>
 
     <script>
