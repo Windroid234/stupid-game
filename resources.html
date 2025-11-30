@@ -16,17 +16,13 @@
             --text: #fff;
         }
 
-        /* Hide scrollbar for Chrome, Safari and Opera */
         ::-webkit-scrollbar {
             display: none;
         }
 
-        /* Hide scrollbar for IE, Edge and Firefox */
         html {
             -ms-overflow-style: none;
-            /* IE and Edge */
             scrollbar-width: none;
-            /* Firefox */
         }
 
         body {
@@ -164,6 +160,19 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
             position: relative;
             overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out, box-shadow 0.2s;
+        }
+
+        .resource-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .resource-card.visible:hover {
+            transform: translateY(-4px);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .resource-card:hover {
@@ -222,6 +231,83 @@
                 opacity: 0;
             }
         }
+
+        .scroll-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            animation: bounce 2s infinite;
+            pointer-events: none;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            transition: opacity 0.5s ease;
+        }
+
+        .scroll-hint span {
+            display: block;
+            width: 10px;
+            height: 10px;
+            border-right: 2px solid rgba(255, 255, 255, 0.5);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+            transform: rotate(45deg);
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+
+        }
+
+        .expand-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+        }
+
+        .expand-wrapper.expanded {
+            grid-template-rows: 1fr;
+        }
+
+        .expand-inner {
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .expand-wrapper.expanded .expand-inner {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .expand-inner.overflow-visible {
+            overflow: visible;
+        }
     </style>
 </head>
 
@@ -256,9 +342,10 @@
                         Windows
                         experience.</p>
                 </a>
-                <a href="https://www.7-zip.org/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">7-Zip</h2>
-                    <p class="resource-desc">A free and open-source file archiver with a high compression ratio.</p>
+                <a href="https://github.com/M2Team/NanaZip" target="_blank" class="resource-card">
+                    <h2 class="resource-title">NanaZip</h2>
+                    <p class="resource-desc">A modern 7-Zip fork that integrates properly with the Windows 11 context
+                        menu.</p>
                 </a>
             </div>
         </div>
@@ -302,6 +389,21 @@
                     <h2 class="resource-title">ProtonVPN</h2>
                     <p class="resource-desc">A high-speed Swiss VPN that safeguards your privacy.</p>
                 </a>
+                <a href="https://signal.org/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">Signal</h2>
+                    <p class="resource-desc">A secure, free, and open source messaging app with end-to-end encryption.
+                    </p>
+                </a>
+                <a href="https://keepassxc.org/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">KeePassXC</h2>
+                    <p class="resource-desc">A modern, secure, and open-source password manager that stores your
+                        passwords offline.</p>
+                </a>
+                <a href="https://www.veracrypt.fr/en/Home.html" target="_blank" class="resource-card">
+                    <h2 class="resource-title">VeraCrypt</h2>
+                    <p class="resource-desc">Free open source disk encryption software for Windows, Mac OSX and Linux.
+                    </p>
+                </a>
             </div>
         </div>
 
@@ -325,12 +427,31 @@
                     <h2 class="resource-title">Audacity</h2>
                     <p class="resource-desc">Free, open source, cross-platform audio software.</p>
                 </a>
+                <a href="https://www.canva.com/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">Canva</h2>
+                    <p class="resource-desc">A free-to-use online graphic design tool. Use it to create social media
+                        posts, presentations, posters, videos, logos and more.</p>
+                </a>
+                <a href="https://www.photopea.com/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">Photopea</h2>
+                    <p class="resource-desc">A free online photo editor supporting PSD, XCF, Sketch, XD and CDR formats.
+                    </p>
+                </a>
+                <a href="https://www.freecad.org/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">FreeCAD</h2>
+                    <p class="resource-desc">An open-source parametric 3D modeler made primarily to design real-life
+                        objects of any size.</p>
+                </a>
             </div>
         </div>
 
         <div class="category-column">
             <div class="section-title">Browsers</div>
             <div class="resources-grid">
+                <a href="https://www.microsoft.com/edge" target="_blank" class="resource-card">
+                    <h2 class="resource-title">Microsoft Edge</h2>
+                    <p class="resource-desc">The fast, secure, and productive browser from Microsoft.</p>
+                </a>
                 <a href="https://www.mozilla.org/en-US/firefox/new/" target="_blank" class="resource-card">
                     <h2 class="resource-title">Firefox</h2>
                     <p class="resource-desc">Get the browser that protects what’s important. No shady privacy policies.
@@ -338,13 +459,32 @@
                 </a>
                 <a href="https://brave.com/" target="_blank" class="resource-card">
                     <h2 class="resource-title">Brave</h2>
-                    <p class="resource-desc">Appearently the best privacy online.</p>
+                    <p class="resource-desc">Apparently the best privacy online.</p>
+                </a>
+                <a href="https://www.torproject.org/" target="_blank" class="resource-card">
+                    <h2 class="resource-title">Tor Browser</h2>
+                    <p class="resource-desc">Defend yourself against tracking and surveillance. Circumvent censorship.
+                    </p>
                 </a>
             </div>
         </div>
     </div>
 
+    <div class="scroll-hint">
+        Scroll for more
+        <span></span>
+    </div>
+
     <script>
+        window.addEventListener('scroll', () => {
+            const scrollHint = document.querySelector('.scroll-hint');
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
+                scrollHint.style.opacity = '0';
+            } else {
+                scrollHint.style.opacity = '1';
+            }
+        });
+
         document.addEventListener('mousemove', (e) => {
             const overlay = document.querySelector('.bg-overlay');
             const x = e.clientX;
@@ -375,6 +515,72 @@
         const buttons = document.querySelectorAll('.resource-card, .back-btn');
         buttons.forEach(btn => {
             btn.addEventListener('click', createRipple);
+        });
+
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.resource-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        document.querySelectorAll('.category-column').forEach(column => {
+            const grid = column.querySelector('.resources-grid');
+            const cards = Array.from(grid.querySelectorAll('.resource-card'));
+            const maxItems = 4;
+
+            if (cards.length > maxItems) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'expand-wrapper';
+
+                const inner = document.createElement('div');
+                inner.className = 'expand-inner';
+
+                wrapper.appendChild(inner);
+
+                const hiddenCards = cards.slice(maxItems);
+                hiddenCards.forEach(card => {
+                    grid.removeChild(card);
+                    inner.appendChild(card);
+                    card.classList.add('visible');
+                    card.style.display = 'flex';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                });
+
+                grid.appendChild(wrapper);
+
+                let timeoutId;
+
+                column.addEventListener('mouseenter', () => {
+                    clearTimeout(timeoutId);
+                    wrapper.classList.add('expanded');
+
+                    timeoutId = setTimeout(() => {
+                        if (wrapper.classList.contains('expanded')) {
+                            inner.classList.add('overflow-visible');
+                        }
+                    }, 500);
+                });
+
+                column.addEventListener('mouseleave', () => {
+                    clearTimeout(timeoutId);
+                    inner.classList.remove('overflow-visible');
+                    void inner.offsetWidth;
+                    wrapper.classList.remove('expanded');
+                });
+            }
         });
     </script>
 </body>
