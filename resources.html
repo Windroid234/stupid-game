@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&family=Roboto:wght@400;500;700&display=swap');
+
+        :root {
+            --primary: #ff0055;
+            --secondary: #00ffaa;
+            --bg: #050505;
+            --card-bg: #1e1e1e;
+            --text: #fff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Roboto', sans-serif;
+            overflow-x: hidden;
+            width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+                filter: blur(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 0, 85, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 85, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(600px circle at var(--x, 50%) var(--y, 50%), rgba(255, 0, 85, 0.15), transparent 40%);
+            z-index: -1;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        header {
+            margin-top: 5rem;
+            text-align: center;
+            z-index: 10;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 4rem;
+            font-weight: 800;
+            margin: 0;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin: 2rem 0 1rem 0;
+            width: 100%;
+            max-width: 800px;
+            text-align: left;
+            padding-left: 1rem;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            max-width: 800px;
+            width: 90%;
+            margin-bottom: 2rem;
+        }
+
+        .resource-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.2);
+            background: #252525;
+        }
+
+        .resource-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            color: #fff;
+        }
+
+        .resource-desc {
+            color: #ccc;
+            font-size: 1rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: #666;
+            background: none;
+            border: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: color 0.3s;
+            z-index: 100;
+            padding: 0;
+        }
+
+        .back-btn:hover {
+            color: var(--primary);
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-grid"></div>
+    <div class="bg-overlay"></div>
+
+    <button onclick="window.location.href='index'" class="back-btn">← Back to Home</button>
+
+    <header>
+        <h1>Resources</h1>
+    </header>
+
+    <div class="section-title">System Utilities</div>
+    <div class="resources-grid">
+        <a href="https://github.com/ionuttbara/windows-defender-remover" target="_blank" class="resource-card">
+            <h2 class="resource-title">Windows Defender Remover</h2>
+            <p class="resource-desc">A tool to remove Windows Defender and other bloatware from your system.</p>
+        </a>
+    </div>
+
+    <div class="section-title">Operating Systems</div>
+    <div class="resources-grid">
+        <a href="https://atlasos.net/" target="_blank" class="resource-card">
+            <h2 class="resource-title">AtlasOS</h2>
+            <p class="resource-desc">An open-source modification of Windows designed for gamers and power users.</p>
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener('mousemove', (e) => {
+            const overlay = document.querySelector('.bg-overlay');
+            const x = e.clientX;
+            const y = e.clientY;
+            overlay.style.setProperty('--x', `${x}px`);
+            overlay.style.setProperty('--y', `${y}px`);
+        });
+
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const circle = document.createElement("span");
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+            circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+            circle.classList.add("ripple");
+
+            const ripple = button.getElementsByClassName("ripple")[0];
+            if (ripple) {
+                ripple.remove();
+            }
+
+            button.appendChild(circle);
+        }
+
+        const buttons = document.querySelectorAll('.resource-card, .back-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', createRipple);
+        });
+    </script>
+</body>
+
+</html>
