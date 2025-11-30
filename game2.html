@@ -52,7 +52,8 @@
         }
 
         #start-screen,
-        #game-over-screen {
+        #game-over-screen,
+        #pause-screen {
             position: absolute;
             top: 0;
             left: 0;
@@ -168,6 +169,13 @@
         <button id="restart-btn">REBOOT</button>
     </div>
 
+    <div id="pause-screen" class="hidden">
+        <h1>PAUSED</h1>
+        <button id="resume-btn">RESUME</button>
+        <button onclick="window.location.href='hub'"
+            style="margin-top: 20px; border-color: #ff0055; color: #ff0055;">EXIT TO HUB</button>
+    </div>
+
     <script>
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -211,6 +219,7 @@
         const finalScoreEl = document.getElementById('final-score');
         const startScreen = document.getElementById('start-screen');
         const gameOverScreen = document.getElementById('game-over-screen');
+        const pauseScreen = document.getElementById('pause-screen');
 
         let width, height;
         let animationId;
@@ -219,6 +228,7 @@
         let combo = 1;
         let frames = 0;
         let gameActive = false;
+        let isPaused = false;
         let difficultyMultiplier = 1;
         let shakeIntensity = 0;
 
@@ -265,7 +275,7 @@
         }, { passive: false });
 
         const triggerDash = () => {
-            if (!gameActive || player.energy < 20) return;
+            if (!gameActive || isPaused || player.energy < 20) return;
 
             player.dashing = true;
             player.energy -= 20;
@@ -558,7 +568,7 @@
         }
 
         function animate() {
-            if (!gameActive) return;
+            if (!gameActive || isPaused) return;
 
             animationId = requestAnimationFrame(animate);
             frames++;
@@ -620,6 +630,30 @@
         document.getElementById('restart-btn').addEventListener('click', () => {
             gameOverScreen.classList.add('hidden');
             initGame();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (!gameActive && !isPaused) return;
+
+                if (isPaused) {
+                    // Resume
+                    isPaused = false;
+                    pauseScreen.classList.add('hidden');
+                    animate();
+                } else {
+                    // Pause
+                    isPaused = true;
+                    pauseScreen.classList.remove('hidden');
+                    cancelAnimationFrame(animationId);
+                }
+            }
+        });
+
+        document.getElementById('resume-btn').addEventListener('click', () => {
+            isPaused = false;
+            pauseScreen.classList.add('hidden');
+            animate();
         });
     </script>
 </body>
