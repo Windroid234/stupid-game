@@ -545,6 +545,81 @@
             box-shadow: 0 0 20px rgba(255, 0, 85, 0.4);
             transform: translateY(-2px);
         }
+
+        #boot-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .win-logo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 40px;
+        }
+
+        .win-sq {
+            background: #00adef;
+        }
+
+        #boot-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #333;
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #dos-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            display: none;
+            z-index: 2001;
+            font-size: 18px;
+            white-space: pre-wrap;
+            box-sizing: border-box;
+        }
+
+        .blink {
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 
@@ -553,13 +628,28 @@
     <body>
         <button id="exit-btn" onclick="window.location.href='hub'">EXIT TO HUB</button>
         <div id="flashbang"></div>
-        <div id="bsod">
-            <p>A problem has been detected and Windows has been shut down to prevent damage to your computer.</p>
-            <p>DRIVER_IRQL_NOT_LESS_OR_EQUAL</p>
-            <p>If this is the first time you've seen this stop error screen, restart your computer.</p>
-            <br>
-            <p>*** STOP: 0x000000D1 (0xF86B5A89)</p>
+
+        <div id="boot-screen">
+            <div class="win-logo">
+                <div class="win-sq"></div>
+                <div class="win-sq"></div>
+                <div class="win-sq"></div>
+                <div class="win-sq"></div>
+            </div>
+            <div id="boot-spinner"></div>
         </div>
+
+        <div id="bsod" style="z-index: 2000;">
+            <p style="font-size: 100px; margin: 0;">:(</p>
+            <p style="font-size: 24px;">Your PC ran into a problem and needs to restart.</p>
+            <p>We're just collecting some error info, and then we'll restart for you.</p>
+            <br>
+            <p>0% complete</p>
+            <br>
+            <p style="font-size: 14px;">Stop Code: CRITICAL_PROCESS_DIED</p>
+        </div>
+
+        <div id="dos-screen"></div>
 
         <div id="game-container">
             <canvas id="gameCanvas" width="600" height="600"></canvas>
@@ -586,6 +676,7 @@
                     <div id="update-bar-fill"></div>
                 </div>
                 <p id="update-status">Downloading...</p>
+                <button onclick="cancelUpdate()">Cancel</button>
             </div>
 
             <div id="captcha-popup" class="chaos-popup">
@@ -664,6 +755,141 @@
         <div id="cursor-container"></div>
 
         <script>
+            // --- Sound Manager ---
+            const SoundManager = {
+                ctx: null,
+                init: function () {
+                    if (!this.ctx) {
+                        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                },
+                playTone: function (freq, type, duration, vol = 0.1) {
+                    if (!this.ctx) this.init();
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                },
+                playEat: function () { this.playTone(600, 'square', 0.1, 0.1); },
+                playDie: function () { this.playTone(100, 'sawtooth', 0.5, 0.2); },
+                playMove: function () { this.playTone(200, 'sine', 0.05, 0.05); },
+                playChaos: function () { this.playTone(800, 'sawtooth', 0.3, 0.1); },
+                playPhone: function () {
+                    if (this.phoneOsc) return; // Already ringing
+                    const now = this.ctx.currentTime;
+                    this.phoneOsc = this.ctx.createOscillator();
+                    this.phoneGain = this.ctx.createGain();
+
+                    this.phoneOsc.type = 'square';
+                    this.phoneOsc.frequency.setValueAtTime(800, now);
+
+                    // Create a rhythmic ringing pattern
+                    // 0.0 - 0.1: 800Hz
+                    // 0.1 - 0.2: 1000Hz
+                    // 0.2 - 0.3: 800Hz
+                    // 0.3 - 0.4: Silence
+                    // Repeat
+
+                    // We can't easily loop complex envelopes with a single oscillator node in a simple way without AudioWorklets or scheduling ahead.
+                    // A simpler approach for "looping" is to use an interval or just a simple repeating beep.
+                    // Let's use a simple repeating beep for the "ring".
+
+                    this.phoneOsc.frequency.setValueAtTime(800, now);
+                    this.phoneOsc.connect(this.phoneGain);
+                    this.phoneGain.connect(this.ctx.destination);
+
+                    this.phoneOsc.start();
+
+                    // Modulate volume to create the ring effect
+                    const cycle = 0.4;
+                    this.phoneGain.gain.setValueAtTime(0.1, now);
+                    this.phoneGain.gain.setValueCurveAtTime(new Float32Array([0.1, 0.1, 0, 0]), now, cycle);
+
+                    // We need to manually schedule the loop or use an LFO. 
+                    // Let's use a second oscillator as an LFO to modulate gain for a true "ringing" effect without JS intervals.
+
+                    // Actually, let's just use a setInterval for the "ring" sound to keep it simple and robust.
+                    this.phoneOsc.stop();
+                    this.phoneOsc = null;
+
+                    this.startPhoneLoop();
+                },
+                startPhoneLoop: function () {
+                    if (this.phoneInterval) return;
+                    const playRing = () => {
+                        const now = this.ctx.currentTime;
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        osc.type = 'square';
+                        osc.frequency.setValueAtTime(800, now);
+                        osc.frequency.setValueAtTime(1000, now + 0.1);
+                        osc.frequency.setValueAtTime(800, now + 0.2);
+
+                        gain.gain.setValueAtTime(0.1, now);
+                        gain.gain.linearRampToValueAtTime(0, now + 0.4);
+
+                        osc.connect(gain);
+                        gain.connect(this.ctx.destination);
+                        osc.start();
+                        osc.stop(now + 0.4);
+                    };
+                    playRing();
+                    this.phoneInterval = setInterval(playRing, 600);
+                },
+                stopPhone: function () {
+                    if (this.phoneInterval) {
+                        clearInterval(this.phoneInterval);
+                        this.phoneInterval = null;
+                    }
+                },
+                playStartup: function () {
+                    const now = this.ctx.currentTime;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.5);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 1.5);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(now + 1.5);
+                },
+                playShutdown: function () {
+                    const now = this.ctx.currentTime;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(50, now + 1);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 1);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(now + 1);
+                },
+                playError: function () {
+                    const now = this.ctx.currentTime;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(150, now);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.5);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(now + 0.5);
+                }
+            };
             const canvas = document.getElementById('gameCanvas');
             const ctx = canvas.getContext('2d');
             const scoreEl = document.getElementById('score-display');
@@ -690,8 +916,8 @@
 
             const gridSize = 20;
             const tileCount = canvas.width / gridSize;
-            let baseSpeed = 7;
-            let currentSpeed = 7;
+            let baseSpeed = 10; // Slightly faster base speed for better feel
+            let currentSpeed = 10;
 
             let velocityX = 0;
             let velocityY = 0;
@@ -706,7 +932,6 @@
             let gameLoop;
             let chaosLoop;
             let chatLoop;
-            let lagLoop;
             let isGameOver = false;
             let controlsInverted = false;
             let controlsScrambled = false;
@@ -717,15 +942,17 @@
             let isTosActive = false;
             let isCallActive = false;
 
-            let inputLagMs = 150;
-            let slipperyFoodChance = 0.3;
+            let inputLagMs = 0; // Removed constant input lag for playability
+            let slipperyFoodChance = 0.1; // Reduced from 0.3
+
+            let updateInterval;
 
             const insults = [
                 "Lag?", "Did you sneeze?", "Embarrassing.", "My cat plays better.",
                 "Alt+F4 saves.", "Controller disconnected?", "Yikes.", "Refund this.",
                 "Buffering...", "Misclick?", "Nice try (not).", "Why are you like this?",
                 "Look at the screen.", "Input dropped.", "Are you okay?", "Panic?",
-                "Cringe.", "L + Ratio", "Touch grass."
+                "Cringe.", "L + Ratio", "Touch grass.", "Skill Issue.", "Download more RAM."
             ];
 
             const deathInsults = [
@@ -733,16 +960,16 @@
                 "Snake? Snake?! SNAAAAKE!", "Maybe Try Sudoku?", "Imagine losing.",
                 "Go touch grass.", "Gravity check failed.", "BSOD.", "Error 404: Skill Not Found",
                 "The hunter got you.", "Stepped on a mine.", "Failed verification.",
-                "Answered the phone? Really?", "Didn't read ToS."
+                "Answered the phone? Really?", "Didn't read ToS.", "Windows Update got you."
             ];
 
-            const chatNames = ["xX_Slayer_Xx", "NoobHunter", "Admin", "YourMom", "ProGamer123", "Bot_42", "TTV_TTV", "ToxicAvenger"];
+            const chatNames = ["xX_Slayer_Xx", "NoobHunter", "Admin", "YourMom", "ProGamer123", "Bot_42", "TTV_TTV", "ToxicAvenger", "GamerGirl99", "Hackerman"];
             const chatMessages = [
                 "lol u suck", "uninstall pls", "my grandma plays faster", "is this easy mode?",
                 "lag switching?", "reported", "ez", "git gud", "imagine dying there",
-                "bot movement", "clown fiesta", "so bad", "????", "why r u trying"
+                "bot movement", "clown fiesta", "so bad", "????", "why r u trying",
+                "nice hacks", "controller player detected", "mom get the camera"
             ];
-
             tosContent.addEventListener('scroll', () => {
                 if (tosContent.scrollTop + tosContent.clientHeight >= tosContent.scrollHeight - 10) {
                     tosBtn.disabled = false;
@@ -752,9 +979,8 @@
             function triggerInvert() {
                 container.classList.toggle('inverted');
                 showInsult("MY EYES!");
+                SoundManager.playChaos();
             }
-
-
 
             function triggerFoodStorm() {
                 for (let i = 0; i < 15; i++) {
@@ -765,6 +991,7 @@
                     });
                 }
                 showInsult("FEEDING FRENZY");
+                SoundManager.playChaos();
             }
 
             function triggerMines() {
@@ -776,6 +1003,7 @@
                     });
                 }
                 showInsult("WATCH YOUR STEP");
+                SoundManager.playChaos();
             }
 
             function triggerRandomWalls() {
@@ -787,6 +1015,7 @@
                     });
                 }
                 showInsult("ROADBLOCK");
+                SoundManager.playChaos();
             }
 
             function triggerDeadPixels() {
@@ -803,10 +1032,12 @@
                 isInvisible = true;
                 showInsult("WHERE DID YOU GO?");
                 setTimeout(() => { isInvisible = false; }, 3000);
+                SoundManager.playChaos();
             }
 
             function triggerBSOD() {
                 bsod.style.display = 'block';
+                SoundManager.playTone(50, 'sawtooth', 0.5, 0.2);
                 setTimeout(() => { bsod.style.display = 'none'; }, 200 + Math.random() * 300);
             }
 
@@ -839,6 +1070,7 @@
                 const shuffled = [...keys].sort(() => 0.5 - Math.random());
                 scrambleMap = { 37: shuffled[0], 38: shuffled[1], 39: shuffled[2], 40: shuffled[3] };
                 showInsult("CONTROLS SCRAMBLED!");
+                SoundManager.playChaos();
                 setTimeout(() => { controlsScrambled = false; }, 4000);
             }
 
@@ -846,12 +1078,14 @@
                 document.getElementById('generic-popup-1').style.display = 'block';
                 setTimeout(() => document.getElementById('generic-popup-2').style.display = 'block', 500);
                 showInsult("ADS ADS ADS");
+                SoundManager.playChaos();
             }
 
             function triggerHelper() {
                 helperPopup.style.display = 'block';
                 helperPopup.style.top = Math.random() * 50 + '%';
                 helperPopup.style.left = Math.random() * 50 + '%';
+                SoundManager.playTone(800, 'sine', 0.2);
             }
 
             function triggerCaptcha() {
@@ -860,6 +1094,7 @@
                 clearInterval(gameLoop);
                 gameLoop = setInterval(gameStep, 1000);
                 showInsult("ARE YOU A ROBOT?");
+                SoundManager.playChaos();
             }
 
             function triggerTos() {
@@ -868,12 +1103,14 @@
                 tosBtn.disabled = true;
                 tosContent.scrollTop = 0;
                 showInsult("READ THIS PLS");
+                SoundManager.playChaos();
             }
 
             function triggerCall() {
                 isCallActive = true;
                 callPopup.style.display = 'flex';
                 showInsult("MOM IS CALLING");
+                SoundManager.playPhone();
             }
 
             window.solveCaptcha = function () {
@@ -892,34 +1129,146 @@
             window.closeCall = function () {
                 isCallActive = false;
                 callPopup.style.display = 'none';
+                SoundManager.stopPhone();
             }
-            window.failCall = function () { die("Social Interaction Fatal."); }
+            window.failCall = function () {
+                callPopup.style.display = 'none';
+                SoundManager.stopPhone();
+                die("Social Interaction Fatal.");
+            }
 
             function triggerUpdate() {
                 updatePopup.style.display = 'block';
                 let progress = 0;
-                const interval = setInterval(() => {
-                    progress += Math.random() * 10;
+                clearInterval(updateInterval);
+                updateInterval = setInterval(() => {
+                    progress += Math.random() * 5; // Slower update to give time to cancel
                     if (progress > 100) progress = 100;
                     updateBarFill.style.width = `${progress}%`;
                     if (progress === 100) {
-                        clearInterval(interval);
-                        setTimeout(() => updatePopup.style.display = 'none', 500);
+                        clearInterval(updateInterval);
+                        performSystemRestart();
                     }
                 }, 200);
                 showInsult("Updating...");
+                SoundManager.playChaos();
+            }
+
+            window.cancelUpdate = function () {
+                clearInterval(updateInterval);
+                updatePopup.style.display = 'none';
+                showInsult("Update Deferred");
+            }
+
+            function performSystemRestart() {
+                // Pause Game Logic
+                isGameOver = true;
+                clearInterval(gameLoop);
+                clearInterval(chaosLoop);
+                clearInterval(chatLoop);
+                if (typeof lagLoop !== 'undefined') clearInterval(lagLoop);
+                SoundManager.stopPhone();
+
+                updatePopup.style.display = 'none';
+                document.body.style.cursor = 'none'; // Hide cursor for realism
+
+                // Request Fullscreen
+                try {
+                    if (document.documentElement.requestFullscreen) {
+                        document.documentElement.requestFullscreen().catch(e => console.log("Fullscreen blocked:", e));
+                    }
+                } catch (e) {
+                    console.log("Fullscreen error:", e);
+                }
+
+                SoundManager.playShutdown();
+
+                // 1. Black Screen (Shutdown)
+                const overlay = document.createElement('div');
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100vw';
+                overlay.style.height = '100vh';
+                overlay.style.background = 'black';
+                overlay.style.zIndex = '1999';
+                document.body.appendChild(overlay);
+
+                // 2. Boot Screen
+                setTimeout(() => {
+                    document.getElementById('boot-screen').style.display = 'flex';
+                    SoundManager.playStartup();
+
+                    // 3. BSOD
+                    setTimeout(() => {
+                        document.getElementById('boot-screen').style.display = 'none';
+                        document.getElementById('bsod').style.display = 'block';
+                        SoundManager.playError();
+
+                        // 4. Restart (Black Screen again)
+                        setTimeout(() => {
+                            document.getElementById('bsod').style.display = 'none';
+
+                            // 5. DOS Screen
+                            setTimeout(() => {
+                                const dos = document.getElementById('dos-screen');
+                                dos.style.display = 'block';
+
+                                const lines = [
+                                    "C:\\> format c: /y",
+                                    "Checking existing disk format...",
+                                    "QuickFormatting 500GB...",
+                                    "Creating file system structures...",
+                                    "Format complete.",
+                                    "",
+                                    "C:\\> del /f /q *.*",
+                                    "Deleting system32...",
+                                    "Deleting user data...",
+                                    "System erased.",
+                                    "",
+                                    "System Halted.",
+                                    "",
+                                    "Press any key to reinstall OS..."
+                                ];
+
+                                let lineIndex = 0;
+                                const typeLine = () => {
+                                    if (lineIndex < lines.length) {
+                                        dos.innerHTML += lines[lineIndex] + "<br>";
+                                        lineIndex++;
+                                        SoundManager.playTone(800, 'square', 0.05, 0.05); // Typing sound
+                                        setTimeout(typeLine, 800);
+                                    } else {
+                                        dos.innerHTML += "<span class='blink'>_</span>";
+                                        const reloadFunc = () => {
+                                            if (document.fullscreenElement) {
+                                                document.exitFullscreen().catch(err => console.log("Exit fullscreen error:", err));
+                                            }
+                                            window.location.reload();
+                                        };
+                                        document.addEventListener('keydown', reloadFunc);
+                                        document.addEventListener('click', reloadFunc);
+                                    }
+                                };
+                                typeLine();
+
+                            }, 2000);
+                        }, 4000);
+                    }, 4000);
+                }, 3000);
             }
 
             function triggerPaywall() {
                 paywallPopup.style.display = 'block';
                 showInsult("Pay up.");
-                setTimeout(() => { paywallPopup.style.display = 'none'; }, 3000);
+                SoundManager.playChaos();
             }
 
             function triggerFlashbang() {
                 flashbang.style.opacity = 1;
                 setTimeout(() => { flashbang.style.opacity = 0; }, 2000);
                 showInsult("Think Fast!");
+                SoundManager.playTone(1000, 'white-noise', 0.5, 0.5);
             }
 
             function addChatMessage() {
@@ -941,11 +1290,16 @@
                     triggerAdware, triggerUpdate, triggerPaywall, triggerHelper, triggerCaptcha,
                     triggerRandomWalls, triggerTos, triggerCall, triggerDeadPixels
                 ];
-                const event = events[Math.floor(Math.random() * events.length)];
-                event();
+                // Slightly increased chaos frequency
+                if (Math.random() < 0.4) {
+                    const event = events[Math.floor(Math.random() * events.length)];
+                    event();
+                }
             }
 
             function initGame() {
+                SoundManager.init();
+                SoundManager.stopPhone(); // Ensure phone stops on restart
                 snake = [{ x: 10, y: 10 }];
                 score = 0;
                 velocityX = 0;
@@ -986,22 +1340,17 @@
                 gameOverScreen.style.display = 'none';
                 insultBox.style.opacity = '0';
 
-                inputLagMs = Math.random() * 200 + 50;
-
                 clearInterval(gameLoop);
                 clearInterval(chaosLoop);
                 clearInterval(chatLoop);
-                clearInterval(lagLoop);
+                clearInterval(updateInterval); // Clear update interval on reset
 
                 gameLoop = setInterval(gameStep, 1000 / currentSpeed);
                 chaosLoop = setInterval(randomChaos, 2000);
                 chatLoop = setInterval(addChatMessage, 2000);
 
-                lagLoop = setInterval(() => {
-                    inputLagMs = Math.random() * 400 + 50;
-                }, 1000);
-
                 placeFood();
+                SoundManager.playStartup(); // Play startup sound on game init
             }
 
             window.closePaywall = function () { paywallPopup.style.display = 'none'; };
@@ -1010,7 +1359,8 @@
                 if (isGameOver) return;
                 if (lagSpikeActive) return;
 
-                if (Math.random() < 0.05) {
+                // Reduced slippery keys chance
+                if (Math.random() < 0.01) {
                     let k = e.keyCode;
                     if (k === 37) k = 39; else if (k === 39) k = 37; else if (k === 38) k = 40; else if (k === 40) k = 38;
                     handleInput(k);
@@ -1018,10 +1368,7 @@
                     return;
                 }
 
-                if (Math.random() < 0.02) {
-                    showInsult("Input Ignored lol");
-                    return;
-                }
+                // Removed "Input Ignored" for better playability
 
                 handleInput(e.keyCode);
             });
@@ -1031,7 +1378,7 @@
 
                 if (controlsScrambled && scrambleMap[key]) {
                     actualKey = scrambleMap[key];
-                } else if (Math.random() < 0.05 || controlsInverted) {
+                } else if (Math.random() < 0.01 || controlsInverted) { // Reduced random invert chance
                     if (key === 37) actualKey = 39;
                     else if (key === 39) actualKey = 37;
                     else if (key === 38) actualKey = 40;
@@ -1039,16 +1386,22 @@
                     if (!controlsInverted && !controlsScrambled) showInsult("Inverted!");
                 }
 
+                // Prevent reversing direction
+                if (actualKey === 37 && velocityX === 1) return;
+                if (actualKey === 38 && velocityY === 1) return;
+                if (actualKey === 39 && velocityX === -1) return;
+                if (actualKey === 40 && velocityY === -1) return;
+
                 switch (actualKey) {
-                    case 37: if (velocityX !== 1) { velocityX = -1; velocityY = 0; } break;
-                    case 38: if (velocityY !== 1) { velocityX = 0; velocityY = -1; } break;
-                    case 39: if (velocityX !== -1) { velocityX = 1; velocityY = 0; } break;
-                    case 40: if (velocityY !== -1) { velocityX = 0; velocityY = 1; } break;
+                    case 37: velocityX = -1; velocityY = 0; SoundManager.playMove(); break;
+                    case 38: velocityX = 0; velocityY = -1; SoundManager.playMove(); break;
+                    case 39: velocityX = 1; velocityY = 0; SoundManager.playMove(); break;
+                    case 40: velocityX = 0; velocityY = 1; SoundManager.playMove(); break;
                 }
             }
 
             function gameStep() {
-                if (Math.random() < 0.01 && !lagSpikeActive && !isCaptchaActive) {
+                if (Math.random() < 0.005 && !lagSpikeActive && !isCaptchaActive) { // Reduced lag spike chance
                     lagSpikeActive = true;
                     lagIndicator.style.opacity = 1;
                     let spikeDuration = Math.random() * 500 + 300;
@@ -1076,7 +1429,7 @@
             }
 
             function update() {
-                if (Math.random() < 0.01) {
+                if (Math.random() < 0.005) { // Reduced screen shake chance
                     let randomX = (Math.random() - 0.5) * 400;
                     let randomY = (Math.random() - 0.5) * 300;
                     body.style.transform = `translate(${randomX}px, ${randomY}px)`;
@@ -1143,6 +1496,7 @@
 
                 if (headX === food.x && headY === food.y) {
                     ate = true;
+                    SoundManager.playEat();
                     if (Math.random() < 0.1 && snake.length > 3) {
                         snake.pop(); snake.pop();
                         showInsult("Inflation.");
@@ -1158,10 +1512,11 @@
                 } else {
                     for (let i = 0; i < fakeFoods.length; i++) {
                         if (headX === fakeFoods[i].x && headY === fakeFoods[i].y) {
-                            score -= 50;
+                            score -= 10; // Reduced penalty
                             showInsult("BAD FOOD!");
                             fakeFoods.splice(i, 1);
                             ate = false;
+                            SoundManager.playTone(150, 'sawtooth', 0.2);
                             break;
                         }
                     }
@@ -1283,10 +1638,11 @@
 
             function die(reason) {
                 isGameOver = true;
+                SoundManager.playDie();
+                SoundManager.stopPhone(); // Ensure phone stops on death
                 clearInterval(gameLoop);
                 clearInterval(chaosLoop);
                 clearInterval(chatLoop);
-                clearInterval(lagLoop);
                 container.classList.remove('spin-left', 'spin-right', 'spin-upside', 'inverted', 'skew-madness');
                 container.classList.add('extreme-shake');
                 setTimeout(() => container.classList.remove('extreme-shake'), 500);
@@ -1296,16 +1652,24 @@
             }
 
             restartBtn.addEventListener('mouseover', () => {
-                if (Math.random() > 0.1) moveButton();
+                // Reduced chance of button moving away significantly
+                if (Math.random() > 0.8) moveButton();
             });
 
             function moveButton() {
-                const x = Math.random() * (window.innerWidth - 200);
-                const y = Math.random() * (window.innerHeight - 100);
+                const btnWidth = restartBtn.offsetWidth || 200; // Fallback width
+                const btnHeight = restartBtn.offsetHeight || 60; // Fallback height
+
+                // Calculate max positions to keep button fully on screen
+                const maxX = window.innerWidth - btnWidth - 20;
+                const maxY = window.innerHeight - btnHeight - 20;
+
+                const x = Math.random() * maxX;
+                const y = Math.random() * maxY;
 
                 restartBtn.style.position = 'fixed';
-                restartBtn.style.left = `${Math.max(0, x)}px`;
-                restartBtn.style.top = `${Math.max(0, y)}px`;
+                restartBtn.style.left = `${Math.max(10, x)}px`;
+                restartBtn.style.top = `${Math.max(10, y)}px`;
 
                 const btnTexts = ["Nope", "Too Slow", "Try Again", "Missed me", "Click here", "Skill issue"];
                 restartBtn.innerText = btnTexts[Math.floor(Math.random() * btnTexts.length)];
