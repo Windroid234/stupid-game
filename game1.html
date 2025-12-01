@@ -620,1034 +620,1428 @@
                 opacity: 0;
             }
         }
+
+        #bios-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            color: white;
+            font-family: 'Courier New', monospace;
+            z-index: 2000;
+            display: none;
+            padding: 40px;
+            font-size: 16px;
+            box-sizing: border-box;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+
+        #update-working-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0078d7;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #discord-chat-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 500px;
+            background: #36393f;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: none;
+            flex-direction: column;
+            z-index: 3000;
+            font-family: 'gg sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .discord-header {
+            background: #2f3136;
+            padding: 10px 15px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #202225;
+        }
+
+        .discord-header span {
+            margin-left: 10px;
+        }
+
+        .discord-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #faa61a;
+        }
+
+        .discord-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .d-msg {
+            display: flex;
+            gap: 10px;
+            color: #dcddde;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .d-msg-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .d-username {
+            font-weight: bold;
+            font-size: 14px;
+            color: white;
+            margin-bottom: 2px;
+        }
+
+        .d-text {
+            white-space: pre-wrap;
+        }
+
+        .d-options {
+            padding: 10px;
+            background: #40444b;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .d-btn {
+            background: #5865f2;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            flex: 1;
+            transition: background 0.2s;
+        }
+
+        .d-btn:hover {
+            background: #4752c4;
+        }
+
+        .d-img-reveal {
+            max-width: 100%;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        #pay-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 10;
+        }
     </style>
 </head>
 
 <body>
+    <button id="exit-btn" onclick="window.location.href='hub'">EXIT TO HUB</button>
+    <div id="flashbang"></div>
 
-    <body>
-        <button id="exit-btn" onclick="window.location.href='hub'">EXIT TO HUB</button>
-        <div id="flashbang"></div>
+    <div id="bios-screen">
+        <p>American Megatrends</p>
+        <p>Released: 04/20/2069</p>
+        <p>CPU: Quantum Core i99 128-Core Processor</p>
+        <p>Speed: 99.9 GHz</p>
+        <br>
+        <p>Memory Frequency For DDR10 8000 MHz</p>
+        <p>Memory(RAM): <span id="bios-mem">0</span> MB OK</p>
+        <br>
+        <p>Detecting Primary Master ... Toxic Snake HDD</p>
+        <p>Detecting Primary Slave ... None</p>
+    </div>
 
-        <div id="boot-screen">
-            <div class="win-logo">
-                <div class="win-sq"></div>
-                <div class="win-sq"></div>
-                <div class="win-sq"></div>
-                <div class="win-sq"></div>
-            </div>
-            <div id="boot-spinner"></div>
+    <div id="boot-screen">
+        <div class="win-logo">
+            <div class="win-sq"></div>
+            <div class="win-sq"></div>
+            <div class="win-sq"></div>
+            <div class="win-sq"></div>
+        </div>
+        <div id="boot-spinner"></div>
+    </div>
+
+    <div id="update-working-screen">
+        <div id="boot-spinner"
+            style="border-color: rgba(255,255,255,0.3); border-top-color: white; margin-bottom: 20px;"></div>
+        <p style="font-size: 24px;">Working on updates <span id="update-pct">0</span>%</p>
+        <p style="margin-top: 10px;">Don't turn off your computer</p>
+        <p style="margin-top: 5px; opacity: 0.7;">This will take a while</p>
+    </div>
+
+    <div id="bsod" style="z-index: 2000;">
+        <p style="font-size: 100px; margin: 0;">:(</p>
+        <p style="font-size: 24px;">Your PC ran into a problem and needs to restart.</p>
+        <p>We're just collecting some error info, and then we'll restart for you.</p>
+        <br>
+        <p>0% complete</p>
+        <br>
+        <p style="font-size: 14px;">Stop Code: CRITICAL_PROCESS_DIED</p>
+    </div>
+
+    <div id="dos-screen"></div>
+
+    <div id="discord-chat-popup">
+        <div class="discord-header">
+            <div class="discord-avatar"></div>
+            <span>HotBabe_69</span>
+        </div>
+        <div class="discord-messages" id="d-msgs"></div>
+        <div class="d-options" id="d-opts"></div>
+        <div id="pay-overlay">
+            <h2>PREMIUM CONTENT</h2>
+            <p>Unlock private photo?</p>
+            <h1 style="color: #5865f2;">$50.00</h1>
+            <button class="d-btn" style="width: 200px; margin-top: 20px;" onclick="payForPic()">PAY NOW</button>
+        </div>
+    </div>
+
+    <div id="game-container">
+        <canvas id="gameCanvas" width="600" height="600"></canvas>
+        <div id="crt-overlay"></div>
+
+        <div id="ui-layer">
+            <div id="score-display">Score: 0</div>
+            <div id="lag-indicator" style="color: yellow; opacity: 0;">ATTEMPTING TO RECONNECT...</div>
         </div>
 
-        <div id="bsod" style="z-index: 2000;">
-            <p style="font-size: 100px; margin: 0;">:(</p>
-            <p style="font-size: 24px;">Your PC ran into a problem and needs to restart.</p>
-            <p>We're just collecting some error info, and then we'll restart for you.</p>
-            <br>
-            <p>0% complete</p>
-            <br>
-            <p style="font-size: 14px;">Stop Code: CRITICAL_PROCESS_DIED</p>
+        <div id="chat-box"></div>
+
+        <div id="paywall-popup" class="chaos-popup">
+            <h3>TRIAL EXPIRED</h3>
+            <p>Please enter credit card.</p>
+            <button onclick="closePaywall()">Pay $499.99</button>
+            <button onclick="closePaywall()" style="font-size: 8px;">No thanks</button>
         </div>
 
-        <div id="dos-screen"></div>
-
-        <div id="game-container">
-            <canvas id="gameCanvas" width="600" height="600"></canvas>
-            <div id="crt-overlay"></div>
-
-            <div id="ui-layer">
-                <div id="score-display">Score: 0</div>
-                <div id="lag-indicator" style="color: yellow; opacity: 0;">ATTEMPTING TO RECONNECT...</div>
+        <div id="update-popup" class="chaos-popup">
+            <h3>CRITICAL UPDATE</h3>
+            <p>Installing Windows 11...</p>
+            <div id="update-bar-bg">
+                <div id="update-bar-fill"></div>
             </div>
+            <p id="update-status">Downloading...</p>
+            <button onclick="cancelUpdate()">Cancel</button>
+        </div>
 
-            <div id="chat-box"></div>
-
-            <div id="paywall-popup" class="chaos-popup">
-                <h3>TRIAL EXPIRED</h3>
-                <p>Please enter credit card.</p>
-                <button onclick="closePaywall()">Pay $499.99</button>
-                <button onclick="closePaywall()" style="font-size: 8px;">No thanks</button>
+        <div id="captcha-popup" class="chaos-popup">
+            <h3>VERIFICATION</h3>
+            <p>Select the squares with: <b>Traffic Lights</b></p>
+            <div id="captcha-grid">
+                <button onclick="failCaptcha()">Tree</button>
+                <button onclick="failCaptcha()">Car</button>
+                <button onclick="solveCaptcha()">Traffic Light</button>
+                <button onclick="failCaptcha()">Crosswalk</button>
             </div>
+            <p style="font-size: 9px; color: red;">Game speed reduced to 10%.</p>
+        </div>
 
-            <div id="update-popup" class="chaos-popup">
-                <h3>CRITICAL UPDATE</h3>
-                <p>Installing Windows 11...</p>
-                <div id="update-bar-bg">
-                    <div id="update-bar-fill"></div>
-                </div>
-                <p id="update-status">Downloading...</p>
-                <button onclick="cancelUpdate()">Cancel</button>
+        <div id="tos-popup" class="chaos-popup">
+            <h3>TERMS OF SERVICE</h3>
+            <div id="tos-content">
+                <p>Welcome to Rage Snake.</p>
+                <p>1. You have no rights.</p>
+                <p>2. We own your soul.</p>
+                <p>3. Scoring is optional.</p>
+                <p>4. Lag is a feature.</p>
+                <p>5. No Refunds.</p>
+                <p>6. You admit skill issue.</p>
+                <p>7. We see you.</p>
+                <p>8. Don't look behind you.</p>
+                <p>9. Scroll more...</p>
+                <p>10. Keep going...</p>
+                <p>11. Almost there...</p>
+                <p>12. Just kidding.</p>
+                <p>13. Okay now for real.</p>
+                <p>14. By clicking agree you owe us $50.</p>
+                <p>15. End of agreement.</p>
             </div>
+            <button id="tos-btn" disabled onclick="closeTos()">I Agree</button>
+        </div>
 
-            <div id="captcha-popup" class="chaos-popup">
-                <h3>VERIFICATION</h3>
-                <p>Select the squares with: <b>Traffic Lights</b></p>
-                <div id="captcha-grid">
-                    <button onclick="failCaptcha()">Tree</button>
-                    <button onclick="failCaptcha()">Car</button>
-                    <button onclick="solveCaptcha()">Traffic Light</button>
-                    <button onclick="failCaptcha()">Crosswalk</button>
-                </div>
-                <p style="font-size: 9px; color: red;">Game speed reduced to 10%.</p>
-            </div>
+        <div id="helper-popup">
+            <h4 style="margin:0">Hi there!</h4>
+            <p style="font-size: 11px;">You seem to be struggling. Need a tutorial?</p>
+            <button onclick="this.parentElement.style.display='none'">Go Away</button>
+        </div>
 
-            <div id="tos-popup" class="chaos-popup">
-                <h3>TERMS OF SERVICE</h3>
-                <div id="tos-content">
-                    <p>Welcome to Rage Snake.</p>
-                    <p>1. You have no rights.</p>
-                    <p>2. We own your soul.</p>
-                    <p>3. Scoring is optional.</p>
-                    <p>4. Lag is a feature.</p>
-                    <p>5. No Refunds.</p>
-                    <p>6. You admit skill issue.</p>
-                    <p>7. We see you.</p>
-                    <p>8. Don't look behind you.</p>
-                    <p>9. Scroll more...</p>
-                    <p>10. Keep going...</p>
-                    <p>11. Almost there...</p>
-                    <p>12. Just kidding.</p>
-                    <p>13. Okay now for real.</p>
-                    <p>14. By clicking agree you owe us $50.</p>
-                    <p>15. End of agreement.</p>
-                </div>
-                <button id="tos-btn" disabled onclick="closeTos()">I Agree</button>
-            </div>
+        <div id="generic-popup-1" class="chaos-popup" style="top: 30%; left: 60%;">
+            <h3>HOT SINGLES</h3>
+            <p>In your area!</p>
+            <button onclick="this.parentElement.style.display='none'">Chat Now</button>
+        </div>
 
-            <div id="helper-popup">
-                <h4 style="margin:0">Hi there!</h4>
-                <p style="font-size: 11px;">You seem to be struggling. Need a tutorial?</p>
-                <button onclick="this.parentElement.style.display='none'">Go Away</button>
-            </div>
+        <div id="generic-popup-2" class="chaos-popup" style="top: 70%; left: 30%;">
+            <h3>VIRUS DETECTED</h3>
+            <p>Delete System32?</p>
+            <button onclick="this.parentElement.style.display='none'">Yes</button>
+            <button onclick="this.parentElement.style.display='none'">Definitely Yes</button>
+        </div>
 
-            <div id="generic-popup-1" class="chaos-popup" style="top: 30%; left: 60%;">
-                <h3>HOT SINGLES</h3>
-                <p>In your area!</p>
-                <button onclick="this.parentElement.style.display='none'">Chat Now</button>
-            </div>
-
-            <div id="generic-popup-2" class="chaos-popup" style="top: 70%; left: 30%;">
-                <h3>VIRUS DETECTED</h3>
-                <p>Delete System32?</p>
-                <button onclick="this.parentElement.style.display='none'">Yes</button>
-                <button onclick="this.parentElement.style.display='none'">Definitely Yes</button>
-            </div>
-
-            <div id="call-popup">
-                <h1>MOM IS CALLING...</h1>
-                <div style="display: flex; gap: 20px;">
-                    <button style="background: green; padding: 20px; border:none; color: white; cursor: pointer;"
-                        onclick="failCall()">Answer</button>
-                    <button style="background: red; padding: 20px; border:none; color: white; cursor: pointer;"
-                        onclick="closeCall()">Decline</button>
-                </div>
-            </div>
-
-            <div id="insult-box">SKILL ISSUE</div>
-
-            <div id="game-over-screen">
-                <h1 class="glitch-text">WASTED</h1>
-                <p id="final-insult" style="color: white; font-size: 20px; margin-bottom: 30px;">You tried.</p>
-                <button id="restart-btn">Try Again</button>
+        <div id="call-popup">
+            <h1>MOM IS CALLING...</h1>
+            <div style="display: flex; gap: 20px;">
+                <button style="background: green; padding: 20px; border:none; color: white; cursor: pointer;"
+                    onclick="failCall()">Answer</button>
+                <button style="background: red; padding: 20px; border:none; color: white; cursor: pointer;"
+                    onclick="closeCall()">Decline</button>
             </div>
         </div>
 
-        <div id="cursor-container"></div>
+        <div id="insult-box">SKILL ISSUE</div>
 
-        <script>
-            const SoundManager = {
-                ctx: null,
-                init: function () {
-                    if (!this.ctx) {
-                        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-                    }
-                },
-                playTone: function (freq, type, duration, vol = 0.1) {
-                    if (!this.ctx) this.init();
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    osc.type = type;
-                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-                    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start();
-                    osc.stop(this.ctx.currentTime + duration);
-                },
-                playEat: function () { this.playTone(600, 'square', 0.1, 0.1); },
-                playDie: function () { this.playTone(100, 'sawtooth', 0.5, 0.2); },
-                playMove: function () { this.playTone(200, 'sine', 0.05, 0.05); },
-                playChaos: function () { this.playTone(800, 'sawtooth', 0.3, 0.1); },
-                playPhone: function () {
-                    if (this.phoneOsc) return;
-                    const now = this.ctx.currentTime;
-                    this.phoneOsc = this.ctx.createOscillator();
-                    this.phoneGain = this.ctx.createGain();
+        <div id="game-over-screen">
+            <h1 class="glitch-text">WASTED</h1>
+            <p id="final-insult" style="color: white; font-size: 20px; margin-bottom: 30px;">You tried.</p>
+            <button id="restart-btn">Try Again</button>
+        </div>
+    </div>
 
-                    this.phoneOsc.type = 'square';
-                    this.phoneOsc.frequency.setValueAtTime(800, now);
-                    this.phoneOsc.frequency.setValueAtTime(800, now);
-                    this.phoneOsc.connect(this.phoneGain);
-                    this.phoneGain.connect(this.ctx.destination);
+    <div id="cursor-container"></div>
 
-                    this.phoneOsc.start();
+    <script>
+        const SoundManager = {
+            ctx: null,
+            init: function () {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+            playTone: function (freq, type, duration, vol = 0.1) {
+                if (!this.ctx) this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + duration);
+            },
+            playEat: function () { this.playTone(600, 'square', 0.1, 0.1); },
+            playDie: function () { this.playTone(100, 'sawtooth', 0.5, 0.2); },
+            playMove: function () { this.playTone(200, 'sine', 0.05, 0.05); },
+            playChaos: function () { this.playTone(800, 'sawtooth', 0.3, 0.1); },
+            playPhone: function () {
+                if (this.phoneOsc) return;
+                const now = this.ctx.currentTime;
+                this.phoneOsc = this.ctx.createOscillator();
+                this.phoneGain = this.ctx.createGain();
 
-                    const cycle = 0.4;
-                    this.phoneGain.gain.setValueAtTime(0.1, now);
-                    this.phoneGain.gain.setValueCurveAtTime(new Float32Array([0.1, 0.1, 0, 0]), now, cycle);
+                this.phoneOsc.type = 'square';
+                this.phoneOsc.frequency.setValueAtTime(800, now);
+                this.phoneOsc.frequency.setValueAtTime(800, now);
+                this.phoneOsc.connect(this.phoneGain);
+                this.phoneGain.connect(this.ctx.destination);
 
-                    this.phoneOsc.stop();
-                    this.phoneOsc = null;
+                this.phoneOsc.start();
 
-                    this.startPhoneLoop();
-                },
-                startPhoneLoop: function () {
-                    if (this.phoneInterval) return;
-                    const playRing = () => {
-                        const now = this.ctx.currentTime;
-                        const osc = this.ctx.createOscillator();
-                        const gain = this.ctx.createGain();
-                        osc.type = 'square';
-                        osc.frequency.setValueAtTime(800, now);
-                        osc.frequency.setValueAtTime(1000, now + 0.1);
-                        osc.frequency.setValueAtTime(800, now + 0.2);
+                const cycle = 0.4;
+                this.phoneGain.gain.setValueAtTime(0.1, now);
+                this.phoneGain.gain.setValueCurveAtTime(new Float32Array([0.1, 0.1, 0, 0]), now, cycle);
 
-                        gain.gain.setValueAtTime(0.1, now);
-                        gain.gain.linearRampToValueAtTime(0, now + 0.4);
+                this.phoneOsc.stop();
+                this.phoneOsc = null;
 
-                        osc.connect(gain);
-                        gain.connect(this.ctx.destination);
-                        osc.start();
-                        osc.stop(now + 0.4);
-                    };
-                    playRing();
-                    this.phoneInterval = setInterval(playRing, 600);
-                },
-                stopPhone: function () {
-                    if (this.phoneInterval) {
-                        clearInterval(this.phoneInterval);
-                        this.phoneInterval = null;
-                    }
-                },
-                playStartup: function () {
-                    const now = this.ctx.currentTime;
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(200, now);
-                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.5);
-                    gain.gain.setValueAtTime(0.2, now);
-                    gain.gain.linearRampToValueAtTime(0, now + 1.5);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start();
-                    osc.stop(now + 1.5);
-                },
-                playShutdown: function () {
-                    const now = this.ctx.currentTime;
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(400, now);
-                    osc.frequency.exponentialRampToValueAtTime(50, now + 1);
-                    gain.gain.setValueAtTime(0.2, now);
-                    gain.gain.linearRampToValueAtTime(0, now + 1);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start();
-                    osc.stop(now + 1);
-                },
-                playError: function () {
+                this.startPhoneLoop();
+            },
+            startPhoneLoop: function () {
+                if (this.phoneInterval) return;
+                const playRing = () => {
                     const now = this.ctx.currentTime;
                     const osc = this.ctx.createOscillator();
                     const gain = this.ctx.createGain();
                     osc.type = 'square';
-                    osc.frequency.setValueAtTime(150, now);
-                    gain.gain.setValueAtTime(0.3, now);
-                    gain.gain.linearRampToValueAtTime(0, now + 0.5);
+                    osc.frequency.setValueAtTime(800, now);
+                    osc.frequency.setValueAtTime(1000, now + 0.1);
+                    osc.frequency.setValueAtTime(800, now + 0.2);
+
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.4);
+
                     osc.connect(gain);
                     gain.connect(this.ctx.destination);
                     osc.start();
-                    osc.stop(now + 0.5);
+                    osc.stop(now + 0.4);
+                };
+                playRing();
+                this.phoneInterval = setInterval(playRing, 600);
+            },
+            stopPhone: function () {
+                if (this.phoneInterval) {
+                    clearInterval(this.phoneInterval);
+                    this.phoneInterval = null;
                 }
-            };
-            const canvas = document.getElementById('gameCanvas');
-            const ctx = canvas.getContext('2d');
-            const scoreEl = document.getElementById('score-display');
-            const insultBox = document.getElementById('insult-box');
-            const gameOverScreen = document.getElementById('game-over-screen');
-            const restartBtn = document.getElementById('restart-btn');
-            const finalInsult = document.getElementById('final-insult');
-            const lagIndicator = document.getElementById('lag-indicator');
-            const container = document.getElementById('game-container');
-            const paywallPopup = document.getElementById('paywall-popup');
-            const updatePopup = document.getElementById('update-popup');
-            const updateBarFill = document.getElementById('update-bar-fill');
-            const captchaPopup = document.getElementById('captcha-popup');
-            const tosPopup = document.getElementById('tos-popup');
-            const tosContent = document.getElementById('tos-content');
-            const tosBtn = document.getElementById('tos-btn');
-            const callPopup = document.getElementById('call-popup');
-            const helperPopup = document.getElementById('helper-popup');
-            const chatBox = document.getElementById('chat-box');
-            const bsod = document.getElementById('bsod');
-            const flashbang = document.getElementById('flashbang');
-            const body = document.body;
-            const cursorContainer = document.getElementById('cursor-container');
-
-            const gridSize = 20;
-            const tileCount = canvas.width / gridSize;
-            let baseSpeed = 10;
-            let currentSpeed = 10;
-
-            let velocityX = 0;
-            let velocityY = 0;
-            let snake = [];
-            let food = { x: 10, y: 10 };
-            let fakeFoods = [];
-            let mines = [];
-            let randomWalls = [];
-            let deadPixels = [];
-            let hunter = { x: 0, y: 0, active: false, moveTick: 0 };
-            let score = 0;
-            let gameLoop;
-            let chaosLoop;
-            let chatLoop;
-            let isGameOver = false;
-            let controlsInverted = false;
-            let controlsScrambled = false;
-            let scrambleMap = {};
-            let lagSpikeActive = false;
-            let isInvisible = false;
-            let isCaptchaActive = false;
-            let isTosActive = false;
-            let isCallActive = false;
-
-            let inputLagMs = 0;
-            let slipperyFoodChance = 0.1;
-
-            let updateInterval;
-
-            const insults = [
-                "Lag?", "Did you sneeze?", "Embarrassing.", "My cat plays better.",
-                "Alt+F4 saves.", "Controller disconnected?", "Yikes.", "Refund this.",
-                "Buffering...", "Misclick?", "Nice try (not).", "Why are you like this?",
-                "Look at the screen.", "Input dropped.", "Are you okay?", "Panic?",
-                "Cringe.", "L + Ratio", "Touch grass.", "Skill Issue.", "Download more RAM."
-            ];
-
-            const deathInsults = [
-                "Have you tried turning it off and on again?", "Physics is hard.",
-                "Snake? Snake?! SNAAAAKE!", "Maybe Try Sudoku?", "Imagine losing.",
-                "Go touch grass.", "Gravity check failed.", "BSOD.", "Error 404: Skill Not Found",
-                "The hunter got you.", "Stepped on a mine.", "Failed verification.",
-                "Answered the phone? Really?", "Didn't read ToS.", "Windows Update got you."
-            ];
-
-            const chatNames = ["xX_Slayer_Xx", "Nikolai", "Sejozwak", "Torch4084", "Ninja", "Sparx", "FoxyCookie", "Mrbeast", "NoobHunter", "Admin", "YourMom", "ProGamer123", "Bot_42", "TTV_TTV", "ToxicAvenger", "GamerGirl99", "Hackerman", "Cypransghost", "Adolf Titler", "Trust"];
-            const chatMessages = [
-                "lol u suck", "uninstall pls", "my grandma plays faster", "is this easy mode?",
-                "lag switching?", "reported", "ez", "git gud", "imagine dying there",
-                "bot movement", "clown fiesta", "so bad", "????", "why r u trying",
-                "nice hacks", "controller player detected", "mom get the camera", "W", "I gooned to this", "Marry me", "You're fired", "You're a macaque"
-            ];
-            tosContent.addEventListener('scroll', () => {
-                if (tosContent.scrollTop + tosContent.clientHeight >= tosContent.scrollHeight - 10) {
-                    tosBtn.disabled = false;
-                }
-            });
-
-            function triggerInvert() {
-                container.classList.toggle('inverted');
-                showInsult("MY EYES!");
-                SoundManager.playChaos();
+            },
+            playStartup: function () {
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.exponentialRampToValueAtTime(600, now + 0.5);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.linearRampToValueAtTime(0, now + 1.5);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(now + 1.5);
+            },
+            playShutdown: function () {
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(50, now + 1);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.linearRampToValueAtTime(0, now + 1);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(now + 1);
+            },
+            playError: function () {
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(150, now);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.5);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(now + 0.5);
             }
+        };
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score-display');
+        const insultBox = document.getElementById('insult-box');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const restartBtn = document.getElementById('restart-btn');
+        const finalInsult = document.getElementById('final-insult');
+        const lagIndicator = document.getElementById('lag-indicator');
+        const container = document.getElementById('game-container');
+        const paywallPopup = document.getElementById('paywall-popup');
+        const updatePopup = document.getElementById('update-popup');
+        const updateBarFill = document.getElementById('update-bar-fill');
+        const captchaPopup = document.getElementById('captcha-popup');
+        const tosPopup = document.getElementById('tos-popup');
+        const tosContent = document.getElementById('tos-content');
+        const tosBtn = document.getElementById('tos-btn');
+        const callPopup = document.getElementById('call-popup');
+        const helperPopup = document.getElementById('helper-popup');
+        const chatBox = document.getElementById('chat-box');
+        const bsod = document.getElementById('bsod');
+        const flashbang = document.getElementById('flashbang');
+        const body = document.body;
+        const cursorContainer = document.getElementById('cursor-container');
 
-            function triggerFoodStorm() {
-                for (let i = 0; i < 15; i++) {
-                    fakeFoods.push({
-                        x: Math.floor(Math.random() * tileCount),
-                        y: Math.floor(Math.random() * tileCount),
-                        life: 100
-                    });
-                }
-                showInsult("FEEDING FRENZY");
-                SoundManager.playChaos();
+        const gridSize = 20;
+        const tileCount = canvas.width / gridSize;
+        let baseSpeed = 10;
+        let currentSpeed = 10;
+
+        let velocityX = 0;
+        let velocityY = 0;
+        let snake = [];
+        let food = { x: 10, y: 10 };
+        let fakeFoods = [];
+        let mines = [];
+        let randomWalls = [];
+        let deadPixels = [];
+        let hunter = { x: 0, y: 0, active: false, moveTick: 0 };
+        let score = 0;
+        let gameLoop;
+        let chaosLoop;
+        let chatLoop;
+        let isGameOver = false;
+        let controlsInverted = false;
+        let controlsScrambled = false;
+        let scrambleMap = {};
+        let lagSpikeActive = false;
+        let isInvisible = false;
+        let isCaptchaActive = false;
+        let isTosActive = false;
+        let isCallActive = false;
+        let hasBeenScammed = false;
+        let isInDebt = false;
+
+        let inputLagMs = 0;
+        let slipperyFoodChance = 0.1;
+
+        let updateInterval;
+
+        const insults = [
+            "Lag?", "Did you sneeze?", "Embarrassing.", "My cat plays better.",
+            "Alt+F4 saves.", "Controller disconnected?", "Yikes.", "Refund this.",
+            "Buffering...", "Misclick?", "Nice try (not).", "Why are you like this?",
+            "Look at the screen.", "Input dropped.", "Are you okay?", "Panic?",
+            "Cringe.", "L + Ratio", "Touch grass.", "Skill Issue.", "Download more RAM."
+        ];
+
+        const deathInsults = [
+            "Have you tried turning it off and on again?", "Physics is hard.",
+            "Snake? Snake?! SNAAAAKE!", "Maybe Try Sudoku?", "Imagine losing.",
+            "Go touch grass.", "Gravity check failed.", "BSOD.", "Error 404: Skill Not Found",
+            "The hunter got you.", "Stepped on a mine.", "Failed verification.",
+            "Answered the phone? Really?", "Didn't read ToS.", "Windows Update got you."
+        ];
+
+        const chatNames = ["xX_Slayer_Xx", "Nikolai", "Sejozwak", "Torch4084", "Ninja", "Sparx", "FoxyCookie", "Mrbeast", "NoobHunter", "Admin", "YourMom", "ProGamer123", "Bot_42", "TTV_TTV", "ToxicAvenger", "GamerGirl99", "Hackerman", "Cypransghost", "Adolf Titler", "Trust"];
+        const chatMessages = [
+            "lol u suck", "uninstall pls", "my grandma plays faster", "is this easy mode?",
+            "lag switching?", "reported", "ez", "git gud", "imagine dying there",
+            "bot movement", "clown fiesta", "so bad", "????", "why r u trying",
+            "nice hacks", "controller player detected", "mom get the camera", "W", "I gooned to this", "Marry me", "You're fired", "You're a macaque"
+        ];
+        tosContent.addEventListener('scroll', () => {
+            if (tosContent.scrollTop + tosContent.clientHeight >= tosContent.scrollHeight - 10) {
+                tosBtn.disabled = false;
             }
+        });
 
-            function triggerMines() {
-                for (let i = 0; i < 5; i++) {
-                    mines.push({
-                        x: Math.floor(Math.random() * tileCount),
-                        y: Math.floor(Math.random() * tileCount),
-                        life: 300
-                    });
-                }
-                showInsult("WATCH YOUR STEP");
-                SoundManager.playChaos();
+        function triggerInvert() {
+            container.classList.toggle('inverted');
+            showInsult("MY EYES!");
+            SoundManager.playChaos();
+        }
+
+        function triggerFoodStorm() {
+            for (let i = 0; i < 15; i++) {
+                fakeFoods.push({
+                    x: Math.floor(Math.random() * tileCount),
+                    y: Math.floor(Math.random() * tileCount),
+                    life: 100
+                });
             }
+            showInsult("FEEDING FRENZY");
+            SoundManager.playChaos();
+        }
 
-            function triggerRandomWalls() {
-                for (let i = 0; i < 8; i++) {
-                    randomWalls.push({
-                        x: Math.floor(Math.random() * tileCount),
-                        y: Math.floor(Math.random() * tileCount),
-                        life: 60
-                    });
-                }
-                showInsult("ROADBLOCK");
-                SoundManager.playChaos();
+        function triggerMines() {
+            for (let i = 0; i < 5; i++) {
+                mines.push({
+                    x: Math.floor(Math.random() * tileCount),
+                    y: Math.floor(Math.random() * tileCount),
+                    life: 300
+                });
             }
+            showInsult("WATCH YOUR STEP");
+            SoundManager.playChaos();
+        }
 
-            function triggerDeadPixels() {
-                for (let i = 0; i < 3; i++) {
-                    deadPixels.push({
-                        x: Math.floor(Math.random() * tileCount),
-                        y: Math.floor(Math.random() * tileCount)
-                    });
-                }
-                showInsult("Monitor Broken?");
+        function triggerRandomWalls() {
+            for (let i = 0; i < 8; i++) {
+                randomWalls.push({
+                    x: Math.floor(Math.random() * tileCount),
+                    y: Math.floor(Math.random() * tileCount),
+                    life: 60
+                });
             }
-
-            function triggerInvisible() {
-                isInvisible = true;
-                showInsult("WHERE DID YOU GO?");
-                setTimeout(() => { isInvisible = false; }, 3000);
-                SoundManager.playChaos();
-            }
-
-            function triggerBSOD() {
-                bsod.style.display = 'block';
-                SoundManager.playTone(50, 'sawtooth', 0.5, 0.2);
-                setTimeout(() => { bsod.style.display = 'none'; }, 200 + Math.random() * 300);
-            }
-
-            function triggerFakeCursors() {
-                for (let i = 0; i < 5; i++) {
-                    const cursor = document.createElement('div');
-                    cursor.className = 'fake-cursor';
-                    cursor.style.left = Math.random() * window.innerWidth + 'px';
-                    cursor.style.top = Math.random() * window.innerHeight + 'px';
-                    cursorContainer.appendChild(cursor);
-
-                    const destX = Math.random() * window.innerWidth;
-                    const destY = Math.random() * window.innerHeight;
-
-                    cursor.animate([
-                        { transform: `translate(0,0)` },
-                        { transform: `translate(${destX - parseFloat(cursor.style.left)}px, ${destY - parseFloat(cursor.style.top)}px)` }
-                    ], {
-                        duration: 2000 + Math.random() * 2000,
-                        iterations: 1,
-                        fill: 'forwards'
-                    }).onfinish = () => cursor.remove();
-                }
-                showInsult("Swarm!");
-            }
-
-            function triggerControlScramble() {
-                controlsScrambled = true;
-                const keys = [37, 38, 39, 40];
-                const shuffled = [...keys].sort(() => 0.5 - Math.random());
-                scrambleMap = { 37: shuffled[0], 38: shuffled[1], 39: shuffled[2], 40: shuffled[3] };
-                showInsult("CONTROLS SCRAMBLED!");
-                SoundManager.playChaos();
-                setTimeout(() => { controlsScrambled = false; }, 4000);
-            }
-
-            function triggerAdware() {
-                document.getElementById('generic-popup-1').style.display = 'block';
-                setTimeout(() => document.getElementById('generic-popup-2').style.display = 'block', 500);
-                showInsult("ADS ADS ADS");
-                SoundManager.playChaos();
-            }
-
-            function triggerHelper() {
-                helperPopup.style.display = 'block';
-                helperPopup.style.top = Math.random() * 50 + '%';
-                helperPopup.style.left = Math.random() * 50 + '%';
-                SoundManager.playTone(800, 'sine', 0.2);
-            }
-
-            function triggerCaptcha() {
-                isCaptchaActive = true;
-                captchaPopup.style.display = 'block';
-                clearInterval(gameLoop);
-                gameLoop = setInterval(gameStep, 1000);
-                showInsult("ARE YOU A ROBOT?");
-                SoundManager.playChaos();
-            }
-
-            function triggerTos() {
-                isTosActive = true;
-                tosPopup.style.display = 'flex';
-                tosBtn.disabled = true;
-                tosContent.scrollTop = 0;
-                showInsult("READ THIS PLS");
-                SoundManager.playChaos();
-            }
-
-            function triggerCall() {
-                isCallActive = true;
-                callPopup.style.display = 'flex';
-                showInsult("MOM IS CALLING");
-                SoundManager.playPhone();
-            }
-
-            window.solveCaptcha = function () {
-                isCaptchaActive = false;
-                captchaPopup.style.display = 'none';
-                clearInterval(gameLoop);
-                gameLoop = setInterval(gameStep, 1000 / currentSpeed);
-                showInsult("Verified Human");
-            }
-
-            window.failCaptcha = function () { die("Bot detected."); }
-            window.closeTos = function () {
-                isTosActive = false;
-                tosPopup.style.display = 'none';
-            }
-            window.closeCall = function () {
-                isCallActive = false;
-                callPopup.style.display = 'none';
-                SoundManager.stopPhone();
-            }
-            window.failCall = function () {
-                callPopup.style.display = 'none';
-                SoundManager.stopPhone();
-                die("Social Interaction Fatal.");
-            }
-
-            function triggerUpdate() {
-                updatePopup.style.display = 'block';
-                let progress = 0;
-                clearInterval(updateInterval);
-                updateInterval = setInterval(() => {
-                    progress += Math.random() * 5;
-                    if (progress > 100) progress = 100;
-                    updateBarFill.style.width = `${progress}%`;
-                    if (progress === 100) {
-                        clearInterval(updateInterval);
-                        performSystemRestart();
-                    }
-                }, 200);
-                showInsult("Updating...");
-                SoundManager.playChaos();
-            }
-
-            window.cancelUpdate = function () {
-                clearInterval(updateInterval);
-                updatePopup.style.display = 'none';
-                showInsult("Update Deferred");
-            }
-
-            function performSystemRestart() {
-                isGameOver = true;
-                clearInterval(gameLoop);
-                clearInterval(chaosLoop);
-                clearInterval(chatLoop);
-                if (typeof lagLoop !== 'undefined') clearInterval(lagLoop);
-                SoundManager.stopPhone();
-
-                updatePopup.style.display = 'none';
-                document.body.style.cursor = 'none';
-                try {
-                    if (document.documentElement.requestFullscreen) {
-                        document.documentElement.requestFullscreen().catch(e => console.log("Fullscreen blocked:", e));
-                    }
-                } catch (e) {
-                    console.log("Fullscreen error:", e);
-                }
-
-                SoundManager.playShutdown();
-
-                const overlay = document.createElement('div');
-                overlay.style.position = 'fixed';
-                overlay.style.top = '0';
-                overlay.style.left = '0';
-                overlay.style.width = '100vw';
-                overlay.style.height = '100vh';
-                overlay.style.background = 'black';
-                overlay.style.zIndex = '1999';
-                document.body.appendChild(overlay);
-
-                setTimeout(() => {
-                    document.getElementById('boot-screen').style.display = 'flex';
-                    SoundManager.playStartup();
-                    setTimeout(() => {
-                        document.getElementById('boot-screen').style.display = 'none';
-                        document.getElementById('bsod').style.display = 'block';
-                        SoundManager.playError();
-                        setTimeout(() => {
-                            document.getElementById('bsod').style.display = 'none';
-                            setTimeout(() => {
-                                const dos = document.getElementById('dos-screen');
-                                dos.style.display = 'block';
-
-                                const lines = [
-                                    "C:\\> format c: /y",
-                                    "Checking existing disk format...",
-                                    "QuickFormatting 500GB...",
-                                    "Creating file system structures...",
-                                    "Format complete.",
-                                    "",
-                                    "C:\\> del /f /q *.*",
-                                    "Deleting system32...",
-                                    "Deleting user data...",
-                                    "System erased.",
-                                    "",
-                                    "System Halted.",
-                                    "",
-                                    "Press any key to reinstall OS..."
-                                ];
-
-                                let lineIndex = 0;
-                                const typeLine = () => {
-                                    if (lineIndex < lines.length) {
-                                        dos.innerHTML += lines[lineIndex] + "<br>";
-                                        lineIndex++;
-                                        SoundManager.playTone(800, 'square', 0.05, 0.05);
-                                        setTimeout(typeLine, 800);
-                                    } else {
-                                        dos.innerHTML += "<span class='blink'>_</span>";
-                                        const reloadFunc = () => {
-                                            if (document.fullscreenElement) {
-                                                document.exitFullscreen().catch(err => console.log("Exit fullscreen error:", err));
-                                            }
-                                            window.location.reload();
-                                        };
-                                        document.addEventListener('keydown', reloadFunc);
-                                        document.addEventListener('click', reloadFunc);
-                                    }
-                                };
-                                typeLine();
-
-                            }, 2000);
-                        }, 4000);
-                    }, 4000);
-                }, 3000);
-            }
-
-            function triggerPaywall() {
-                paywallPopup.style.display = 'block';
-                showInsult("Pay up.");
-                SoundManager.playChaos();
-            }
-
-            function triggerFlashbang() {
-                flashbang.style.opacity = 1;
-                setTimeout(() => { flashbang.style.opacity = 0; }, 2000);
-                showInsult("Think Fast!");
-                SoundManager.playTone(1000, 'white-noise', 0.5, 0.5);
-            }
-
-            function addChatMessage() {
-                const name = chatNames[Math.floor(Math.random() * chatNames.length)];
-                const msg = chatMessages[Math.floor(Math.random() * chatMessages.length)];
-                const div = document.createElement('div');
-                div.className = 'chat-msg';
-                div.innerHTML = `<span class="chat-name">${name}:</span> ${msg}`;
-                chatBox.appendChild(div);
-                if (chatBox.children.length > 8) chatBox.removeChild(chatBox.firstChild);
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }
-
-            function randomChaos() {
-                if (isGameOver || isCaptchaActive || isTosActive || isCallActive) return;
-                const events = [
-                    triggerInvert, triggerFoodStorm, triggerMines, triggerInvisible,
-                    triggerBSOD, triggerFlashbang, triggerFakeCursors, triggerControlScramble,
-                    triggerAdware, triggerUpdate, triggerPaywall, triggerHelper, triggerCaptcha,
-                    triggerRandomWalls, triggerTos, triggerCall, triggerDeadPixels
-                ];
-                if (Math.random() < 0.4) {
-                    const event = events[Math.floor(Math.random() * events.length)];
-                    event();
-                }
-            }
-
-            function initGame() {
-                SoundManager.init();
-                SoundManager.stopPhone();
-                snake = [{ x: 10, y: 10 }];
-                score = 0;
-                velocityX = 0;
-                velocityY = 0;
-                isGameOver = false;
-                isCaptchaActive = false;
-                isTosActive = false;
-                isCallActive = false;
-                controlsInverted = false;
-                controlsScrambled = false;
-                lagSpikeActive = false;
-                isInvisible = false;
-                fakeFoods = [];
-                mines = [];
-                randomWalls = [];
-                deadPixels = [];
-                currentSpeed = baseSpeed;
-                chatBox.innerHTML = '';
-
-                hunter = { x: 0, y: 0, active: true, moveTick: 0 };
-
-                body.style.transform = `translate(0px, 0px)`;
-                container.className = '';
-                paywallPopup.style.display = 'none';
-                updatePopup.style.display = 'none';
-                captchaPopup.style.display = 'none';
-                helperPopup.style.display = 'none';
-                tosPopup.style.display = 'none';
-                callPopup.style.display = 'none';
-                document.getElementById('generic-popup-1').style.display = 'none';
-                document.getElementById('generic-popup-2').style.display = 'none';
-                bsod.style.display = 'none';
-                flashbang.style.opacity = 0;
-                cursorContainer.innerHTML = '';
-
-                scoreEl.innerText = "Score: 0";
-                gameOverScreen.style.display = 'none';
-                insultBox.style.opacity = '0';
-
-                clearInterval(gameLoop);
-                clearInterval(chaosLoop);
-                clearInterval(chatLoop);
-                clearInterval(updateInterval);
-
-                gameLoop = setInterval(gameStep, 1000 / currentSpeed);
-                chaosLoop = setInterval(randomChaos, 2000);
-                chatLoop = setInterval(addChatMessage, 2000);
-
-                placeFood();
-                SoundManager.playStartup();
-            }
-
-            window.closePaywall = function () { paywallPopup.style.display = 'none'; };
-
-            document.addEventListener('keydown', (e) => {
-                if (isGameOver) return;
-                if (lagSpikeActive) return;
-
-                if (Math.random() < 0.01) {
-                    let k = e.keyCode;
-                    if (k === 37) k = 39; else if (k === 39) k = 37; else if (k === 38) k = 40; else if (k === 40) k = 38;
-                    handleInput(k);
-                    showInsult("Slippery Keys");
-                    return;
-                }
-
-                handleInput(e.keyCode);
-            });
-
-            function handleInput(key) {
-                let actualKey = key;
-
-                if (controlsScrambled && scrambleMap[key]) {
-                    actualKey = scrambleMap[key];
-                } else if (Math.random() < 0.01 || controlsInverted) {
-                    if (key === 37) actualKey = 39;
-                    else if (key === 39) actualKey = 37;
-                    else if (key === 38) actualKey = 40;
-                    else if (key === 40) actualKey = 38;
-                    if (!controlsInverted && !controlsScrambled) showInsult("Inverted!");
-                }
-
-                if (actualKey === 37 && velocityX === 1) return;
-                if (actualKey === 38 && velocityY === 1) return;
-                if (actualKey === 39 && velocityX === -1) return;
-                if (actualKey === 40 && velocityY === -1) return;
-
-                switch (actualKey) {
-                    case 37: velocityX = -1; velocityY = 0; SoundManager.playMove(); break;
-                    case 38: velocityX = 0; velocityY = -1; SoundManager.playMove(); break;
-                    case 39: velocityX = 1; velocityY = 0; SoundManager.playMove(); break;
-                    case 40: velocityX = 0; velocityY = 1; SoundManager.playMove(); break;
-                }
-            }
-
-            function gameStep() {
-                if (Math.random() < 0.005 && !lagSpikeActive && !isCaptchaActive) {
-                    lagSpikeActive = true;
-                    lagIndicator.style.opacity = 1;
-                    let spikeDuration = Math.random() * 500 + 300;
-                    setTimeout(() => {
-                        lagSpikeActive = false;
-                        lagIndicator.style.opacity = 0;
-                    }, spikeDuration);
-                    return;
-                }
-                if (lagSpikeActive) return;
-
-                update();
-                draw();
-            }
-
-            function toRoman(num) {
-                if (num < 1) return "O";
-                const lookup = { M: 1000, CM: 900, D: 500, CD: 400, C: 100, XC: 90, L: 50, XL: 40, X: 10, IX: 9, V: 5, IV: 4, I: 1 };
-                let roman = '', i;
-                let n = Math.floor(Math.abs(num));
-                for (i in lookup) {
-                    while (n >= lookup[i]) { roman += i; n -= lookup[i]; }
-                }
-                return roman;
-            }
-
-            function update() {
-                if (Math.random() < 0.005) {
-                    let randomX = (Math.random() - 0.5) * 400;
-                    let randomY = (Math.random() - 0.5) * 300;
-                    body.style.transform = `translate(${randomX}px, ${randomY}px)`;
-                    setTimeout(() => { body.style.transform = `translate(0px, 0px)`; }, 1500);
-                }
-
-                let headX = snake[0].x + velocityX;
-                let headY = snake[0].y + velocityY;
-
-                if (headX < 0) headX = tileCount - 1;
-                if (headX >= tileCount) headX = 0;
-                if (headY < 0) headY = tileCount - 1;
-                if (headY >= tileCount) headY = 0;
-
-                if (velocityX !== 0 || velocityY !== 0) {
-                    for (let i = 0; i < snake.length; i++) {
-                        if (snake[i].x === headX && snake[i].y === headY) {
-                            die("You ate yourself.");
-                            return;
-                        }
-                    }
-                }
-
-                if (hunter.active) {
-                    hunter.moveTick++;
-                    if (hunter.moveTick > 5) {
-                        hunter.moveTick = 0;
-                        if (hunter.x < snake[0].x) hunter.x++;
-                        else if (hunter.x > snake[0].x) hunter.x--;
-
-                        if (hunter.y < snake[0].y) hunter.y++;
-                        else if (hunter.y > snake[0].y) hunter.y--;
-                    }
-                    if (headX === hunter.x && headY === hunter.y) {
-                        die("Hunted down.");
-                        return;
-                    }
-                }
-
-                for (let i = 0; i < mines.length; i++) {
-                    if (headX === mines[i].x && headY === mines[i].y) {
-                        die("Stepped on a mine.");
-                        return;
-                    }
-                }
-
-                for (let w of randomWalls) {
-                    if (headX === w.x && headY === w.y) {
-                        die("Ran into a wall.");
-                        return;
-                    }
-                }
-
-                const dist = Math.abs(headX - food.x) + Math.abs(headY - food.y);
-                if (dist === 1 && Math.random() < slipperyFoodChance) {
-                    placeFood();
-                    showInsult("Psych!");
-                    return;
-                }
-
-                snake.unshift({ x: headX, y: headY });
-
-                let ate = false;
-
-                if (headX === food.x && headY === food.y) {
-                    ate = true;
-                    SoundManager.playEat();
-                    if (Math.random() < 0.1 && snake.length > 3) {
-                        snake.pop(); snake.pop();
-                        showInsult("Inflation.");
-                        score -= 5;
-                    } else {
-                        let scoreAdd = (Math.random() * 10);
-                        score += scoreAdd;
-                    }
-                    placeFood();
-                    container.classList.add('shake-screen');
-                    setTimeout(() => container.classList.remove('shake-screen'), 200);
-
-                } else {
-                    for (let i = 0; i < fakeFoods.length; i++) {
-                        if (headX === fakeFoods[i].x && headY === fakeFoods[i].y) {
-                            score -= 10;
-                            showInsult("BAD FOOD!");
-                            fakeFoods.splice(i, 1);
-                            ate = false;
-                            SoundManager.playTone(150, 'sawtooth', 0.2);
-                            break;
-                        }
-                    }
-                }
-
-                if (!ate) {
-                    snake.pop();
-                }
-
-                for (let i = fakeFoods.length - 1; i >= 0; i--) {
-                    fakeFoods[i].life--;
-                    if (fakeFoods[i].life <= 0) fakeFoods.splice(i, 1);
-                }
-                for (let i = mines.length - 1; i >= 0; i--) {
-                    mines[i].life--;
-                    if (mines[i].life <= 0) mines.splice(i, 1);
-                }
-                for (let i = randomWalls.length - 1; i >= 0; i--) {
-                    randomWalls[i].life--;
-                    if (randomWalls[i].life <= 0) randomWalls.splice(i, 1);
-                }
-
-                if (Math.random() < 0.05) {
-                    const formats = [
-                        `Score: ${Math.floor(score)}`,
-                        `Score: ${toRoman(score)}`,
-                        `Score: ${score.toString(2)}`,
-                        `Score: ???`,
-                        `Score: NaN`,
-                        `Score: No`
-                    ];
-                    scoreEl.innerText = formats[Math.floor(Math.random() * formats.length)];
-                }
-            }
-
-            function draw() {
-                ctx.fillStyle = '#000';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                if (Math.random() < 0.1) {
-                    ctx.strokeStyle = '#222';
-                    for (let i = 0; i < tileCount; i++) {
-                        ctx.beginPath();
-                        ctx.moveTo(i * gridSize, 0); ctx.lineTo(i * gridSize, canvas.height);
-                        ctx.stroke();
-                    }
-                }
-
-                if (!isInvisible) {
-                    for (let i = 0; i < snake.length; i++) {
-                        if (i > 0 && Math.random() < 0.1) continue;
-
-                        ctx.fillStyle = i === 0 ? '#fff' : `hsl(${120 + Math.random() * 50}, 100%, 50%)`;
-                        let offsetX = (Math.random() - 0.5) * 4;
-                        let offsetY = (Math.random() - 0.5) * 4;
-                        ctx.fillRect(snake[i].x * gridSize + offsetX, snake[i].y * gridSize + offsetY, gridSize - 2, gridSize - 2);
-                    }
-                } else {
-                    if (Math.random() < 0.1 && snake.length > 0) {
-                        ctx.fillStyle = '#111';
-                        ctx.fillRect(snake[0].x * gridSize, snake[0].y * gridSize, gridSize, gridSize);
-                    }
-                }
-
-                ctx.fillStyle = '#aa0000';
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = 'red';
-                ctx.fillRect(hunter.x * gridSize, hunter.y * gridSize, gridSize, gridSize);
-                ctx.shadowBlur = 0;
-
-                ctx.strokeStyle = 'red';
-                ctx.lineWidth = 2;
-                for (let m of mines) {
-                    const x = m.x * gridSize;
-                    const y = m.y * gridSize;
-                    ctx.beginPath();
-                    ctx.moveTo(x, y); ctx.lineTo(x + gridSize, y + gridSize);
-                    ctx.moveTo(x + gridSize, y); ctx.lineTo(x, y + gridSize);
-                    ctx.stroke();
-                }
-
-                ctx.fillStyle = '#444';
-                for (let w of randomWalls) {
-                    ctx.fillRect(w.x * gridSize, w.y * gridSize, gridSize, gridSize);
-                }
-
-                ctx.fillStyle = '#000';
-                for (let p of deadPixels) {
-                    ctx.fillRect(p.x * gridSize, p.y * gridSize, gridSize, gridSize);
-                }
-
-                ctx.fillStyle = '#ff0055';
-                let jitterX = (Math.random() - 0.5) * 4;
-                let jitterY = (Math.random() - 0.5) * 4;
-                ctx.fillRect(food.x * gridSize + jitterX, food.y * gridSize + jitterY, gridSize - 2, gridSize - 2);
-
-                ctx.fillStyle = '#cc0044';
-                for (let f of fakeFoods) {
-                    ctx.fillRect(f.x * gridSize, f.y * gridSize, gridSize - 2, gridSize - 2);
-                }
-            }
-
-            function placeFood() {
-                food = {
+            showInsult("ROADBLOCK");
+            SoundManager.playChaos();
+        }
+
+        function triggerDeadPixels() {
+            for (let i = 0; i < 3; i++) {
+                deadPixels.push({
                     x: Math.floor(Math.random() * tileCount),
                     y: Math.floor(Math.random() * tileCount)
-                };
-                for (let part of snake) {
-                    if (part.x === food.x && part.y === food.y) placeFood();
+                });
+            }
+            showInsult("Monitor Broken?");
+        }
+
+        function triggerInvisible() {
+            isInvisible = true;
+            showInsult("WHERE DID YOU GO?");
+            setTimeout(() => { isInvisible = false; }, 3000);
+            SoundManager.playChaos();
+        }
+
+        function triggerBSOD() {
+            bsod.style.display = 'block';
+            SoundManager.playTone(50, 'sawtooth', 0.5, 0.2);
+            setTimeout(() => { bsod.style.display = 'none'; }, 200 + Math.random() * 300);
+        }
+
+        function triggerFakeCursors() {
+            for (let i = 0; i < 5; i++) {
+                const cursor = document.createElement('div');
+                cursor.className = 'fake-cursor';
+                cursor.style.left = Math.random() * window.innerWidth + 'px';
+                cursor.style.top = Math.random() * window.innerHeight + 'px';
+                cursorContainer.appendChild(cursor);
+
+                const destX = Math.random() * window.innerWidth;
+                const destY = Math.random() * window.innerHeight;
+
+                cursor.animate([
+                    { transform: `translate(0,0)` },
+                    { transform: `translate(${destX - parseFloat(cursor.style.left)}px, ${destY - parseFloat(cursor.style.top)}px)` }
+                ], {
+                    duration: 2000 + Math.random() * 2000,
+                    iterations: 1,
+                    fill: 'forwards'
+                }).onfinish = () => cursor.remove();
+            }
+            showInsult("Swarm!");
+        }
+
+        function triggerControlScramble() {
+            controlsScrambled = true;
+            const keys = [37, 38, 39, 40];
+            const shuffled = [...keys].sort(() => 0.5 - Math.random());
+            scrambleMap = { 37: shuffled[0], 38: shuffled[1], 39: shuffled[2], 40: shuffled[3] };
+            showInsult("CONTROLS SCRAMBLED!");
+            SoundManager.playChaos();
+            setTimeout(() => { controlsScrambled = false; }, 4000);
+        }
+
+        function triggerAdware() {
+            // Modified to show the specific Hot Singles ad
+            const popup = document.getElementById('generic-popup-1');
+            if (!hasBeenScammed) {
+                popup.innerHTML = `
+                        <h3>HOT SINGLES NEAR YOU</h3>
+                        <p>Lonely? Chat with local singles now!</p>
+                        <button onclick="triggerDiscordChat()">Chat Now</button>
+                        <button onclick="this.parentElement.style.display='none'" style="font-size: 10px;">Close</button>
+                    `;
+            } else {
+                popup.innerHTML = `
+                        <h3>WIN A FREE IPHONE</h3>
+                        <p>Click here to claim your prize!</p>
+                        <button onclick="this.parentElement.style.display='none'">Claim</button>
+                    `;
+            }
+            popup.style.display = 'block';
+            showInsult("ADS ADS ADS");
+            SoundManager.playChaos();
+        }
+
+        function pauseGame() {
+            clearInterval(gameLoop);
+            clearInterval(chaosLoop);
+            clearInterval(chatLoop);
+        }
+
+        function resumeGame() {
+            if (isGameOver) return;
+            clearInterval(gameLoop);
+            clearInterval(chaosLoop);
+            clearInterval(chatLoop);
+
+            gameLoop = setInterval(gameStep, 1000 / currentSpeed);
+            // If in debt, chaos is faster
+            chaosLoop = setInterval(randomChaos, isInDebt ? 1000 : 2000);
+            chatLoop = setInterval(addChatMessage, 2000);
+        }
+
+        let chatStep = 0;
+        function triggerDiscordChat() {
+            pauseGame();
+
+            document.getElementById('generic-popup-1').style.display = 'none';
+            document.getElementById('generic-popup-2').style.display = 'none';
+            document.getElementById('paywall-popup').style.display = 'none';
+            document.getElementById('update-popup').style.display = 'none';
+            document.getElementById('captcha-popup').style.display = 'none';
+            document.getElementById('tos-popup').style.display = 'none';
+            document.getElementById('call-popup').style.display = 'none';
+            document.getElementById('helper-popup').style.display = 'none';
+            document.getElementById('bsod').style.display = 'none';
+            document.getElementById('pay-overlay').style.display = 'none';
+
+            const chat = document.getElementById('discord-chat-popup');
+            chat.style.display = 'flex';
+            document.getElementById('d-msgs').innerHTML = '';
+            chatStep = 0;
+            addDiscordMsg("HotBabe_69", "Hey cutie... saw you playing that snake game. You look strong ;)");
+            showDiscordOptions(["Who is this?", "I am strong 💪"]);
+        }
+
+        function addDiscordMsg(user, text, isImg = false) {
+            const msgs = document.getElementById('d-msgs');
+            const div = document.createElement('div');
+            div.className = 'd-msg';
+            div.innerHTML = `
+                    <div class="discord-avatar" style="background: ${user === 'You' ? '#5865f2' : '#faa61a'}"></div>
+                    <div class="d-msg-content">
+                        <div class="d-username">${user}</div>
+                        ${isImg ? `<img src="${text}" class="d-img-reveal">` : `<div class="d-text">${text}</div>`}
+                    </div>
+                `;
+            msgs.appendChild(div);
+            msgs.scrollTop = msgs.scrollHeight;
+            SoundManager.playTone(user === 'You' ? 400 : 600, 'sine', 0.1, 0.1);
+        }
+
+        function showDiscordOptions(opts) {
+            const cont = document.getElementById('d-opts');
+            cont.innerHTML = '';
+            opts.forEach((txt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'd-btn';
+                btn.innerText = txt;
+                btn.onclick = () => handleChatOption(i, txt);
+                cont.appendChild(btn);
+            });
+        }
+
+        function handleChatOption(idx, txt) {
+            addDiscordMsg("You", txt);
+            document.getElementById('d-opts').innerHTML = ''; // Clear opts
+
+            setTimeout(() => {
+                if (chatStep === 0) {
+                    addDiscordMsg("HotBabe_69", "I love a gamer with skills. Wanna see a secret pic? 😘");
+                    showDiscordOptions(["Yes please!", "How much?"]);
+                    chatStep++;
+                } else if (chatStep === 1) {
+                    addDiscordMsg("HotBabe_69", "For you? Just a small fee. I need to pay my internet bill lol.");
+                    showDiscordOptions(["Send it!", "Take my money"]);
+                    chatStep++;
+                } else if (chatStep === 2) {
+                    document.getElementById('pay-overlay').style.display = 'flex';
+                }
+            }, 1000);
+        }
+
+        window.payForPic = function () {
+            document.getElementById('pay-overlay').style.display = 'none';
+            addDiscordMsg("System", "Payment of $50.00 Successful.");
+
+            // Apply Scam Effects
+            hasBeenScammed = true;
+            isInDebt = true;
+            score -= 50;
+            updateScore();
+
+            // Increase Difficulty Permanently
+            currentSpeed += 5;
+
+            // We don't restart loops here because the game is PAUSED.
+            // The loops will be restarted with the new speed when resumeGame() is called at the end.
+
+            setTimeout(() => {
+                addDiscordMsg("HotBabe_69", "Thanks baby. Here you go ❤️");
+                setTimeout(() => {
+                    addDiscordMsg("HotBabe_69", "catfish.png", true);
+                    showDiscordOptions(["WTF?", "Beautiful"]);
+
+                    // Close chat after a delay
+                    setTimeout(() => {
+                        document.getElementById('discord-chat-popup').style.display = 'none';
+                        showInsult("SCAMMED");
+                        resumeGame(); // This will pick up the new currentSpeed
+                    }, 5000);
+                }, 1000);
+            }, 1000);
+        }
+
+        function triggerHelper() {
+            helperPopup.style.display = 'block';
+            helperPopup.style.top = Math.random() * 50 + '%';
+            helperPopup.style.left = Math.random() * 50 + '%';
+            SoundManager.playTone(800, 'sine', 0.2);
+        }
+
+        function triggerCaptcha() {
+            isCaptchaActive = true;
+            captchaPopup.style.display = 'block';
+            clearInterval(gameLoop);
+            gameLoop = setInterval(gameStep, 1000);
+            showInsult("ARE YOU A ROBOT?");
+            SoundManager.playChaos();
+        }
+
+        function triggerTos() {
+            isTosActive = true;
+            tosPopup.style.display = 'flex';
+            tosBtn.disabled = true;
+            tosContent.scrollTop = 0;
+            showInsult("READ THIS PLS");
+            SoundManager.playChaos();
+        }
+
+        function triggerCall() {
+            isCallActive = true;
+            callPopup.style.display = 'flex';
+            showInsult("MOM IS CALLING");
+            SoundManager.playPhone();
+        }
+
+        window.solveCaptcha = function () {
+            isCaptchaActive = false;
+            captchaPopup.style.display = 'none';
+            clearInterval(gameLoop);
+            gameLoop = setInterval(gameStep, 1000 / currentSpeed);
+            showInsult("Verified Human");
+        }
+
+        window.failCaptcha = function () { die("Bot detected."); }
+        window.closeTos = function () {
+            isTosActive = false;
+            tosPopup.style.display = 'none';
+        }
+        window.closeCall = function () {
+            isCallActive = false;
+            callPopup.style.display = 'none';
+            SoundManager.stopPhone();
+        }
+        window.failCall = function () {
+            callPopup.style.display = 'none';
+            SoundManager.stopPhone();
+            die("Social Interaction Fatal.");
+        }
+
+        function triggerUpdate() {
+            updatePopup.style.display = 'block';
+            let progress = 0;
+            clearInterval(updateInterval);
+            updateInterval = setInterval(() => {
+                progress += Math.random() * 5;
+                if (progress > 100) progress = 100;
+                updateBarFill.style.width = `${progress}%`;
+                if (progress === 100) {
+                    clearInterval(updateInterval);
+                    performSystemRestart();
+                }
+            }, 200);
+            showInsult("Updating...");
+            SoundManager.playChaos();
+        }
+
+        window.cancelUpdate = function () {
+            clearInterval(updateInterval);
+            updatePopup.style.display = 'none';
+            showInsult("Update Deferred");
+        }
+
+        function performSystemRestart() {
+            // Pause Game Logic
+            isGameOver = true;
+            clearInterval(gameLoop);
+            clearInterval(chaosLoop);
+            clearInterval(chatLoop);
+            if (typeof lagLoop !== 'undefined') clearInterval(lagLoop);
+            SoundManager.stopPhone();
+
+            updatePopup.style.display = 'none';
+            document.body.style.cursor = 'none'; // Hide cursor for realism
+
+            // Request Fullscreen
+            try {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen().catch(e => console.log("Fullscreen blocked:", e));
+                }
+            } catch (e) {
+                console.log("Fullscreen error:", e);
+            }
+
+            SoundManager.playShutdown();
+
+            // 1. Black Screen (Shutdown)
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100vw';
+            overlay.style.height = '100vh';
+            overlay.style.background = 'black';
+            overlay.style.zIndex = '1999';
+            document.body.appendChild(overlay);
+
+            // 2. BIOS Screen
+            setTimeout(() => {
+                const bios = document.getElementById('bios-screen');
+                bios.style.display = 'flex';
+
+                // Simulate memory count
+                let mem = 0;
+                const memInterval = setInterval(() => {
+                    mem += 1024;
+                    document.getElementById('bios-mem').innerText = mem;
+                    if (mem >= 32768) {
+                        clearInterval(memInterval);
+                        setTimeout(() => {
+                            bios.style.display = 'none';
+
+                            // 3. Boot Screen
+                            document.getElementById('boot-screen').style.display = 'flex';
+                            SoundManager.playStartup();
+
+                            setTimeout(() => {
+                                document.getElementById('boot-screen').style.display = 'none';
+
+                                // 4. Update Working Screen
+                                const updateScreen = document.getElementById('update-working-screen');
+                                updateScreen.style.display = 'flex';
+                                let pct = 0;
+                                const pctInterval = setInterval(() => {
+                                    pct += Math.floor(Math.random() * 5);
+                                    if (pct > 30) pct = 30; // Stall at 30%
+                                    document.getElementById('update-pct').innerText = pct;
+                                    if (pct === 30) {
+                                        clearInterval(pctInterval);
+                                        setTimeout(() => {
+                                            updateScreen.style.display = 'none';
+
+                                            // 5. BSOD
+                                            document.getElementById('bsod').style.display = 'block';
+                                            SoundManager.playError();
+
+                                            // 6. Restart (Black Screen again)
+                                            setTimeout(() => {
+                                                document.getElementById('bsod').style.display = 'none';
+
+                                                // 7. DOS Screen
+                                                setTimeout(() => {
+                                                    const dos = document.getElementById('dos-screen');
+                                                    dos.style.display = 'block';
+
+                                                    const lines = [
+                                                        "C:\\> format c: /y",
+                                                        "Checking existing disk format...",
+                                                        "QuickFormatting 500GB...",
+                                                        "Creating file system structures...",
+                                                        "Format complete.",
+                                                        "",
+                                                        "C:\\> del /f /q *.*",
+                                                        "Deleting system32...",
+                                                        "Deleting user data...",
+                                                        "Deleting 'homework' folder...",
+                                                        "Deleting browser history...",
+                                                        "System erased.",
+                                                        "",
+                                                        "VIRUS DETECTED: Troj_Snake.exe",
+                                                        "Uploading personal data to server...",
+                                                        "Upload complete.",
+                                                        "",
+                                                        "System Halted.",
+                                                        "",
+                                                        "Press any key to reinstall OS..."
+                                                    ];
+
+                                                    let lineIndex = 0;
+                                                    const typeLine = () => {
+                                                        if (lineIndex < lines.length) {
+                                                            dos.innerHTML += lines[lineIndex] + "<br>";
+                                                            lineIndex++;
+                                                            SoundManager.playTone(800, 'square', 0.05, 0.05); // Typing sound
+                                                            setTimeout(typeLine, 400);
+                                                        } else {
+                                                            dos.innerHTML += "<span class='blink'>_</span>";
+                                                            const reloadFunc = () => {
+                                                                if (document.fullscreenElement) {
+                                                                    document.exitFullscreen().catch(err => console.log("Exit fullscreen error:", err));
+                                                                }
+                                                                window.location.reload();
+                                                            };
+                                                            document.addEventListener('keydown', reloadFunc);
+                                                            document.addEventListener('click', reloadFunc);
+                                                        }
+                                                    };
+                                                    typeLine();
+
+                                                }, 2000);
+                                            }, 4000);
+                                        }, 3000);
+                                    }
+                                }, 200);
+                            }, 3000);
+                        }, 1000);
+                    }
+                }, 50);
+            }, 2000);
+        }
+
+        function triggerPaywall() {
+            paywallPopup.style.display = 'block';
+            showInsult("Pay up.");
+            SoundManager.playChaos();
+        }
+
+        function triggerFlashbang() {
+            flashbang.style.opacity = 1;
+            setTimeout(() => { flashbang.style.opacity = 0; }, 2000);
+            showInsult("Think Fast!");
+            SoundManager.playTone(1000, 'white-noise', 0.5, 0.5);
+        }
+
+        function addChatMessage() {
+            const name = chatNames[Math.floor(Math.random() * chatNames.length)];
+            const msg = chatMessages[Math.floor(Math.random() * chatMessages.length)];
+            const div = document.createElement('div');
+            div.className = 'chat-msg';
+            div.innerHTML = `<span class="chat-name">${name}:</span> ${msg}`;
+            chatBox.appendChild(div);
+            if (chatBox.children.length > 8) chatBox.removeChild(chatBox.firstChild);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function randomChaos() {
+            if (isGameOver || isCaptchaActive || isTosActive || isCallActive) return;
+            const events = [
+                triggerInvert, triggerFoodStorm, triggerMines, triggerInvisible,
+                triggerBSOD, triggerFlashbang, triggerFakeCursors, triggerControlScramble,
+                triggerAdware, triggerUpdate, triggerPaywall, triggerHelper, triggerCaptcha,
+                triggerRandomWalls, triggerTos, triggerCall, triggerDeadPixels
+            ];
+            if (Math.random() < 0.4) {
+                const event = events[Math.floor(Math.random() * events.length)];
+                event();
+            }
+        }
+
+        function initGame() {
+            SoundManager.init();
+            SoundManager.stopPhone();
+            snake = [{ x: 10, y: 10 }];
+            score = 0;
+            velocityX = 0;
+            velocityY = 0;
+            isGameOver = false;
+            isCaptchaActive = false;
+            isTosActive = false;
+            isCallActive = false;
+            controlsInverted = false;
+            controlsScrambled = false;
+            lagSpikeActive = false;
+            isInvisible = false;
+            hasBeenScammed = false;
+            isInDebt = false;
+            fakeFoods = [];
+            mines = [];
+            randomWalls = [];
+            deadPixels = [];
+            currentSpeed = baseSpeed;
+            chatBox.innerHTML = '';
+
+            hunter = { x: 0, y: 0, active: true, moveTick: 0 };
+
+            body.style.transform = `translate(0px, 0px)`;
+            container.className = '';
+            paywallPopup.style.display = 'none';
+            updatePopup.style.display = 'none';
+            captchaPopup.style.display = 'none';
+            helperPopup.style.display = 'none';
+            tosPopup.style.display = 'none';
+            callPopup.style.display = 'none';
+            document.getElementById('generic-popup-1').style.display = 'none';
+            document.getElementById('generic-popup-2').style.display = 'none';
+            document.getElementById('discord-chat-popup').style.display = 'none';
+            document.getElementById('pay-overlay').style.display = 'none';
+            bsod.style.display = 'none';
+            flashbang.style.opacity = 0;
+            cursorContainer.innerHTML = '';
+
+            scoreEl.innerText = "Score: 0";
+            scoreEl.style.color = 'white';
+            gameOverScreen.style.display = 'none';
+            insultBox.style.opacity = '0';
+
+            clearInterval(gameLoop);
+            clearInterval(chaosLoop);
+            clearInterval(chatLoop);
+            clearInterval(updateInterval);
+
+            gameLoop = setInterval(gameStep, 1000 / currentSpeed);
+            chaosLoop = setInterval(randomChaos, 2000);
+            chatLoop = setInterval(addChatMessage, 2000);
+
+            placeFood();
+            SoundManager.playStartup();
+        }
+
+        window.closePaywall = function () { paywallPopup.style.display = 'none'; };
+
+        document.addEventListener('keydown', (e) => {
+            if (isGameOver) return;
+            if (lagSpikeActive) return;
+
+            if (Math.random() < 0.01) {
+                let k = e.keyCode;
+                if (k === 37) k = 39; else if (k === 39) k = 37; else if (k === 38) k = 40; else if (k === 40) k = 38;
+                handleInput(k);
+                showInsult("Slippery Keys");
+                return;
+            }
+
+            handleInput(e.keyCode);
+        });
+
+        function handleInput(key) {
+            let actualKey = key;
+
+            if (controlsScrambled && scrambleMap[key]) {
+                actualKey = scrambleMap[key];
+            } else if (Math.random() < 0.01 || controlsInverted) {
+                if (key === 37) actualKey = 39;
+                else if (key === 39) actualKey = 37;
+                else if (key === 38) actualKey = 40;
+                else if (key === 40) actualKey = 38;
+                if (!controlsInverted && !controlsScrambled) showInsult("Inverted!");
+            }
+
+            if (actualKey === 37 && velocityX === 1) return;
+            if (actualKey === 38 && velocityY === 1) return;
+            if (actualKey === 39 && velocityX === -1) return;
+            if (actualKey === 40 && velocityY === -1) return;
+
+            switch (actualKey) {
+                case 37: velocityX = -1; velocityY = 0; SoundManager.playMove(); break;
+                case 38: velocityX = 0; velocityY = -1; SoundManager.playMove(); break;
+                case 39: velocityX = 1; velocityY = 0; SoundManager.playMove(); break;
+                case 40: velocityX = 0; velocityY = 1; SoundManager.playMove(); break;
+            }
+        }
+
+        function gameStep() {
+            if (Math.random() < 0.005 && !lagSpikeActive && !isCaptchaActive) {
+                lagSpikeActive = true;
+                lagIndicator.style.opacity = 1;
+                let spikeDuration = Math.random() * 500 + 300;
+                setTimeout(() => {
+                    lagSpikeActive = false;
+                    lagIndicator.style.opacity = 0;
+                }, spikeDuration);
+                return;
+            }
+            if (lagSpikeActive) return;
+
+            update();
+            draw();
+        }
+
+        function toRoman(num) {
+            if (num < 1) return "O";
+            const lookup = { M: 1000, CM: 900, D: 500, CD: 400, C: 100, XC: 90, L: 50, XL: 40, X: 10, IX: 9, V: 5, IV: 4, I: 1 };
+            let roman = '', i;
+            let n = Math.floor(Math.abs(num));
+            for (i in lookup) {
+                while (n >= lookup[i]) { roman += i; n -= lookup[i]; }
+            }
+            return roman;
+        }
+
+        function update() {
+            if (Math.random() < 0.005) {
+                let randomX = (Math.random() - 0.5) * 400;
+                let randomY = (Math.random() - 0.5) * 300;
+                body.style.transform = `translate(${randomX}px, ${randomY}px)`;
+                setTimeout(() => { body.style.transform = `translate(0px, 0px)`; }, 1500);
+            }
+
+            let headX = snake[0].x + velocityX;
+            let headY = snake[0].y + velocityY;
+
+            if (headX < 0) headX = tileCount - 1;
+            if (headX >= tileCount) headX = 0;
+            if (headY < 0) headY = tileCount - 1;
+            if (headY >= tileCount) headY = 0;
+
+            if (velocityX !== 0 || velocityY !== 0) {
+                for (let i = 0; i < snake.length; i++) {
+                    if (snake[i].x === headX && snake[i].y === headY) {
+                        die("You ate yourself.");
+                        return;
+                    }
                 }
             }
 
-            function showInsult(text) {
-                insultBox.innerText = text || insults[Math.floor(Math.random() * insults.length)];
-                insultBox.style.opacity = 1;
-                insultBox.style.transform = `translate(-50%, -50%) rotate(${Math.random() * 40 - 20}deg) scale(${Math.random() * 0.5 + 1})`;
-                setTimeout(() => { insultBox.style.opacity = 0; }, 1000);
+            if (hunter.active) {
+                hunter.moveTick++;
+                if (hunter.moveTick > 5) {
+                    hunter.moveTick = 0;
+                    if (hunter.x < snake[0].x) hunter.x++;
+                    else if (hunter.x > snake[0].x) hunter.x--;
+
+                    if (hunter.y < snake[0].y) hunter.y++;
+                    else if (hunter.y > snake[0].y) hunter.y--;
+                }
+                if (headX === hunter.x && headY === hunter.y) {
+                    die("Hunted down.");
+                    return;
+                }
             }
 
-            function die(reason) {
-                isGameOver = true;
-                SoundManager.playDie();
-                SoundManager.stopPhone();
-                clearInterval(gameLoop);
-                clearInterval(chaosLoop);
-                clearInterval(chatLoop);
-                container.classList.remove('spin-left', 'spin-right', 'spin-upside', 'inverted', 'skew-madness');
-                container.classList.add('extreme-shake');
-                setTimeout(() => container.classList.remove('extreme-shake'), 500);
-
-                finalInsult.innerText = `${reason} \n ${deathInsults[Math.floor(Math.random() * deathInsults.length)]}`;
-                gameOverScreen.style.display = 'flex';
+            for (let i = 0; i < mines.length; i++) {
+                if (headX === mines[i].x && headY === mines[i].y) {
+                    die("Stepped on a mine.");
+                    return;
+                }
             }
 
-            restartBtn.addEventListener('mouseover', () => {
-                if (Math.random() > 0.8) moveButton();
-            });
-
-            function moveButton() {
-                const btnWidth = restartBtn.offsetWidth || 200;
-                const btnHeight = restartBtn.offsetHeight || 60;
-                const maxX = window.innerWidth - btnWidth - 20;
-                const maxY = window.innerHeight - btnHeight - 20;
-
-                const x = Math.random() * maxX;
-                const y = Math.random() * maxY;
-
-                restartBtn.style.position = 'fixed';
-                restartBtn.style.left = `${Math.max(10, x)}px`;
-                restartBtn.style.top = `${Math.max(10, y)}px`;
-
-                const btnTexts = ["Nope", "Too Slow", "Try Again", "Missed me", "Click here", "Skill issue"];
-                restartBtn.innerText = btnTexts[Math.floor(Math.random() * btnTexts.length)];
+            for (let w of randomWalls) {
+                if (headX === w.x && headY === w.y) {
+                    die("Ran into a wall.");
+                    return;
+                }
             }
 
-            restartBtn.addEventListener('click', () => {
-                restartBtn.style.position = 'relative';
-                restartBtn.style.left = 'auto';
-                restartBtn.style.top = 'auto';
-                restartBtn.innerText = "Try Again";
-                initGame();
-            });
+            const dist = Math.abs(headX - food.x) + Math.abs(headY - food.y);
+            if (dist === 1 && Math.random() < slipperyFoodChance) {
+                placeFood();
+                showInsult("Psych!");
+                return;
+            }
 
+            snake.unshift({ x: headX, y: headY });
+
+            let ate = false;
+
+            if (headX === food.x && headY === food.y) {
+                ate = true;
+                SoundManager.playEat();
+                if (Math.random() < 0.1 && snake.length > 3) {
+                    snake.pop(); snake.pop();
+                    showInsult("Inflation.");
+                    score -= 5;
+                } else {
+                    let scoreAdd = (Math.random() * 10);
+                    score += scoreAdd;
+                }
+                placeFood();
+                container.classList.add('shake-screen');
+                setTimeout(() => container.classList.remove('shake-screen'), 200);
+
+            } else {
+                for (let i = 0; i < fakeFoods.length; i++) {
+                    if (headX === fakeFoods[i].x && headY === fakeFoods[i].y) {
+                        score -= 10;
+                        showInsult("BAD FOOD!");
+                        fakeFoods.splice(i, 1);
+                        ate = false;
+                        SoundManager.playTone(150, 'sawtooth', 0.2);
+                        break;
+                    }
+                }
+            }
+
+            if (!ate) {
+                snake.pop();
+            }
+
+            for (let i = fakeFoods.length - 1; i >= 0; i--) {
+                fakeFoods[i].life--;
+                if (fakeFoods[i].life <= 0) fakeFoods.splice(i, 1);
+            }
+            for (let i = mines.length - 1; i >= 0; i--) {
+                mines[i].life--;
+                if (mines[i].life <= 0) mines.splice(i, 1);
+            }
+            for (let i = randomWalls.length - 1; i >= 0; i--) {
+                randomWalls[i].life--;
+                if (randomWalls[i].life <= 0) randomWalls.splice(i, 1);
+            }
+
+            updateScore();
+        }
+
+        function draw() {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (Math.random() < 0.1) {
+                ctx.strokeStyle = '#222';
+                for (let i = 0; i < tileCount; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(i * gridSize, 0); ctx.lineTo(i * gridSize, canvas.height);
+                    ctx.stroke();
+                }
+            }
+
+            if (!isInvisible) {
+                for (let i = 0; i < snake.length; i++) {
+                    if (i > 0 && Math.random() < 0.1) continue;
+
+                    ctx.fillStyle = i === 0 ? '#fff' : `hsl(${120 + Math.random() * 50}, 100%, 50%)`;
+                    let offsetX = (Math.random() - 0.5) * 4;
+                    let offsetY = (Math.random() - 0.5) * 4;
+                    ctx.fillRect(snake[i].x * gridSize + offsetX, snake[i].y * gridSize + offsetY, gridSize - 2, gridSize - 2);
+                }
+            } else {
+                if (Math.random() < 0.1 && snake.length > 0) {
+                    ctx.fillStyle = '#111';
+                    ctx.fillRect(snake[0].x * gridSize, snake[0].y * gridSize, gridSize, gridSize);
+                }
+            }
+
+            ctx.fillStyle = '#aa0000';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = 'red';
+            ctx.fillRect(hunter.x * gridSize, hunter.y * gridSize, gridSize, gridSize);
+            ctx.shadowBlur = 0;
+
+            ctx.strokeStyle = 'red';
+            ctx.lineWidth = 2;
+            for (let m of mines) {
+                const x = m.x * gridSize;
+                const y = m.y * gridSize;
+                ctx.beginPath();
+                ctx.moveTo(x, y); ctx.lineTo(x + gridSize, y + gridSize);
+                ctx.moveTo(x + gridSize, y); ctx.lineTo(x, y + gridSize);
+                ctx.stroke();
+            }
+
+            ctx.fillStyle = '#444';
+            for (let w of randomWalls) {
+                ctx.fillRect(w.x * gridSize, w.y * gridSize, gridSize, gridSize);
+            }
+
+            ctx.fillStyle = '#000';
+            for (let p of deadPixels) {
+                ctx.fillRect(p.x * gridSize, p.y * gridSize, gridSize, gridSize);
+            }
+
+            ctx.fillStyle = '#ff0055';
+            let jitterX = (Math.random() - 0.5) * 4;
+            let jitterY = (Math.random() - 0.5) * 4;
+            ctx.fillRect(food.x * gridSize + jitterX, food.y * gridSize + jitterY, gridSize - 2, gridSize - 2);
+
+            ctx.fillStyle = '#cc0044';
+            for (let f of fakeFoods) {
+                ctx.fillRect(f.x * gridSize, f.y * gridSize, gridSize - 2, gridSize - 2);
+            }
+        }
+
+
+
+        function updateScore() {
+            if (isInDebt) {
+                scoreEl.innerText = `Debt: $${Math.abs(Math.floor(score))}`;
+                scoreEl.style.color = 'red';
+                return;
+            }
+
+            scoreEl.style.color = 'white';
+            if (Math.random() < 0.05) {
+                const formats = [
+                    `Score: ${Math.floor(score)}`,
+                    `Score: ${toRoman(score)}`,
+                    `Score: ${Math.floor(score).toString(2)}`,
+                    `Score: ???`,
+                    `Score: NaN`,
+                    `Score: No`
+                ];
+                scoreEl.innerText = formats[Math.floor(Math.random() * formats.length)];
+            } else {
+                scoreEl.innerText = `Score: ${Math.floor(score)}`;
+            }
+        }
+
+        function placeFood() {
+            food = {
+                x: Math.floor(Math.random() * tileCount),
+                y: Math.floor(Math.random() * tileCount)
+            };
+            for (let part of snake) {
+                if (part.x === food.x && part.y === food.y) placeFood();
+            }
+        }
+
+        function showInsult(text) {
+            insultBox.innerText = text || insults[Math.floor(Math.random() * insults.length)];
+            insultBox.style.opacity = 1;
+            insultBox.style.transform = `translate(-50%, -50%) rotate(${Math.random() * 40 - 20}deg) scale(${Math.random() * 0.5 + 1})`;
+            setTimeout(() => { insultBox.style.opacity = 0; }, 1000);
+        }
+
+        function die(reason) {
+            isGameOver = true;
+            SoundManager.playDie();
+            SoundManager.stopPhone();
+            clearInterval(gameLoop);
+            clearInterval(chaosLoop);
+            clearInterval(chatLoop);
+            container.classList.remove('spin-left', 'spin-right', 'spin-upside', 'inverted', 'skew-madness');
+            container.classList.add('extreme-shake');
+            setTimeout(() => container.classList.remove('extreme-shake'), 500);
+
+            finalInsult.innerText = `${reason} \n ${deathInsults[Math.floor(Math.random() * deathInsults.length)]}`;
+            gameOverScreen.style.display = 'flex';
+        }
+
+        restartBtn.addEventListener('mouseover', () => {
+            if (Math.random() > 0.8) moveButton();
+        });
+
+        function moveButton() {
+            const btnWidth = restartBtn.offsetWidth || 200;
+            const btnHeight = restartBtn.offsetHeight || 60;
+            const maxX = window.innerWidth - btnWidth - 20;
+            const maxY = window.innerHeight - btnHeight - 20;
+
+            const x = Math.random() * maxX;
+            const y = Math.random() * maxY;
+
+            restartBtn.style.position = 'fixed';
+            restartBtn.style.left = `${Math.max(10, x)}px`;
+            restartBtn.style.top = `${Math.max(10, y)}px`;
+
+            const btnTexts = ["Nope", "Too Slow", "Try Again", "Missed me", "Click here", "Skill issue"];
+            restartBtn.innerText = btnTexts[Math.floor(Math.random() * btnTexts.length)];
+        }
+
+        restartBtn.addEventListener('click', () => {
+            restartBtn.style.position = 'relative';
+            restartBtn.style.left = 'auto';
+            restartBtn.style.top = 'auto';
+            restartBtn.innerText = "Try Again";
             initGame();
+        });
 
-        </script>
-    </body>
+        initGame();
+
+    </script>
+</body>
 
 </html>
