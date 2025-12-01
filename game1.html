@@ -755,7 +755,6 @@
         <div id="cursor-container"></div>
 
         <script>
-            // --- Sound Manager ---
             const SoundManager = {
                 ctx: null,
                 init: function () {
@@ -781,40 +780,23 @@
                 playMove: function () { this.playTone(200, 'sine', 0.05, 0.05); },
                 playChaos: function () { this.playTone(800, 'sawtooth', 0.3, 0.1); },
                 playPhone: function () {
-                    if (this.phoneOsc) return; // Already ringing
+                    if (this.phoneOsc) return;
                     const now = this.ctx.currentTime;
                     this.phoneOsc = this.ctx.createOscillator();
                     this.phoneGain = this.ctx.createGain();
 
                     this.phoneOsc.type = 'square';
                     this.phoneOsc.frequency.setValueAtTime(800, now);
-
-                    // Create a rhythmic ringing pattern
-                    // 0.0 - 0.1: 800Hz
-                    // 0.1 - 0.2: 1000Hz
-                    // 0.2 - 0.3: 800Hz
-                    // 0.3 - 0.4: Silence
-                    // Repeat
-
-                    // We can't easily loop complex envelopes with a single oscillator node in a simple way without AudioWorklets or scheduling ahead.
-                    // A simpler approach for "looping" is to use an interval or just a simple repeating beep.
-                    // Let's use a simple repeating beep for the "ring".
-
                     this.phoneOsc.frequency.setValueAtTime(800, now);
                     this.phoneOsc.connect(this.phoneGain);
                     this.phoneGain.connect(this.ctx.destination);
 
                     this.phoneOsc.start();
 
-                    // Modulate volume to create the ring effect
                     const cycle = 0.4;
                     this.phoneGain.gain.setValueAtTime(0.1, now);
                     this.phoneGain.gain.setValueCurveAtTime(new Float32Array([0.1, 0.1, 0, 0]), now, cycle);
 
-                    // We need to manually schedule the loop or use an LFO. 
-                    // Let's use a second oscillator as an LFO to modulate gain for a true "ringing" effect without JS intervals.
-
-                    // Actually, let's just use a setInterval for the "ring" sound to keep it simple and robust.
                     this.phoneOsc.stop();
                     this.phoneOsc = null;
 
@@ -916,7 +898,7 @@
 
             const gridSize = 20;
             const tileCount = canvas.width / gridSize;
-            let baseSpeed = 10; // Slightly faster base speed for better feel
+            let baseSpeed = 10;
             let currentSpeed = 10;
 
             let velocityX = 0;
@@ -942,8 +924,8 @@
             let isTosActive = false;
             let isCallActive = false;
 
-            let inputLagMs = 0; // Removed constant input lag for playability
-            let slipperyFoodChance = 0.1; // Reduced from 0.3
+            let inputLagMs = 0;
+            let slipperyFoodChance = 0.1;
 
             let updateInterval;
 
@@ -1142,7 +1124,7 @@
                 let progress = 0;
                 clearInterval(updateInterval);
                 updateInterval = setInterval(() => {
-                    progress += Math.random() * 5; // Slower update to give time to cancel
+                    progress += Math.random() * 5;
                     if (progress > 100) progress = 100;
                     updateBarFill.style.width = `${progress}%`;
                     if (progress === 100) {
@@ -1161,7 +1143,6 @@
             }
 
             function performSystemRestart() {
-                // Pause Game Logic
                 isGameOver = true;
                 clearInterval(gameLoop);
                 clearInterval(chaosLoop);
@@ -1170,9 +1151,7 @@
                 SoundManager.stopPhone();
 
                 updatePopup.style.display = 'none';
-                document.body.style.cursor = 'none'; // Hide cursor for realism
-
-                // Request Fullscreen
+                document.body.style.cursor = 'none';
                 try {
                     if (document.documentElement.requestFullscreen) {
                         document.documentElement.requestFullscreen().catch(e => console.log("Fullscreen blocked:", e));
@@ -1183,7 +1162,6 @@
 
                 SoundManager.playShutdown();
 
-                // 1. Black Screen (Shutdown)
                 const overlay = document.createElement('div');
                 overlay.style.position = 'fixed';
                 overlay.style.top = '0';
@@ -1194,22 +1172,15 @@
                 overlay.style.zIndex = '1999';
                 document.body.appendChild(overlay);
 
-                // 2. Boot Screen
                 setTimeout(() => {
                     document.getElementById('boot-screen').style.display = 'flex';
                     SoundManager.playStartup();
-
-                    // 3. BSOD
                     setTimeout(() => {
                         document.getElementById('boot-screen').style.display = 'none';
                         document.getElementById('bsod').style.display = 'block';
                         SoundManager.playError();
-
-                        // 4. Restart (Black Screen again)
                         setTimeout(() => {
                             document.getElementById('bsod').style.display = 'none';
-
-                            // 5. DOS Screen
                             setTimeout(() => {
                                 const dos = document.getElementById('dos-screen');
                                 dos.style.display = 'block';
@@ -1236,7 +1207,7 @@
                                     if (lineIndex < lines.length) {
                                         dos.innerHTML += lines[lineIndex] + "<br>";
                                         lineIndex++;
-                                        SoundManager.playTone(800, 'square', 0.05, 0.05); // Typing sound
+                                        SoundManager.playTone(800, 'square', 0.05, 0.05);
                                         setTimeout(typeLine, 800);
                                     } else {
                                         dos.innerHTML += "<span class='blink'>_</span>";
@@ -1290,7 +1261,6 @@
                     triggerAdware, triggerUpdate, triggerPaywall, triggerHelper, triggerCaptcha,
                     triggerRandomWalls, triggerTos, triggerCall, triggerDeadPixels
                 ];
-                // Slightly increased chaos frequency
                 if (Math.random() < 0.4) {
                     const event = events[Math.floor(Math.random() * events.length)];
                     event();
@@ -1299,7 +1269,7 @@
 
             function initGame() {
                 SoundManager.init();
-                SoundManager.stopPhone(); // Ensure phone stops on restart
+                SoundManager.stopPhone();
                 snake = [{ x: 10, y: 10 }];
                 score = 0;
                 velocityX = 0;
@@ -1321,7 +1291,6 @@
 
                 hunter = { x: 0, y: 0, active: true, moveTick: 0 };
 
-                // Reset visual states
                 body.style.transform = `translate(0px, 0px)`;
                 container.className = '';
                 paywallPopup.style.display = 'none';
@@ -1343,14 +1312,14 @@
                 clearInterval(gameLoop);
                 clearInterval(chaosLoop);
                 clearInterval(chatLoop);
-                clearInterval(updateInterval); // Clear update interval on reset
+                clearInterval(updateInterval);
 
                 gameLoop = setInterval(gameStep, 1000 / currentSpeed);
                 chaosLoop = setInterval(randomChaos, 2000);
                 chatLoop = setInterval(addChatMessage, 2000);
 
                 placeFood();
-                SoundManager.playStartup(); // Play startup sound on game init
+                SoundManager.playStartup();
             }
 
             window.closePaywall = function () { paywallPopup.style.display = 'none'; };
@@ -1359,7 +1328,6 @@
                 if (isGameOver) return;
                 if (lagSpikeActive) return;
 
-                // Reduced slippery keys chance
                 if (Math.random() < 0.01) {
                     let k = e.keyCode;
                     if (k === 37) k = 39; else if (k === 39) k = 37; else if (k === 38) k = 40; else if (k === 40) k = 38;
@@ -1367,8 +1335,6 @@
                     showInsult("Slippery Keys");
                     return;
                 }
-
-                // Removed "Input Ignored" for better playability
 
                 handleInput(e.keyCode);
             });
@@ -1378,7 +1344,7 @@
 
                 if (controlsScrambled && scrambleMap[key]) {
                     actualKey = scrambleMap[key];
-                } else if (Math.random() < 0.01 || controlsInverted) { // Reduced random invert chance
+                } else if (Math.random() < 0.01 || controlsInverted) {
                     if (key === 37) actualKey = 39;
                     else if (key === 39) actualKey = 37;
                     else if (key === 38) actualKey = 40;
@@ -1386,7 +1352,6 @@
                     if (!controlsInverted && !controlsScrambled) showInsult("Inverted!");
                 }
 
-                // Prevent reversing direction
                 if (actualKey === 37 && velocityX === 1) return;
                 if (actualKey === 38 && velocityY === 1) return;
                 if (actualKey === 39 && velocityX === -1) return;
@@ -1401,7 +1366,7 @@
             }
 
             function gameStep() {
-                if (Math.random() < 0.005 && !lagSpikeActive && !isCaptchaActive) { // Reduced lag spike chance
+                if (Math.random() < 0.005 && !lagSpikeActive && !isCaptchaActive) {
                     lagSpikeActive = true;
                     lagIndicator.style.opacity = 1;
                     let spikeDuration = Math.random() * 500 + 300;
@@ -1429,7 +1394,7 @@
             }
 
             function update() {
-                if (Math.random() < 0.005) { // Reduced screen shake chance
+                if (Math.random() < 0.005) {
                     let randomX = (Math.random() - 0.5) * 400;
                     let randomY = (Math.random() - 0.5) * 300;
                     body.style.transform = `translate(${randomX}px, ${randomY}px)`;
@@ -1512,7 +1477,7 @@
                 } else {
                     for (let i = 0; i < fakeFoods.length; i++) {
                         if (headX === fakeFoods[i].x && headY === fakeFoods[i].y) {
-                            score -= 10; // Reduced penalty
+                            score -= 10;
                             showInsult("BAD FOOD!");
                             fakeFoods.splice(i, 1);
                             ate = false;
@@ -1639,7 +1604,7 @@
             function die(reason) {
                 isGameOver = true;
                 SoundManager.playDie();
-                SoundManager.stopPhone(); // Ensure phone stops on death
+                SoundManager.stopPhone();
                 clearInterval(gameLoop);
                 clearInterval(chaosLoop);
                 clearInterval(chatLoop);
@@ -1652,15 +1617,12 @@
             }
 
             restartBtn.addEventListener('mouseover', () => {
-                // Reduced chance of button moving away significantly
                 if (Math.random() > 0.8) moveButton();
             });
 
             function moveButton() {
-                const btnWidth = restartBtn.offsetWidth || 200; // Fallback width
-                const btnHeight = restartBtn.offsetHeight || 60; // Fallback height
-
-                // Calculate max positions to keep button fully on screen
+                const btnWidth = restartBtn.offsetWidth || 200;
+                const btnHeight = restartBtn.offsetHeight || 60;
                 const maxX = window.innerWidth - btnWidth - 20;
                 const maxY = window.innerHeight - btnHeight - 20;
 
