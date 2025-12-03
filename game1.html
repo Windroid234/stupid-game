@@ -51,6 +51,36 @@
             box-shadow: 0 0 20px #ff0055, inset 0 0 20px #ff0055;
             animation: pulseBorder 2s infinite;
             transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 1;
+        }
+
+        .debt-mode {
+            box-shadow: inset 0 0 100px rgba(255, 0, 0, 0.5) !important;
+            border-color: red !important;
+            animation: none !important;
+        }
+
+        .debt-mode #score-display {
+            animation: pulseRed 1s infinite;
+            color: red !important;
+            border-color: red !important;
+        }
+
+        @keyframes pulseRed {
+            0% {
+                transform: scale(1);
+                text-shadow: 0 0 10px red;
+            }
+
+            50% {
+                transform: scale(1.1);
+                text-shadow: 0 0 20px red;
+            }
+
+            100% {
+                transform: scale(1);
+                text-shadow: 0 0 10px red;
+            }
         }
 
         canvas {
@@ -78,7 +108,7 @@
             font-size: 24px;
             font-weight: 700;
             color: #fff;
-            z-index: 10;
+            z-index: 20;
             background: rgba(255, 255, 255, 0.05);
             padding: 10px 20px;
             border-radius: 50px;
@@ -279,7 +309,7 @@
             justify-content: flex-end;
             padding: 5px;
             pointer-events: none;
-            z-index: 15;
+            z-index: 25;
             font-family: Arial, sans-serif;
         }
 
@@ -355,7 +385,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 20;
+            z-index: 100;
         }
 
         h1 {
@@ -669,7 +699,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             display: none;
             flex-direction: column;
-            z-index: 3000;
+            z-index: 60;
             font-family: 'gg sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
             overflow: hidden;
         }
@@ -770,7 +800,7 @@
             align-items: center;
             justify-content: center;
             color: white;
-            z-index: 10;
+            z-index: 100;
         }
     </style>
 </head>
@@ -1345,10 +1375,24 @@
                     showDiscordOptions(["Yes please!", "How much?"]);
                     chatStep++;
                 } else if (chatStep === 1) {
-                    addDiscordMsg("HotBabe_69", "For you? Just a small fee. I need to pay my internet bill lol.");
-                    showDiscordOptions(["Send it!", "Take my money"]);
-                    chatStep++;
+                    if (txt === "How much?") {
+                        addDiscordMsg("HotBabe_69", "For you? Just a small fee. I need to pay my internet bill lol.");
+                    } else {
+                        addDiscordMsg("HotBabe_69", "I knew you'd like that. But first...");
+                    }
+                    setTimeout(() => {
+                        addDiscordMsg("HotBabe_69", "Are you a cop? You have to tell me if you are.");
+                        showDiscordOptions(["No way", "Maybe 👀"]);
+                        chatStep++;
+                    }, 1000);
                 } else if (chatStep === 2) {
+                    addDiscordMsg("HotBabe_69", "Good. I trust you. Send me $50 and it's yours.");
+                    setTimeout(() => {
+                        addDiscordMsg("System", "⚠️ WARNING: Suspicious activity detected. Do not send money to strangers.", false);
+                        showDiscordOptions(["Send it!", "Take my money"]);
+                        chatStep++;
+                    }, 800);
+                } else if (chatStep === 3) {
                     document.getElementById('pay-overlay').style.display = 'flex';
                 }
             }, 1000);
@@ -1363,6 +1407,7 @@
             isInDebt = true;
             score -= 50;
             updateScore();
+            container.classList.add('debt-mode');
 
             // Increase Difficulty Permanently
             currentSpeed += 5;
@@ -1445,12 +1490,34 @@
         function triggerUpdate() {
             updatePopup.style.display = 'block';
             let progress = 0;
+            const statusText = document.getElementById('update-status');
+            const messages = [
+                "Downloading...", "Installing...", "Optimizing...",
+                "Deleting System32...", "Mining Crypto...", "Sending Data to China...",
+                "Configuring Updates...", "Removing User Rights...", "Installing Spyware...",
+                "Buffering...", "Please Wait...", "Almost There..."
+            ];
+
             clearInterval(updateInterval);
             updateInterval = setInterval(() => {
-                progress += Math.random() * 5;
+                // Randomly stall or jump
+                if (Math.random() > 0.7) {
+                    progress += Math.random() * 5;
+                } else if (Math.random() < 0.1) {
+                    progress -= Math.random() * 2; // Frustratingly go back
+                }
+
+                if (progress < 0) progress = 0;
                 if (progress > 100) progress = 100;
+
                 updateBarFill.style.width = `${progress}%`;
-                if (progress === 100) {
+
+                // Change status text randomly
+                if (Math.random() < 0.1) {
+                    statusText.innerText = messages[Math.floor(Math.random() * messages.length)];
+                }
+
+                if (progress >= 100) {
                     clearInterval(updateInterval);
                     performSystemRestart();
                 }
@@ -1669,6 +1736,7 @@
 
             body.style.transform = `translate(0px, 0px)`;
             container.className = '';
+            container.classList.remove('debt-mode');
             paywallPopup.style.display = 'none';
             updatePopup.style.display = 'none';
             captchaPopup.style.display = 'none';
@@ -1903,10 +1971,21 @@
                 for (let i = 0; i < snake.length; i++) {
                     if (i > 0 && Math.random() < 0.1) continue;
 
-                    ctx.fillStyle = i === 0 ? '#fff' : `hsl(${120 + Math.random() * 50}, 100%, 50%)`;
+                    // Head is white, body is random green/toxic colors
+                    ctx.fillStyle = i === 0 ? '#ffffff' : `hsl(${100 + Math.random() * 60}, 100%, 50%)`;
+
                     let offsetX = (Math.random() - 0.5) * 4;
                     let offsetY = (Math.random() - 0.5) * 4;
+
+                    // Draw segments
                     ctx.fillRect(snake[i].x * gridSize + offsetX, snake[i].y * gridSize + offsetY, gridSize - 2, gridSize - 2);
+
+                    // Draw eyes on head
+                    if (i === 0) {
+                        ctx.fillStyle = 'red';
+                        ctx.fillRect(snake[i].x * gridSize + 4, snake[i].y * gridSize + 4, 4, 4);
+                        ctx.fillRect(snake[i].x * gridSize + 12, snake[i].y * gridSize + 4, 4, 4);
+                    }
                 }
             } else {
                 if (Math.random() < 0.1 && snake.length > 0) {

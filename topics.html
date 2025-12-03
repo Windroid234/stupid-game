@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topics</title>
+    <meta property="og:title" content="Windroid's Topics">
+    <meta property="og:description" content="Explore various topics and discussions.">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#ff0055">
+    <meta name="twitter:card" content="summary_large_image">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&family=Roboto:wght@400;500;700&display=swap');
+
+        :root {
+            --primary: #ff0055;
+            --secondary: #00ffaa;
+            --bg: #050505;
+            --card-bg: #1e1e1e;
+            --text: #fff;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        html {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Roboto', sans-serif;
+            overflow-x: hidden;
+            width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+                filter: blur(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 0, 85, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 85, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(600px circle at var(--x, 50%) var(--y, 50%), rgba(255, 0, 85, 0.15), transparent 40%);
+            z-index: -1;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        header {
+            margin-top: 5rem;
+            text-align: center;
+            z-index: 10;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 4rem;
+            font-weight: 800;
+            margin: 0;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            width: 100%;
+            height: auto;
+            padding: 0 2rem 4rem 2rem;
+            box-sizing: border-box;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        .main-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-column {
+            flex: 1 1 300px;
+            min-width: 300px;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin: 0;
+            padding-left: 1rem;
+            border-left: 4px solid var(--secondary);
+            position: sticky;
+            top: 0;
+        }
+
+        .resources-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        .resources-grid::-webkit-scrollbar {
+            display: none;
+        }
+
+        .resource-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 1.5rem;
+            width: 100%;
+            box-sizing: border-box;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out, box-shadow 0.2s;
+        }
+
+        .resource-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .resource-card.visible:hover {
+            transform: translateY(-4px);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.2);
+            background: #252525;
+        }
+
+        .resource-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            color: #fff;
+        }
+
+        .resource-desc {
+            color: #ccc;
+            font-size: 1rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: #666;
+            background: none;
+            border: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: color 0.3s;
+            z-index: 100;
+            padding: 0;
+        }
+
+        .back-btn:hover {
+            color: var(--primary);
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .scroll-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            animation: bounce 2s infinite;
+            pointer-events: none;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            transition: opacity 0.5s ease;
+        }
+
+        .scroll-hint span {
+            display: block;
+            width: 10px;
+            height: 10px;
+            border-right: 2px solid rgba(255, 255, 255, 0.5);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+            transform: rotate(45deg);
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+
+        }
+
+        .expand-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+        }
+
+        .expand-wrapper.expanded {
+            grid-template-rows: 1fr;
+        }
+
+        .expand-inner {
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .expand-wrapper.expanded .expand-inner {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .expand-inner.overflow-visible {
+            overflow: visible;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-grid"></div>
+    <div class="bg-overlay"></div>
+
+    <button onclick="window.location.href='index'" class="back-btn">← Back to Home</button>
+
+    <header>
+        <h1>Topics</h1>
+    </header>
+
+    <div class="main-content">
+        <!-- Content will be added here later -->
+    </div>
+
+    <div class="scroll-hint">
+        Scroll for more
+        <span></span>
+    </div>
+
+    <script>
+        window.addEventListener('scroll', () => {
+            const scrollHint = document.querySelector('.scroll-hint');
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
+                scrollHint.style.opacity = '0';
+            } else {
+                scrollHint.style.opacity = '1';
+            }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            const overlay = document.querySelector('.bg-overlay');
+            const x = e.clientX;
+            const y = e.clientY;
+            overlay.style.setProperty('--x', `${x}px`);
+            overlay.style.setProperty('--y', `${y}px`);
+        });
+
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const circle = document.createElement("span");
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+            circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+            circle.classList.add("ripple");
+
+            const ripple = button.getElementsByClassName("ripple")[0];
+            if (ripple) {
+                ripple.remove();
+            }
+
+            button.appendChild(circle);
+        }
+
+        const buttons = document.querySelectorAll('.resource-card, .back-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', createRipple);
+        });
+
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.resource-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        document.querySelectorAll('.category-column').forEach(column => {
+            const grid = column.querySelector('.resources-grid');
+            const cards = Array.from(grid.querySelectorAll('.resource-card'));
+            const maxItems = 4;
+
+            if (cards.length > maxItems) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'expand-wrapper';
+
+                const inner = document.createElement('div');
+                inner.className = 'expand-inner';
+
+                wrapper.appendChild(inner);
+
+                const hiddenCards = cards.slice(maxItems);
+                hiddenCards.forEach(card => {
+                    grid.removeChild(card);
+                    inner.appendChild(card);
+                    card.classList.add('visible');
+                    card.style.display = 'flex';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                });
+
+                grid.appendChild(wrapper);
+
+                let timeoutId;
+
+                column.addEventListener('mouseenter', () => {
+                    clearTimeout(timeoutId);
+                    wrapper.classList.add('expanded');
+
+                    timeoutId = setTimeout(() => {
+                        if (wrapper.classList.contains('expanded')) {
+                            inner.classList.add('overflow-visible');
+                        }
+                    }, 500);
+                });
+
+                column.addEventListener('mouseleave', () => {
+                    clearTimeout(timeoutId);
+                    inner.classList.remove('overflow-visible');
+                    void inner.offsetWidth;
+                    wrapper.classList.remove('expanded');
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

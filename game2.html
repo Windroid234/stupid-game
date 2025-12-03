@@ -46,14 +46,63 @@
         .hud-top {
             display: flex;
             justify-content: space-between;
+            align-items: flex-start;
             font-size: 24px;
             text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
         }
 
-        .hud-bottom {
-            text-align: center;
+        .score-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .sub-text {
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 5px;
+        }
+
+        .hud-bottom {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding-bottom: 20px;
+        }
+
+        .energy-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 300px;
+            max-width: 80%;
+        }
+
+        .energy-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px rgba(0, 242, 255, 0.5);
+        }
+
+        .energy-bar-bg {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.1);
+        }
+
+        #energy-bar-fill {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #00f2ff, #00aaff);
+            box-shadow: 0 0 10px #00f2ff;
+            transition: width 0.1s linear, background 0.3s;
         }
 
         #start-screen,
@@ -155,11 +204,19 @@
 
     <div id="ui-layer">
         <div class="hud-top">
-            <div id="score-display">SCORE: 0</div>
-            <div id="combo-display">x1</div>
+            <div class="score-container">
+                <div id="score-display">SCORE: 0</div>
+                <div id="high-score-display" class="sub-text">HI: 0</div>
+            </div>
+            <div id="combo-display">x1.0</div>
         </div>
         <div class="hud-bottom">
-            ENERGY: <span id="energy-meter">100%</span>
+            <div class="energy-container">
+                <div class="energy-label">ENERGY</div>
+                <div class="energy-bar-bg">
+                    <div id="energy-bar-fill"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -220,8 +277,9 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const scoreEl = document.getElementById('score-display');
+        const highScoreEl = document.getElementById('high-score-display');
         const comboEl = document.getElementById('combo-display');
-        const energyEl = document.getElementById('energy-meter');
+        const energyBarFill = document.getElementById('energy-bar-fill');
         const finalScoreEl = document.getElementById('final-score');
         const startScreen = document.getElementById('start-screen');
         const gameOverScreen = document.getElementById('game-over-screen');
@@ -233,6 +291,7 @@
         let animationId;
         let lastTime = 0;
         let score = 0;
+        let highScore = parseInt(localStorage.getItem('neonFluxHighScore')) || 0;
         let combo = 1;
         let frames = 0;
         let gameActive = false;
@@ -257,6 +316,7 @@
 
         let enemies = [];
         let particles = [];
+        let bgParticles = [];
         let pickups = [];
         let grid = [];
 
@@ -360,9 +420,26 @@
                 }
 
                 this.type = type;
-                this.color = type === 0 ? '#ff0055' : '#bf00ff';
-                this.radius = type === 0 ? 10 : 15;
-                this.speed = type === 0 ? (2 + Math.random()) * difficultyMultiplier : (1 + Math.random() * 2);
+                // 0: Chaser, 1: Linear, 2: Dasher
+                if (type === 0) {
+                    this.color = '#ff0055';
+                    this.radius = 10;
+                    this.speed = (2 + Math.random()) * difficultyMultiplier;
+                } else if (type === 1) {
+                    this.color = '#bf00ff';
+                    this.radius = 15;
+                    this.speed = (1 + Math.random() * 2);
+                } else if (type === 2) {
+                    this.color = '#ffaa00';
+                    this.radius = 12;
+                    this.speed = 0; // Starts stationary
+                    this.state = 'charging'; // charging -> dashing
+                    this.chargeTimer = 60 + Math.random() * 60;
+                    this.dashSpeed = 12 * difficultyMultiplier;
+                    this.targetX = 0;
+                    this.targetY = 0;
+                }
+
                 this.angle = Math.random() * Math.PI * 2;
                 this.rotation = 0;
             }
@@ -375,13 +452,31 @@
                     this.x += Math.cos(angle) * this.speed;
                     this.y += Math.sin(angle) * this.speed;
                     this.rotation = angle;
-                } else {
+                } else if (this.type === 1) {
                     this.x += Math.cos(this.angle) * this.speed;
                     this.y += Math.sin(this.angle) * this.speed;
                     this.rotation += 0.05;
 
                     if (this.x < 0 || this.x > width) this.angle = Math.PI - this.angle;
                     if (this.y < 0 || this.y > height) this.angle = -this.angle;
+                } else if (this.type === 2) {
+                    if (this.state === 'charging') {
+                        this.chargeTimer--;
+                        // Face player
+                        const dx = player.x - this.x;
+                        const dy = player.y - this.y;
+                        this.rotation = Math.atan2(dy, dx);
+
+                        if (this.chargeTimer <= 0) {
+                            this.state = 'dashing';
+                            this.targetX = Math.cos(this.rotation) * this.dashSpeed;
+                            this.targetY = Math.sin(this.rotation) * this.dashSpeed;
+                            Sound.playTone(300, 'square', 0.1, 0.1); // Dash sound
+                        }
+                    } else {
+                        this.x += this.targetX;
+                        this.y += this.targetY;
+                    }
                 }
             }
 
@@ -399,8 +494,17 @@
                     ctx.moveTo(15, 0);
                     ctx.lineTo(-10, 10);
                     ctx.lineTo(-10, -10);
-                } else {
+                } else if (this.type === 1) {
                     ctx.rect(-10, -10, 20, 20);
+                } else if (this.type === 2) {
+                    // Dasher shape (arrow-like)
+                    if (this.state === 'charging') {
+                        ctx.shadowBlur = 15 + Math.sin(frames * 0.5) * 10; // Pulse while charging
+                    }
+                    ctx.moveTo(15, 0);
+                    ctx.lineTo(-10, 8);
+                    ctx.lineTo(-5, 0);
+                    ctx.lineTo(-10, -8);
                 }
                 ctx.closePath();
                 ctx.stroke();
@@ -452,8 +556,20 @@
             difficultyMultiplier = 1;
             shakeIntensity = 0;
 
+            bgParticles = [];
+            for (let i = 0; i < 50; i++) {
+                bgParticles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    size: Math.random() * 2
+                });
+            }
+
             for (let i = 0; i < 5; i++) pickups.push(new Pickup());
 
+            highScoreEl.innerText = `HI: ${Math.floor(highScore)}`;
             gameActive = true;
             animate();
         }
@@ -534,7 +650,12 @@
             const spawnRate = Math.max(30, 100 - (score / 200));
 
             if (frames % Math.floor(spawnRate) === 0) {
-                const type = Math.random() > 0.3 ? 0 : 1;
+                const rand = Math.random();
+                let type = 0;
+                if (rand < 0.5) type = 0; // Chaser
+                else if (rand < 0.8) type = 1; // Linear
+                else type = 2; // Dasher
+
                 enemies.push(new Enemy(type));
             }
         }
@@ -605,6 +726,20 @@
 
             drawBackground();
 
+            // Draw BG Particles
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            bgParticles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < 0) p.x = width;
+                if (p.x > width) p.x = 0;
+                if (p.y < 0) p.y = height;
+                if (p.y > height) p.y = 0;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
             updatePlayer();
             spawnEnemies();
             checkCollisions();
@@ -626,9 +761,15 @@
 
             let dispEnergy = Math.floor(player.energy);
             if (dispEnergy > 100) dispEnergy = 100;
-            energyEl.innerText = `${dispEnergy}%`;
+            energyBarFill.style.width = `${dispEnergy}%`;
 
-            energyEl.style.color = player.energy > 20 ? '#00f2ff' : '#ff0055';
+            if (player.energy <= 20) {
+                energyBarFill.style.background = '#ff0055';
+                energyBarFill.style.boxShadow = '0 0 10px #ff0055';
+            } else {
+                energyBarFill.style.background = 'linear-gradient(90deg, #00f2ff, #00aaff)';
+                energyBarFill.style.boxShadow = '0 0 10px #00f2ff';
+            }
         }
 
         function gameOver() {
@@ -641,6 +782,13 @@
             Sound.hit();
 
             finalScoreEl.innerText = Math.floor(score);
+
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('neonFluxHighScore', highScore);
+                finalScoreEl.innerText += " (NEW HIGH SCORE!)";
+            }
+
             gameOverScreen.classList.remove('hidden');
         }
 
