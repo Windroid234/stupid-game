@@ -323,7 +323,6 @@
         <div id="flux-pause-screen" class="screen hidden">
             <h1>PAUSED</h1>
             <button id="flux-resume-btn">RESUME</button>
-            <button id="flux-auto-toggle-btn" style="border-color: #00ff88; color: #00ff88;">TOGGLE AUTO</button>
             <button class="back-btn" onclick="GameManager.showMenu()">Main Menu</button>
         </div>
     </div>
@@ -483,7 +482,10 @@
                     this.mouse.x = e.touches[0].clientX;
                     this.mouse.y = e.touches[0].clientY;
                 };
-                this.handleDash = () => this.triggerDash();
+                this.handleDash = () => {
+                    if (this.isAuto) return;
+                    this.triggerDash();
+                };
 
                 window.addEventListener('mousemove', this.handleMouseMove);
                 window.addEventListener('touchmove', this.handleTouchMove, { passive: false });
@@ -503,10 +505,6 @@
                 };
                 document.getElementById('flux-restart-btn').onclick = () => this.startGame();
                 document.getElementById('flux-resume-btn').onclick = () => this.togglePause();
-                document.getElementById('flux-auto-toggle-btn').onclick = () => {
-                    this.isAuto = !this.isAuto;
-                    this.togglePause();
-                };
 
                 this.handleKey = (e) => {
                     if (e.code === 'Escape' && this.gameActive) {
@@ -528,6 +526,7 @@
                 this.gameActive = false;
                 cancelAnimationFrame(this.animationId);
                 this.removeEvents();
+                this.canvas.style.cursor = 'default';
             },
 
             resize: function (w, h) {
@@ -561,6 +560,7 @@
 
                 this.gameActive = true;
                 this.isPaused = false;
+                this.canvas.style.cursor = this.isAuto ? 'none' : 'default';
                 this.animate();
             },
 
@@ -730,7 +730,7 @@
                 if (this.player.trail.length > 20) this.player.trail.shift();
 
                 if (this.player.energy < 100) {
-                    this.player.energy += 0.1;
+                    this.player.energy += this.isAuto ? 0.5 : 0.1;
                     if (this.player.energy > 100) this.player.energy = 100;
                 }
 
@@ -743,7 +743,7 @@
                         this.pickups.splice(i, 1);
                         this.score += 100 * this.combo;
                         this.combo = Math.min(this.combo + 0.1, 10);
-                        this.player.energy = Math.min(this.player.energy + 10, 100);
+                        this.player.energy = Math.min(this.player.energy + (this.isAuto ? 30 : 10), 100);
 
                         AudioSys.playTone(880 + Math.random() * 200, 'sine', 0.1, 0.1);
                         setTimeout(() => AudioSys.playTone(1760, 'triangle', 0.1, 0.05), 50);
@@ -795,42 +795,83 @@
                 let forceX = 0;
                 let forceY = 0;
 
+                // Wander (Prevent getting stuck/spinning)
+                const time = Date.now() * 0.001;
+                forceX += Math.sin(time) * 10;
+                forceY += Math.cos(time) * 10;
 
                 let nearestPickupDist = Infinity;
                 for (let p of this.pickups) {
+                    // Smart Pickup: Check if pickup is safe
+                    let isSafe = true;
+                    for (let e of this.enemies) {
+                        if (Math.hypot(p.x - e.x, p.y - e.y) < 100) {
+                            isSafe = false;
+                            break;
+                        }
+                    }
+                    if (!isSafe) continue;
+
                     const dx = p.x - this.player.x;
                     const dy = p.y - this.player.y;
                     const dist = Math.hypot(dx, dy);
-                    if (dist < nearestPickupDist) nearestPickupDist = dist;
+                    if (dist < nearestPickupDist) {
+                        nearestPickupDist = dist;
+                    }
 
-
-                    const weight = 2000 / (dist + 100);
+                    const weight = 3000 / (dist + 50);
                     forceX += (dx / dist) * weight;
                     forceY += (dy / dist) * weight;
                 }
 
-
                 let nearestEnemyDist = Infinity;
-                for (let e of this.enemies) {
-                    const dx = this.player.x - e.x;
-                    const dy = this.player.y - e.y;
-                    const dist = Math.hypot(dx, dy);
-                    if (dist < nearestEnemyDist) nearestEnemyDist = dist;
+                let redEnemiesInRange = [];
 
-                    if (dist < 300) {
-                        const weight = 500000 / (dist * dist);
-                        forceX -= (dx / dist) * weight;
-                        forceY -= (dy / dist) * weight;
+                for (let e of this.enemies) {
+                    let ex = e.x;
+                    let ey = e.y;
+
+                    if (e.type === 0) {
+                        const angle = e.rotation;
+                        ex += Math.cos(angle) * e.speed * 15;
+                        ey += Math.sin(angle) * e.speed * 15;
+                    } else if (e.type === 2 && e.state === 'dashing') {
+                        ex += e.targetX * 10;
+                        ey += e.targetY * 10;
+                    }
+
+                    const dx = this.player.x - ex;
+                    const dy = this.player.y - ey;
+                    const dist = Math.hypot(dx, dy);
+
+                    const realDist = Math.hypot(this.player.x - e.x, this.player.y - e.y);
+
+                    if (realDist < nearestEnemyDist) {
+                        nearestEnemyDist = realDist;
+                    }
+
+                    if (e.type === 0 && realDist < 450) {
+                        redEnemiesInRange.push(e);
+                    }
+
+                    if (dist < 200) {
+                        let weight = 200000 / (dist * dist);
+
+                        if (e.type === 2) {
+                            weight *= 10.0;
+                        }
+
+                        forceX += (dx / dist) * weight;
+                        forceY += (dy / dist) * weight;
                     }
                 }
 
-
-                const wallMargin = 100;
-                if (this.player.x < wallMargin) forceX += 2000 / Math.max(1, this.player.x);
-                if (this.player.x > this.width - wallMargin) forceX -= 2000 / Math.max(1, this.width - this.player.x);
-                if (this.player.y < wallMargin) forceY += 2000 / Math.max(1, this.player.y);
-                if (this.player.y > this.height - wallMargin) forceY -= 2000 / Math.max(1, this.height - this.player.y);
-
+                const wallMargin = 250;
+                const wallForce = 5000;
+                if (this.player.x < wallMargin) forceX += wallForce / Math.max(1, this.player.x);
+                if (this.player.x > this.width - wallMargin) forceX -= wallForce / Math.max(1, this.width - this.player.x);
+                if (this.player.y < wallMargin) forceY += wallForce / Math.max(1, this.player.y);
+                if (this.player.y > this.height - wallMargin) forceY -= wallForce / Math.max(1, this.height - this.player.y);
 
                 const forceMag = Math.hypot(forceX, forceY);
                 if (forceMag > 0) {
@@ -838,18 +879,34 @@
                     const targetX = this.player.x + (forceX / forceMag) * targetDist;
                     const targetY = this.player.y + (forceY / forceMag) * targetDist;
 
-
-                    this.mouse.x += (targetX - this.mouse.x) * 0.2;
-                    this.mouse.y += (targetY - this.mouse.y) * 0.2;
+                    this.mouse.x += (targetX - this.mouse.x) * 0.6;
+                    this.mouse.y += (targetY - this.mouse.y) * 0.6;
                 }
 
-
-                const margin = 50;
+                const margin = 80;
                 const nearWall = this.player.x < margin || this.player.x > this.width - margin ||
                     this.player.y < margin || this.player.y > this.height - margin;
 
-                if (nearestEnemyDist < 120 && this.player.energy > 20 && !this.player.dashing && !nearWall) {
-                    this.triggerDash();
+                // Removed Emergency Dash (Never run away)
+
+                if (!this.player.dashing && !nearWall && this.player.energy > 40) {
+                    // Simple Attack Logic: Kill nearest Red enemy if in range
+                    let nearestRed = null;
+                    let minRedDist = Infinity;
+
+                    for (let e of redEnemiesInRange) {
+                        const dist = Math.hypot(this.player.x - e.x, this.player.y - e.y);
+                        if (dist < minRedDist) {
+                            minRedDist = dist;
+                            nearestRed = e;
+                        }
+                    }
+
+                    if (nearestRed && minRedDist < 250) {
+                        this.mouse.x = nearestRed.x;
+                        this.mouse.y = nearestRed.y;
+                        this.triggerDash();
+                    }
                 }
             },
 
@@ -949,12 +1006,15 @@
             gameOver: function () {
                 this.gameActive = false;
                 cancelAnimationFrame(this.animationId);
+                this.canvas.style.cursor = 'default';
                 AudioSys.playTone(100, 'sawtooth', 0.4, 0.2);
                 document.getElementById('flux-final-score').innerText = Math.floor(this.score);
-                if (this.score > this.highScore) {
+                if (!this.isAuto && this.score > this.highScore) {
                     this.highScore = this.score;
                     localStorage.setItem('neonFluxHighScore', this.highScore);
                     document.getElementById('flux-final-score').innerText += " (NEW HIGH SCORE!)";
+                } else if (this.isAuto) {
+                    document.getElementById('flux-final-score').innerText += " (AUTO PILOT)";
                 }
                 document.getElementById('flux-game-over-screen').classList.remove('hidden');
             },
@@ -964,8 +1024,10 @@
                 this.isPaused = !this.isPaused;
                 if (this.isPaused) {
                     document.getElementById('flux-pause-screen').classList.remove('hidden');
+                    this.canvas.style.cursor = 'default';
                 } else {
                     document.getElementById('flux-pause-screen').classList.add('hidden');
+                    this.canvas.style.cursor = this.isAuto ? 'none' : 'default';
                     this.animate();
                 }
             }
