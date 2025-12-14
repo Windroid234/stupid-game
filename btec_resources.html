@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTEC Resources</title>
+    <meta property="og:title" content="Windroid's BTEC Resources">
+    <meta property="og:description" content="Resources for BTEC studies.">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#ff0055">
+    <meta name="twitter:card" content="summary_large_image">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&family=Roboto:wght@400;500;700&display=swap');
+
+        :root {
+            --primary: #ff0055;
+            --secondary: #00ffaa;
+            --bg: #050505;
+            --card-bg: #1e1e1e;
+            --text: #fff;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        html {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Roboto', sans-serif;
+            overflow-x: hidden;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+                filter: blur(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        header,
+        .main-content,
+        .scroll-hint,
+        .back-btn {
+            animation: fadeIn 2.0s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
+                linear-gradient(rgba(255, 0, 85, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 85, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(600px circle at var(--x, 50%) var(--y, 50%), rgba(255, 0, 85, 0.15), transparent 40%);
+            z-index: -1;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        header {
+            margin-top: 5rem;
+            text-align: center;
+            z-index: 10;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 4rem;
+            font-weight: 800;
+            margin: 0;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            height: auto;
+            padding: 0 2rem 4rem 2rem;
+            box-sizing: border-box;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        .main-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-column {
+            flex: 1 1 300px;
+            min-width: 300px;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin: 0;
+            padding-left: 1rem;
+            border-left: 4px solid var(--secondary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .resources-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        .resources-grid::-webkit-scrollbar {
+            display: none;
+        }
+
+        .resource-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 1.5rem;
+            width: 100%;
+            box-sizing: border-box;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out, box-shadow 0.2s;
+        }
+
+        .resource-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .resource-card.visible:hover {
+            transform: translateY(-4px);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.2);
+            background: #252525;
+        }
+
+        .resource-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            color: #fff;
+        }
+
+        .resource-desc {
+            color: #ccc;
+            font-size: 1rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: #666;
+            background: none;
+            border: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: color 0.3s;
+            z-index: 100;
+            padding: 0;
+        }
+
+        .back-btn:hover {
+            color: var(--primary);
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .scroll-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            margin-inline: auto;
+            width: max-content;
+            color: rgba(255, 255, 255, 0.5);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            pointer-events: none;
+            z-index: 100;
+            transition: opacity 0.5s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .scroll-hint span {
+            display: block;
+            width: 10px;
+            height: 10px;
+            border-right: 2px solid rgba(255, 255, 255, 0.5);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+            transform: rotate(45deg);
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .unit-badge {
+            background: rgba(255, 0, 85, 0.2);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .resource-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        .resource-desc {
+            color: #ccc;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 0;
+            margin-top: 0.5rem;
+        }
+
+        .card-actions {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin-top 0.3s ease;
+        }
+
+        .resource-card:hover .card-actions {
+            max-height: 150px;
+            opacity: 1;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            transition: background 0.2s, color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .action-btn.secondary {
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
+
+        .action-btn.secondary:hover {
+            background: var(--secondary);
+            color: #000;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-grid"></div>
+    <div class="bg-overlay"></div>
+
+    <button onclick="window.location.href='index'" class="back-btn">← Back to Home</button>
+
+    <header>
+        <h1>BTEC Resources</h1>
+    </header>
+
+    <div class="main-content">
+        <div class="category-column">
+            <div class="section-title">10th Grade</div>
+            <div class="resources-grid">
+                <!-- Unit 1 -->
+                <div class="resource-card"
+                    onclick="window.open('BTEC/Books(10th)/Using Information Technology to Support Information and Communication in Organizations - Tenth(1).pdf', '_blank')">
+                    <div class="card-header">
+                        <h2 class="resource-title">IT in Organizations</h2>
+                        <span class="unit-badge">Unit 1</span>
+                    </div>
+                    <p class="resource-desc">Using Information Technology to Support Information and Communication in
+                        Organizations</p>
+                    <div class="card-actions" onclick="event.stopPropagation()">
+                        <a href="BTEC/Books(10th)/assignment 1.pdf" target="_blank"
+                            class="action-btn secondary">Download Assignment 1</a>
+                    </div>
+                </div>
+
+                <!-- Unit 2 -->
+                <div class="resource-card"
+                    onclick="window.open('BTEC/Books(10th)/Data Modeling and Spreadsheets - 10th Grade(2).pdf', '_blank')">
+                    <div class="card-header">
+                        <h2 class="resource-title">Data Modeling</h2>
+                        <span class="unit-badge">Unit 2</span>
+                    </div>
+                    <p class="resource-desc">Data Modeling and Spreadsheets</p>
+                    <div class="card-actions" onclick="event.stopPropagation()">
+                        <div onclick="window.open('BTEC/Books(10th)/assignment 2.pdf', '_blank')"
+                            class="action-btn secondary">Download Assignment 2</div>
+                    </div>
+                </div>
+
+                <!-- Unit 3 -->
+                <div class="resource-card"
+                    onclick="window.open('BTEC/Books(10th)/Introduction to Computer Networks - 10th Grade(3).pdf', '_blank')">
+                    <div class="card-header">
+                        <h2 class="resource-title">Computer Networks</h2>
+                        <span class="unit-badge">Unit 3</span>
+                    </div>
+                    <p class="resource-desc">Introduction to Computer Networks</p>
+                    <div class="card-actions" onclick="event.stopPropagation()">
+                        <div onclick="window.open('BTEC/Books(10th)/assignment 3p1.pdf', '_blank')"
+                            class="action-btn secondary">Download Assignment 3 (Part 1)</div>
+                        <div onclick="window.open('BTEC/Books(10th)/assignment 3p2.pdf', '_blank')"
+                            class="action-btn secondary">Download Assignment 3 (Part 2)</div>
+                    </div>
+                </div>
+
+                <!-- Unit 4 -->
+                <div class="resource-card"
+                    onclick="window.open('BTEC/Books(10th)/Introduction to Programming 10th grade(4).pdf', '_blank')">
+                    <div class="card-header">
+                        <h2 class="resource-title">Programming</h2>
+                        <span class="unit-badge">Unit 4</span>
+                    </div>
+                    <p class="resource-desc">Introduction to Programming</p>
+                    <div class="card-actions" onclick="event.stopPropagation()">
+                        <div onclick="window.open('BTEC/Books(10th)/assignment 4p1.pdf', '_blank')"
+                            class="action-btn secondary">Download Assignment 4 (Part 1)</div>
+                        <div onclick="window.open('BTEC/Books(10th)/assignment 4p2.pdf', '_blank')"
+                            class="action-btn secondary">Download Assignment 4 (Part 2)</div>
+                    </div>
+                </div>
+
+                <!-- Unit 5 -->
+                <div class="resource-card"
+                    onclick="window.open('BTEC/Books(10th)/Introduction to Digital Graphics and Animation - 10th grade(5).pdf', '_blank')">
+                    <div class="card-header">
+                        <h2 class="resource-title">Digital Graphics</h2>
+                        <span class="unit-badge">Unit 5</span>
+                    </div>
+                    <p class="resource-desc">Introduction to Digital Graphics and Animation</p>
+                    <div class="card-actions" onclick="event.stopPropagation()">
+                        <div onclick="window.open('BTEC/Books(10th)/assignment 5p1.pdf', '_blank')"
+                            class="action-btn secondary">Download Assignment 5 (Part 1)</div>
+                        <div onclick="window.open('BTEC/Books(10th)/assignment 5p2.pdf', '_blank')"
+                            class="action-btn secondary">Download Assignment 5 (Part 2)</div>
+                    </div>
+                </div>
+
+                <!-- Unit 6 -->
+                <div class="resource-card"
+                    onclick="window.open('BTEC/Books(10th)/Introduction to Web Development - 10th grade(6).pdf', '_blank')">
+                    <div class="card-header">
+                        <h2 class="resource-title">Web Development</h2>
+                        <span class="unit-badge">Unit 6</span>
+                    </div>
+                    <p class="resource-desc">Introduction to Web Development</p>
+                    <div class="card-actions" onclick="event.stopPropagation()">
+                        <div onclick="window.open('BTEC/Books(10th)/assignment 6p1.pdf', '_blank')"
+                            class="action-btn secondary">Download Assignment 6 (Part 1)</div>
+                    </div>
+                </div>
+
+                <!-- Unit 7 -->
+                <div class="resource-card"
+                    onclick="window.open('BTEC/Books(10th)/Introduction to Applications - 10th grade(7).pdf', '_blank')">
+                    <div class="card-header">
+                        <h2 class="resource-title">Apps</h2>
+                        <span class="unit-badge">Unit 7</span>
+                    </div>
+                    <p class="resource-desc">Introduction to Applications</p>
+                    <div class="card-actions" onclick="event.stopPropagation()">
+                        <div onclick="window.open('BTEC/Books(10th)/assignment 7p1.pdf', '_blank')"
+                            class="action-btn secondary">Download Assignment 7 (Part 1)</div>
+                        <div onclick="window.open('BTEC/Books(10th)/assignment 7p2.pdf', '_blank')"
+                            class="action-btn secondary">Download Assignment 7 (Part 2)</div>
+                    </div>
+                </div>
+
+                <!-- Unit 8 -->
+                <div class="resource-card"
+                    onclick="window.open('BTEC/Books(10th)/Introduction to Game Design - 10th grade(8).pdf', '_blank')">
+                    <div class="card-header">
+                        <h2 class="resource-title">Game Design</h2>
+                        <span class="unit-badge">Unit 8</span>
+                    </div>
+                    <p class="resource-desc">Introduction to Game Design</p>
+                    <div class="card-actions" onclick="event.stopPropagation()">
+                        <div onclick="window.open('BTEC/Books(10th)/assignment 8p1.pdf', '_blank')"
+                            class="action-btn secondary">Download Assignment 8 (Part 1)</div>
+                        <div onclick="window.open('BTEC/Books(10th)/assignment 8p2.pdf', '_blank')"
+                            class="action-btn secondary">Download Assignment 8 (Part 2)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="category-column">
+            <div class="section-title">11th Grade</div>
+            <div class="resources-grid">
+                <!-- Unit 1 -->
+                <div onclick="window.open('BTEC/Books(11th)/Strategic Information Technology Systems book - 11th grade(1).pdf', '_blank')"
+                    class="resource-card">
+                    <div class="card-header">
+                        <h2 class="resource-title">Strategic IT Systems</h2>
+                        <span class="unit-badge">Unit 1</span>
+                    </div>
+                    <p class="resource-desc">Strategic Information Technology Systems</p>
+                </div>
+
+                <!-- Unit 2 -->
+                <div onclick="window.open('BTEC/Books(11th)/Website Development - 11th grade(2).pdf', '_blank')"
+                    class="resource-card">
+                    <div class="card-header">
+                        <h2 class="resource-title">Website Development</h2>
+                        <span class="unit-badge">Unit 2</span>
+                    </div>
+                    <p class="resource-desc">Website Development</p>
+                </div>
+
+                <!-- Unit 3 -->
+                <div onclick="window.open('BTEC/Books(11th)/Mobile application development - 11th grade (3).pdf', '_blank')"
+                    class="resource-card">
+                    <div class="card-header">
+                        <h2 class="resource-title">Mobile App Dev</h2>
+                        <span class="unit-badge">Unit 3</span>
+                    </div>
+                    <p class="resource-desc">Mobile application development</p>
+                </div>
+
+                <!-- Unit 4 -->
+                <div onclick="window.open('BTEC/Books(11th)/Technical support and IT management - 11th grade(4).pdf', '_blank')"
+                    class="resource-card">
+                    <div class="card-header">
+                        <h2 class="resource-title">Tech Support & IT Mgmt</h2>
+                        <span class="unit-badge">Unit 4</span>
+                    </div>
+                    <p class="resource-desc">Technical support and IT management</p>
+                </div>
+
+                <!-- Unit 5 -->
+                <div onclick="window.open('BTEC/Books(11th)/Computer game development 11th grade(5).pdf', '_blank')"
+                    class="resource-card">
+                    <div class="card-header">
+                        <h2 class="resource-title">Game Development</h2>
+                        <span class="unit-badge">Unit 5</span>
+                    </div>
+                    <p class="resource-desc">Computer game development</p>
+                </div>
+            </div>
+        </div>
+        <div class="category-column">
+            <div class="section-title">12th Grade</div>
+            <div class="resources-grid">
+                <!-- Unit 1 -->
+                <div onclick="window.open('BTEC/Books(12th)/Cybersecurity and Incident Management Book - 12th grade(1).pdf', '_blank')"
+                    class="resource-card">
+                    <div class="card-header">
+                        <h2 class="resource-title">Cybersecurity</h2>
+                        <span class="unit-badge">Unit 1</span>
+                    </div>
+                    <p class="resource-desc">Cybersecurity and Incident Management</p>
+                </div>
+
+                <!-- Unit 2 -->
+                <div onclick="window.open('BTEC/Books(12th)/Programming book - 12th grade (2).pdf', '_blank')"
+                    class="resource-card">
+                    <div class="card-header">
+                        <h2 class="resource-title">Programming</h2>
+                        <span class="unit-badge">Unit 2</span>
+                    </div>
+                    <p class="resource-desc">Programming</p>
+                </div>
+
+                <!-- Unit 3 -->
+                <div onclick="window.open('BTEC/Books(12th)/Information Technology Project Management book - 12th grade (3).pdf', '_blank')"
+                    class="resource-card">
+                    <div class="card-header">
+                        <h2 class="resource-title">IT Project Mgmt</h2>
+                        <span class="unit-badge">Unit 3</span>
+                    </div>
+                    <p class="resource-desc">Information Technology Project Management</p>
+                </div>
+
+                <!-- Unit 4 -->
+                <div onclick="window.open('BTEC/Books(12th)/Introduction to Artificial Intelligence 12th grade(4).pdf', '_blank')"
+                    class="resource-card">
+                    <div class="card-header">
+                        <h2 class="resource-title">Intro to AI</h2>
+                        <span class="unit-badge">Unit 4</span>
+                    </div>
+                    <p class="resource-desc">Introduction to Artificial Intelligence</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="scroll-hint">
+        Scroll for more
+        <span></span>
+    </div>
+
+    <script>
+        const scrollHint = document.querySelector('.scroll-hint');
+        const handleScroll = () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
+                scrollHint.style.opacity = '0';
+                window.removeEventListener('scroll', handleScroll);
+            }
+        };
+        window.addEventListener('scroll', handleScroll);
+
+        document.addEventListener('mousemove', (e) => {
+            const overlay = document.querySelector('.bg-overlay');
+            const x = e.clientX;
+            const y = e.clientY;
+            overlay.style.setProperty('--x', `${x}px`);
+            overlay.style.setProperty('--y', `${y}px`);
+        });
+
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const circle = document.createElement("span");
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+            circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+            circle.classList.add("ripple");
+
+            const ripple = button.getElementsByClassName("ripple")[0];
+            if (ripple) {
+                ripple.remove();
+            }
+
+            button.appendChild(circle);
+        }
+
+        const buttons = document.querySelectorAll('.resource-card, .back-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', createRipple);
+        });
+
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.resource-card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+</body>
+
+</html>
