@@ -795,14 +795,12 @@
                 let forceX = 0;
                 let forceY = 0;
 
-                // Wander (Prevent getting stuck/spinning)
                 const time = Date.now() * 0.001;
                 forceX += Math.sin(time) * 10;
                 forceY += Math.cos(time) * 10;
 
                 let nearestPickupDist = Infinity;
                 for (let p of this.pickups) {
-                    // Smart Pickup: Check if pickup is safe
                     let isSafe = true;
                     for (let e of this.enemies) {
                         if (Math.hypot(p.x - e.x, p.y - e.y) < 100) {
@@ -887,10 +885,7 @@
                 const nearWall = this.player.x < margin || this.player.x > this.width - margin ||
                     this.player.y < margin || this.player.y > this.height - margin;
 
-                // Removed Emergency Dash (Never run away)
-
                 if (!this.player.dashing && !nearWall && this.player.energy > 40) {
-                    // Simple Attack Logic: Kill nearest Red enemy if in range
                     let nearestRed = null;
                     let minRedDist = Infinity;
 

@@ -1275,7 +1275,6 @@
         }
 
         function triggerAdware() {
-            // Modified to show the specific Hot Singles ad
             const popup = document.getElementById('generic-popup-1');
             if (!hasBeenScammed) {
                 popup.innerHTML = `
@@ -1309,7 +1308,6 @@
             clearInterval(chatLoop);
 
             gameLoop = setInterval(gameStep, 1000 / currentSpeed);
-            // If in debt, chaos is faster
             chaosLoop = setInterval(randomChaos, isInDebt ? 1000 : 2000);
             chatLoop = setInterval(addChatMessage, 2000);
         }
@@ -1367,7 +1365,7 @@
 
         function handleChatOption(idx, txt) {
             addDiscordMsg("You", txt);
-            document.getElementById('d-opts').innerHTML = ''; // Clear opts
+            document.getElementById('d-opts').innerHTML = '';
 
             setTimeout(() => {
                 if (chatStep === 0) {
@@ -1402,18 +1400,13 @@
             document.getElementById('pay-overlay').style.display = 'none';
             addDiscordMsg("System", "Payment of $50.00 Successful.");
 
-            // Apply Scam Effects
             hasBeenScammed = true;
             isInDebt = true;
             score -= 50;
             updateScore();
             container.classList.add('debt-mode');
 
-            // Increase Difficulty Permanently
             currentSpeed += 5;
-
-            // We don't restart loops here because the game is PAUSED.
-            // The loops will be restarted with the new speed when resumeGame() is called at the end.
 
             setTimeout(() => {
                 addDiscordMsg("HotBabe_69", "Thanks baby. Here you go ❤️");
@@ -1425,7 +1418,7 @@
                     setTimeout(() => {
                         document.getElementById('discord-chat-popup').style.display = 'none';
                         showInsult("SCAMMED");
-                        resumeGame(); // This will pick up the new currentSpeed
+                        resumeGame();
                     }, 5000);
                 }, 1000);
             }, 1000);
@@ -1500,11 +1493,10 @@
 
             clearInterval(updateInterval);
             updateInterval = setInterval(() => {
-                // Randomly stall or jump
                 if (Math.random() > 0.7) {
                     progress += Math.random() * 5;
                 } else if (Math.random() < 0.1) {
-                    progress -= Math.random() * 2; // Frustratingly go back
+                    progress -= Math.random() * 2;
                 }
 
                 if (progress < 0) progress = 0;
@@ -1512,7 +1504,6 @@
 
                 updateBarFill.style.width = `${progress}%`;
 
-                // Change status text randomly
                 if (Math.random() < 0.1) {
                     statusText.innerText = messages[Math.floor(Math.random() * messages.length)];
                 }
@@ -1533,7 +1524,6 @@
         }
 
         function performSystemRestart() {
-            // Pause Game Logic
             isGameOver = true;
             clearInterval(gameLoop);
             clearInterval(chaosLoop);
@@ -1542,7 +1532,7 @@
             SoundManager.stopPhone();
 
             updatePopup.style.display = 'none';
-            document.body.style.cursor = 'none'; // Hide cursor for realism
+            document.body.style.cursor = 'none';
 
             // Request Fullscreen
             try {
@@ -1555,7 +1545,6 @@
 
             SoundManager.playShutdown();
 
-            // 1. Black Screen (Shutdown)
             const overlay = document.createElement('div');
             overlay.style.position = 'fixed';
             overlay.style.top = '0';
@@ -1566,12 +1555,10 @@
             overlay.style.zIndex = '1999';
             document.body.appendChild(overlay);
 
-            // 2. BIOS Screen
             setTimeout(() => {
                 const bios = document.getElementById('bios-screen');
                 bios.style.display = 'flex';
 
-                // Simulate memory count
                 let mem = 0;
                 const memInterval = setInterval(() => {
                     mem += 1024;
@@ -1581,35 +1568,30 @@
                         setTimeout(() => {
                             bios.style.display = 'none';
 
-                            // 3. Boot Screen
                             document.getElementById('boot-screen').style.display = 'flex';
                             SoundManager.playStartup();
 
                             setTimeout(() => {
                                 document.getElementById('boot-screen').style.display = 'none';
 
-                                // 4. Update Working Screen
                                 const updateScreen = document.getElementById('update-working-screen');
                                 updateScreen.style.display = 'flex';
                                 let pct = 0;
                                 const pctInterval = setInterval(() => {
                                     pct += Math.floor(Math.random() * 5);
-                                    if (pct > 30) pct = 30; // Stall at 30%
+                                    if (pct > 30) pct = 30;
                                     document.getElementById('update-pct').innerText = pct;
                                     if (pct === 30) {
                                         clearInterval(pctInterval);
                                         setTimeout(() => {
                                             updateScreen.style.display = 'none';
 
-                                            // 5. BSOD
                                             document.getElementById('bsod').style.display = 'block';
                                             SoundManager.playError();
 
-                                            // 6. Restart (Black Screen again)
                                             setTimeout(() => {
                                                 document.getElementById('bsod').style.display = 'none';
 
-                                                // 7. DOS Screen
                                                 setTimeout(() => {
                                                     const dos = document.getElementById('dos-screen');
                                                     dos.style.display = 'block';
@@ -1642,7 +1624,7 @@
                                                         if (lineIndex < lines.length) {
                                                             dos.innerHTML += lines[lineIndex] + "<br>";
                                                             lineIndex++;
-                                                            SoundManager.playTone(800, 'square', 0.05, 0.05); // Typing sound
+                                                            SoundManager.playTone(800, 'square', 0.05, 0.05);
                                                             setTimeout(typeLine, 400);
                                                         } else {
                                                             dos.innerHTML += "<span class='blink'>_</span>";
