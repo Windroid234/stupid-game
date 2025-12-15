@@ -12,7 +12,14 @@
     <meta name="theme-color" content="#ff0055">
     <meta name="twitter:card" content="summary_large_image">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&family=Roboto:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&family=Roboto:wght@400;500;700&family=Cairo:wght@400;600;800&display=swap');
+
+        * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
 
         :root {
             --primary: #ff0055;
@@ -20,6 +27,61 @@
             --bg: #050505;
             --card-bg: #1e1e1e;
             --text: #fff;
+        }
+
+        body.rtl {
+            direction: rtl;
+            font-family: 'Cairo', sans-serif !important;
+        }
+
+        body.rtl h1,
+        body.rtl .section-title,
+        body.rtl .resource-title,
+        body.rtl .back-btn,
+        body.rtl .lang-toggle {
+            font-family: 'Cairo', sans-serif !important;
+        }
+
+        body.rtl .section-title {
+            border-left: none;
+            border-right: 4px solid var(--secondary);
+            padding-left: 0;
+            padding-right: 1rem;
+        }
+
+
+
+        .lang-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .lang-toggle:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        @media screen and (max-width: 768px) {
+            .lang-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            /* Mobile button override removed */
         }
 
         ::-webkit-scrollbar {
@@ -44,6 +106,12 @@
             flex-direction: column;
             align-items: center;
             animation: fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: opacity 0.3s ease, filter 0.3s ease;
+        }
+
+        body.fading {
+            opacity: 0;
+            filter: blur(10px);
         }
 
         @keyframes fadeIn {
@@ -322,166 +390,315 @@
     <div class="bg-grid"></div>
     <div class="bg-overlay"></div>
 
-    <button onclick="window.location.href='index'" class="back-btn">← Back to Home</button>
+    <button onclick="window.location.href='index'" class="back-btn" data-en="← Back to Home" data-ar="رجوع">Back to
+        Home</button>
+    <button class="lang-toggle" onclick="toggleLanguage()">العربية</button>
 
     <header>
-        <h1>Resources</h1>
+        <h1 data-en="Resources" data-ar="الموارد">Resources</h1>
     </header>
 
     <div class="main-content">
         <div class="category-column">
-            <div class="section-title">System Utilities</div>
+            <div class="section-title" data-en="System Utilities" data-ar="أدوات النظام">System Utilities</div>
             <div class="resources-grid">
                 <a href="https://github.com/ionuttbara/windows-defender-remover" target="_blank" class="resource-card">
-                    <h2 class="resource-title">Windows Defender Remover</h2>
-                    <p class="resource-desc">A tool to remove Windows Defender and other bloatware from your system.</p>
+                    <h2 class="resource-title" data-en="Windows Defender Remover" data-ar="أداة إزالة Windows Defender">
+                        Windows Defender Remover</h2>
+                    <p class="resource-desc"
+                        data-en="A tool to remove Windows Defender and other bloatware from your system."
+                        data-ar="أداة لإزالة Windows Defender والبرامج غير الضرورية من نظامك.">A tool to remove Windows
+                        Defender and other bloatware from your system.</p>
                 </a>
                 <a href="https://www.bleachbit.org/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">BleachBit</h2>
-                    <p class="resource-desc">Free and open source disk space cleaner, privacy manager, and computer
+                    <h2 class="resource-title" data-en="BleachBit" data-ar="منظف القرص BleachBit">BleachBit</h2>
+                    <p class="resource-desc"
+                        data-en="Free and open source disk space cleaner, privacy manager, and computer system optimizer."
+                        data-ar="منظف مجاني ومفتوح المصدر لمساحة القرص، ومدير للخصوصية، ومحسن للنظام.">Free and open
+                        source disk space cleaner, privacy manager, and computer
                         system
                         optimizer.</p>
                 </a>
                 <a href="https://learn.microsoft.com/en-us/windows/powertoys/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">PowerToys</h2>
-                    <p class="resource-desc">A set of system utilities for power users to tune and streamline their
+                    <h2 class="resource-title" data-en="PowerToys" data-ar="أدوات PowerToys">PowerToys</h2>
+                    <p class="resource-desc"
+                        data-en="A set of system utilities for power users to tune and streamline their Windows experience."
+                        data-ar="مجموعة من أدوات النظام للمستخدمين المحترفين لتحسين وضبط تجربة Windows.">A set of system
+                        utilities for power users to tune and streamline their
                         Windows
                         experience.</p>
                 </a>
                 <a href="https://github.com/M2Team/NanaZip" target="_blank" class="resource-card">
-                    <h2 class="resource-title">NanaZip</h2>
-                    <p class="resource-desc">A modern 7-Zip fork that integrates properly with the Windows 11 context
+                    <h2 class="resource-title" data-en="NanaZip" data-ar="أداة NanaZip">NanaZip</h2>
+                    <p class="resource-desc"
+                        data-en="A modern 7-Zip fork that integrates properly with the Windows 11 context menu."
+                        data-ar="نسخة حديثة من 7-Zip تتكامل بشكل صحيح مع قائمة سياق Windows 11.">A modern 7-Zip fork
+                        that integrates properly with the Windows 11 context
                         menu.</p>
                 </a>
             </div>
         </div>
 
         <div class="category-column">
-            <div class="section-title">Operating Systems</div>
+            <div class="section-title" data-en="Operating Systems" data-ar="أنظمة التشغيل">Operating Systems</div>
             <div class="resources-grid">
                 <a href="https://atlasos.net/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">AtlasOS</h2>
-                    <p class="resource-desc">An open-source modification of Windows designed for gamers and power users.
+                    <h2 class="resource-title" data-en="AtlasOS" data-ar="نظام AtlasOS">AtlasOS</h2>
+                    <p class="resource-desc"
+                        data-en="An open-source modification of Windows designed for gamers and power users."
+                        data-ar="تعديل مفتوح المصدر لنظام Windows مصمم للاعبين والمستخدمين المحترفين.">An open-source
+                        modification of Windows designed for gamers and power users.
                     </p>
                 </a>
                 <a href="https://revios.no/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">ReviOS</h2>
-                    <p class="resource-desc">A capable, efficient, yet private and performant instance of Windows.</p>
+                    <h2 class="resource-title" data-en="ReviOS" data-ar="نظام ReviOS">ReviOS</h2>
+                    <p class="resource-desc"
+                        data-en="A capable, efficient, yet private and performant instance of Windows."
+                        data-ar="نسخة قوية وفعالة وآمنة وعالية الأداء من Windows.">A capable, efficient, yet private and
+                        performant instance of Windows.</p>
                 </a>
                 <a href="https://linuxmint.com/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">Linux Mint</h2>
-                    <p class="resource-desc">A modern, elegant and comfortable operating system which is both powerful
+                    <h2 class="resource-title" data-en="Linux Mint" data-ar="توزيعة Linux Mint">Linux Mint</h2>
+                    <p class="resource-desc"
+                        data-en="A modern, elegant and comfortable operating system which is both powerful and easy to use."
+                        data-ar="نظام تشغيل حديث وأنيق ومريح يتميز بالقوة وسهولة الاستخدام.">A modern, elegant and
+                        comfortable operating system which is both powerful
                         and easy
                         to use.</p>
                 </a>
                 <a href="https://fedoraproject.org/spins/kde/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">Fedora KDE Plasma</h2>
-                    <p class="resource-desc">A powerful, customizable, and modern desktop experience built on the solid
+                    <h2 class="resource-title" data-en="Fedora KDE Plasma" data-ar="توزيعة Fedora KDE">Fedora KDE Plasma
+                    </h2>
+                    <p class="resource-desc"
+                        data-en="A powerful, customizable, and modern desktop experience built on the solid Fedora Linux foundation."
+                        data-ar="تجربة سطح مكتب قوية وقابلة للتخصيص وحديثة مبنية على أساس Fedora Linux الصلب.">A
+                        powerful, customizable, and modern desktop experience built on the solid
                         Fedora Linux foundation.</p>
                 </a>
             </div>
         </div>
 
         <div class="category-column">
-            <div class="section-title">Privacy & Security</div>
+            <div class="section-title" data-en="Privacy & Security" data-ar="الخصوصية والأمان">Privacy & Security</div>
             <div class="resources-grid">
                 <a href="https://ublockorigin.com/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">uBlock Origin</h2>
-                    <p class="resource-desc">A free and open-source, cross-platform browser extension for content
+                    <h2 class="resource-title" data-en="uBlock Origin" data-ar="مانع الإعلانات uBlock Origin">uBlock
+                        Origin</h2>
+                    <p class="resource-desc"
+                        data-en="A free and open-source, cross-platform browser extension for content filtering, including ad-blocking."
+                        data-ar="إضافة متصفح مجانية ومفتوحة المصدر لحجب الإعلانات وتصفية المحتوى.">A free and
+                        open-source, cross-platform browser extension for content
                         filtering,
                         including ad-blocking.</p>
                 </a>
                 <a href="https://protonvpn.com/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">ProtonVPN</h2>
-                    <p class="resource-desc">A high-speed Swiss VPN that safeguards your privacy.</p>
+                    <h2 class="resource-title" data-en="ProtonVPN" data-ar="خدمة ProtonVPN">ProtonVPN</h2>
+                    <p class="resource-desc" data-en="A high-speed Swiss VPN that safeguards your privacy."
+                        data-ar="خدمة VPN سويسرية عالية السرعة تحمي خصوصيتك.">A high-speed Swiss VPN that safeguards
+                        your privacy.</p>
                 </a>
                 <a href="https://signal.org/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">Signal</h2>
-                    <p class="resource-desc">A secure, free, and open source messaging app with end-to-end encryption.
+                    <h2 class="resource-title" data-en="Signal" data-ar="تطبيق Signal">Signal</h2>
+                    <p class="resource-desc"
+                        data-en="A secure, free, and open source messaging app with end-to-end encryption."
+                        data-ar="تطبيق مراسلة آمن ومجاني ومفتوح المصدر مع تشفير من طرف إلى طرف.">A secure, free, and
+                        open source messaging app with end-to-end encryption.
                     </p>
                 </a>
                 <a href="https://keepassxc.org/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">KeePassXC</h2>
-                    <p class="resource-desc">A modern, secure, and open-source password manager that stores your
+                    <h2 class="resource-title" data-en="KeePassXC" data-ar="مدير كلمات المرور KeePassXC">KeePassXC</h2>
+                    <p class="resource-desc"
+                        data-en="A modern, secure, and open-source password manager that stores your passwords offline."
+                        data-ar="مدير كلمات مرور حديث وآمن ومفتوح المصدر يخزن كلمات المرور محلياً.">A modern, secure,
+                        and open-source password manager that stores your
                         passwords offline.</p>
                 </a>
                 <a href="https://www.veracrypt.fr/en/Home.html" target="_blank" class="resource-card">
-                    <h2 class="resource-title">VeraCrypt</h2>
-                    <p class="resource-desc">Free open source disk encryption software for Windows, Mac OSX and Linux.
+                    <h2 class="resource-title" data-en="VeraCrypt" data-ar="تشفير الأقراص VeraCrypt">VeraCrypt</h2>
+                    <p class="resource-desc"
+                        data-en="Free open source disk encryption software for Windows, Mac OSX and Linux."
+                        data-ar="برنامج تشفير أقراص مجاني ومفتوح المصدر لأنظمة Windows و Mac و Linux.">Free open source
+                        disk encryption software for Windows, Mac OSX and Linux.
                     </p>
                 </a>
             </div>
         </div>
 
         <div class="category-column">
-            <div class="section-title">Creative Tools</div>
+            <div class="section-title" data-en="Creative Tools" data-ar="أدوات إبداعية">Creative Tools</div>
             <div class="resources-grid">
                 <a href="https://obsproject.com/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">OBS Studio</h2>
-                    <p class="resource-desc">Free and open source software for video recording and live streaming.</p>
+                    <h2 class="resource-title" data-en="OBS Studio" data-ar="برنامج OBS Studio">OBS Studio</h2>
+                    <p class="resource-desc"
+                        data-en="Free and open source software for video recording and live streaming."
+                        data-ar="برنامج مجاني ومفتوح المصدر لتسجيل الفيديو والبث المباشر.">Free and open source software
+                        for video recording and live streaming.</p>
                 </a>
                 <a href="https://www.blender.org/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">Blender</h2>
-                    <p class="resource-desc">The free and open source 3D creation suite.</p>
+                    <h2 class="resource-title" data-en="Blender" data-ar="برنامج Blender">Blender</h2>
+                    <p class="resource-desc" data-en="The free and open source 3D creation suite."
+                        data-ar="مجموعة أدوات إنشاء وتصميم ثلاثي الأبعاد مجانية ومفتوحة المصدر.">The free and open
+                        source 3D creation suite.</p>
                 </a>
                 <a href="https://www.gimp.org/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">GIMP</h2>
-                    <p class="resource-desc">A cross-platform image editor available for GNU/Linux, OS X, Windows and
+                    <h2 class="resource-title" data-en="GIMP" data-ar="محرر الصور GIMP">GIMP</h2>
+                    <p class="resource-desc"
+                        data-en="A cross-platform image editor available for GNU/Linux, OS X, Windows and more."
+                        data-ar="محرر صور متعدد المنصات متاح لأنظمة Linux و OS X و Windows والمزيد.">A cross-platform
+                        image editor available for GNU/Linux, OS X, Windows and
                         more.</p>
                 </a>
                 <a href="https://audacityteam.org/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">Audacity</h2>
-                    <p class="resource-desc">Free, open source, cross-platform audio software.</p>
+                    <h2 class="resource-title" data-en="Audacity" data-ar="محرر الصوت Audacity">Audacity</h2>
+                    <p class="resource-desc" data-en="Free, open source, cross-platform audio software."
+                        data-ar="برنامج صوتي مجاني ومفتوح المصدر ومتعدد المنصات.">Free, open source, cross-platform
+                        audio software.</p>
                 </a>
                 <a href="https://www.canva.com/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">Canva</h2>
-                    <p class="resource-desc">A free-to-use online graphic design tool. Use it to create social media
+                    <h2 class="resource-title" data-en="Canva" data-ar="موقع Canva">Canva</h2>
+                    <p class="resource-desc"
+                        data-en="A free-to-use online graphic design tool. Use it to create social media posts, presentations, posters, videos, logos and more."
+                        data-ar="أداة تصميم جرافيك مجانية عبر الإنترنت لإنشاء منشورات وسائل التواصل الاجتماعي والعروض التقديمية والمزيد.">
+                        A free-to-use online graphic design tool. Use it to create social media
                         posts, presentations, posters, videos, logos and more.</p>
                 </a>
                 <a href="https://www.photopea.com/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">Photopea</h2>
-                    <p class="resource-desc">A free online photo editor supporting PSD, XCF, Sketch, XD and CDR formats.
+                    <h2 class="resource-title" data-en="Photopea" data-ar="محرر Photopea">Photopea</h2>
+                    <p class="resource-desc"
+                        data-en="A free online photo editor supporting PSD, XCF, Sketch, XD and CDR formats."
+                        data-ar="محرر صور مجاني عبر الإنترنت يدعم تنسيقات PSD و XCF و Sketch و XD و CDR.">A free online
+                        photo editor supporting PSD, XCF, Sketch, XD and CDR formats.
                     </p>
                 </a>
                 <a href="https://www.freecad.org/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">FreeCAD</h2>
-                    <p class="resource-desc">An open-source parametric 3D modeler made primarily to design real-life
+                    <h2 class="resource-title" data-en="FreeCAD" data-ar="برنامج FreeCAD">FreeCAD</h2>
+                    <p class="resource-desc"
+                        data-en="An open-source parametric 3D modeler made primarily to design real-life objects of any size."
+                        data-ar="مصمم نماذج ثلاثية الأبعاد بامتياز مفتوح المصدر مصمم لتصميم كائنات واقعية بأي حجم.">An
+                        open-source parametric 3D modeler made primarily to design real-life
                         objects of any size.</p>
                 </a>
             </div>
         </div>
 
         <div class="category-column">
-            <div class="section-title">Browsers</div>
+            <div class="section-title" data-en="IDEs & SDKs" data-ar="أدوات التطوير">IDEs & SDKs</div>
+            <div class="resources-grid">
+                <a href="https://code.visualstudio.com/" target="_blank" class="resource-card">
+                    <h2 class="resource-title" data-en="Visual Studio Code" data-ar="محرر VS Code">Visual Studio Code
+                    </h2>
+                    <p class="resource-desc"
+                        data-en="Code editing. Redefined. Free. Built on open source. Runs everywhere."
+                        data-ar="محرر أكواد مجاني وقوي ومفتوح المصدر يعمل على جميع الأنظمة.">Code editing. Redefined.
+                        Free. Built on open source. Runs everywhere.</p>
+                </a>
+                <a href="https://visualstudio.microsoft.com/vs/community/" target="_blank" class="resource-card">
+                    <h2 class="resource-title" data-en="Visual Studio Community" data-ar="بيئة Visual Studio Community">
+                        Visual Studio Community</h2>
+                    <p class="resource-desc"
+                        data-en="A fully-featured, extensible, free IDE for creating modern applications for Android, iOS, Windows, as well as web applications and cloud services."
+                        data-ar="بيئة تطوير متكاملة ومجانية لإنشاء تطبيقات لنظام التشغيل Windows والويب والسحابة.">A
+                        fully-featured, extensible, free IDE for creating modern applications for Android, iOS, Windows,
+                        as well as web applications and cloud services.</p>
+                </a>
+                <a href="https://www.python.org/downloads/" target="_blank" class="resource-card">
+                    <h2 class="resource-title" data-en="Python" data-ar="لغة Python">Python</h2>
+                    <p class="resource-desc"
+                        data-en="A programming language that lets you work quickly and integrate systems more effectively."
+                        data-ar="لغة برمجة تسمح لك بالعمل بسرعة ودمج الأنظمة بشكل أكثر فاعلية.">A programming language
+                        that lets you work quickly and integrate systems more effectively.</p>
+                </a>
+                <a href="https://nodejs.org/en/" target="_blank" class="resource-card">
+                    <h2 class="resource-title" data-en="Node.js" data-ar="بيئة Node.js">Node.js</h2>
+                    <p class="resource-desc"
+                        data-en="Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine."
+                        data-ar="بيئة تشغيل JavaScript مبنية على محرك V8 الخاص بمتصفح Chrome.">Node.js® is a JavaScript
+                        runtime built on Chrome's V8 JavaScript engine.</p>
+                </a>
+                <a href="https://git-scm.com/" target="_blank" class="resource-card">
+                    <h2 class="resource-title" data-en="Git" data-ar="أداة Git">Git</h2>
+                    <p class="resource-desc" data-en="Free and open source distributed version control system."
+                        data-ar="نظام مجاني ومفتوح المصدر للتحكم في الإصدارات الموزعة.">Free and open source distributed
+                        version control system.</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="category-column">
+            <div class="section-title" data-en="Browsers" data-ar="المتصفحات">Browsers</div>
             <div class="resources-grid">
                 <a href="https://www.microsoft.com/edge" target="_blank" class="resource-card">
-                    <h2 class="resource-title">Microsoft Edge</h2>
-                    <p class="resource-desc">The fast, secure, and productive browser from Microsoft.</p>
+                    <h2 class="resource-title" data-en="Microsoft Edge" data-ar="متصفح Edge">Microsoft Edge</h2>
+                    <p class="resource-desc" data-en="The fast, secure, and productive browser from Microsoft."
+                        data-ar="المتصفح السريع والآمن والمنتج من Microsoft.">The fast, secure, and productive browser
+                        from Microsoft.</p>
                 </a>
                 <a href="https://www.mozilla.org/en-US/firefox/new/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">Firefox</h2>
-                    <p class="resource-desc">Get the browser that protects what’s important. No shady privacy policies.
+                    <h2 class="resource-title" data-en="Firefox" data-ar="متصفح Firefox">Firefox</h2>
+                    <p class="resource-desc"
+                        data-en="Get the browser that protects what’s important. No shady privacy policies."
+                        data-ar="احصل على المتصفح الذي يحمي ما هو مهم. لا توجد سياسات خصوصية غامضة.">Get the browser
+                        that protects what’s important. No shady privacy policies.
                     </p>
                 </a>
                 <a href="https://brave.com/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">Brave</h2>
-                    <p class="resource-desc">Apparently the best privacy online.</p>
+                    <h2 class="resource-title" data-en="Brave" data-ar="متصفح Brave">Brave</h2>
+                    <p class="resource-desc" data-en="Apparently the best privacy online."
+                        data-ar="على ما يبدو أفضل خصوصية على الإنترنت.">Apparently the best privacy online.</p>
                 </a>
                 <a href="https://www.torproject.org/" target="_blank" class="resource-card">
-                    <h2 class="resource-title">Tor Browser</h2>
-                    <p class="resource-desc">Defend yourself against tracking and surveillance. Circumvent censorship.
+                    <h2 class="resource-title" data-en="Tor Browser" data-ar="متصفح Tor">Tor Browser</h2>
+                    <p class="resource-desc"
+                        data-en="Defend yourself against tracking and surveillance. Circumvent censorship."
+                        data-ar="دافع عن نفسك ضد التتبع والمراقبة. تخلص من الرقابة.">Defend yourself against tracking
+                        and surveillance. Circumvent censorship.
                     </p>
                 </a>
             </div>
         </div>
     </div>
 
-    <div class="scroll-hint">
+    <div class="scroll-hint" data-en="Scroll for more" data-ar="مرر للمزيد">
         Scroll for more
         <span></span>
     </div>
 
     <script>
+        const langToggle = document.querySelector('.lang-toggle');
+        let currentLang = localStorage.getItem('lang') || 'en';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('lang', lang);
+
+            if (lang === 'ar') {
+                document.body.classList.add('rtl');
+                langToggle.textContent = 'English';
+            } else {
+                document.body.classList.remove('rtl');
+                langToggle.textContent = 'العربية';
+            }
+
+            document.querySelectorAll('[data-en]').forEach(el => {
+                if (lang === 'ar') {
+                    if (el.dataset.ar) el.textContent = el.dataset.ar;
+                } else {
+                    if (el.dataset.en) el.textContent = el.dataset.en;
+                }
+            });
+        }
+
+        setLanguage(currentLang);
+
+        function toggleLanguage() {
+            document.body.classList.add('fading');
+            setTimeout(() => {
+                const newLang = currentLang === 'en' ? 'ar' : 'en';
+                setLanguage(newLang);
+                document.body.classList.remove('fading');
+            }, 300);
+        }
+
         window.addEventListener('scroll', () => {
             const scrollHint = document.querySelector('.scroll-hint');
             if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
