@@ -11,7 +11,7 @@
     <meta name="theme-color" content="#ff0055">
     <meta name="twitter:card" content="summary_large_image">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&family=Roboto:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&family=Roboto:wght@400;500;700&family=Cairo:wght@400;600;800&display=swap');
 
         :root {
             --primary: #ff0055;
@@ -28,20 +28,32 @@
         html {
             -ms-overflow-style: none;
             scrollbar-width: none;
+            scroll-behavior: smooth;
+            background-color: #111;
         }
 
         body {
+            font-family: 'Outfit', sans-serif;
+            background-color: transparent;
+
+            color: #fff;
             margin: 0;
             padding: 0;
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Roboto', sans-serif;
             overflow-x: hidden;
             width: 100%;
+
+            transition: opacity 0.3s ease, filter 0.3s ease;
+            opacity: 1;
+            filter: none;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
+        }
+
+        body.fading {
+            opacity: 0;
+            filter: blur(10px);
         }
 
         @keyframes fadeIn {
@@ -110,14 +122,47 @@
 
         .main-content {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column;
             width: 100%;
             height: auto;
             padding: 0 2rem 4rem 2rem;
             box-sizing: border-box;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .stream-section {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .stream-title-text {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #fff;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 1rem;
+        }
+
+        body.rtl .stream-title-text {
+            font-family: 'Cairo', sans-serif !important;
+        }
+
+        .stream-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 2rem;
             align-items: flex-start;
+            width: 100%;
         }
 
         .main-content::-webkit-scrollbar {
@@ -228,6 +273,57 @@
         .back-btn:hover {
             color: var(--primary);
         }
+
+        .lang-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .lang-toggle:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+
+        body.rtl {
+            direction: rtl;
+            font-family: 'Cairo', sans-serif !important;
+        }
+
+        body.rtl h1,
+        body.rtl .section-title,
+        body.rtl .resource-title,
+        body.rtl .action-btn,
+        body.rtl .back-btn,
+        body.rtl .lang-toggle {
+            font-family: 'Cairo', sans-serif !important;
+        }
+
+        body.rtl .section-title {
+            border-left: none;
+            border-right: 4px solid var(--secondary);
+            padding-left: 0;
+            padding-right: 1rem;
+        }
+
+        body.rtl .back-btn {
+            left: 20px;
+            right: auto;
+            right: auto;
+        }
+
 
         .ripple {
             position: absolute;
@@ -340,6 +436,98 @@
             transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin-top 0.3s ease;
         }
 
+        .expand-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+        }
+
+        .expand-wrapper.expanded {
+            grid-template-rows: 1fr;
+        }
+
+        .expand-inner {
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .expand-wrapper.expanded .expand-inner {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .expand-inner.overflow-visible {
+            overflow: visible;
+        }
+
+
+        @media screen and (max-width: 768px) {
+            header {
+                margin-top: 2rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .lang-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .main-content {
+                padding: 0 1rem 2rem 1rem;
+                gap: 2rem;
+            }
+
+            .stream-title-text {
+                font-size: 2rem;
+            }
+
+            .category-column {
+                min-width: 100%;
+                max-width: 100%;
+            }
+
+
+            .expand-wrapper {
+                grid-template-rows: 1fr !important;
+            }
+
+            .expand-inner {
+                opacity: 1 !important;
+                transform: none !important;
+                overflow: visible !important;
+            }
+
+            .scroll-hint {
+                display: none;
+            }
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        .btn-row .action-btn {
+            flex: 1;
+            padding: 8px 4px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         .resource-card:hover .card-actions {
             max-height: 150px;
             opacity: 1;
@@ -379,6 +567,40 @@
             background: var(--secondary);
             color: #000;
         }
+
+        .stream-nav {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            z-index: 10;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ccc;
+            padding: 8px 24px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+            transform: translateY(-2px);
+        }
+
+        body.rtl .nav-btn {
+            font-family: 'Cairo', sans-serif !important;
+        }
     </style>
 </head>
 
@@ -387,238 +609,1339 @@
     <div class="bg-grid"></div>
     <div class="bg-overlay"></div>
 
-    <button onclick="window.location.href='index'" class="back-btn">← Back to Home</button>
+    <button onclick="window.location.href='index'" class="back-btn" data-en="Back to Home" data-ar="رجوع">Back to
+        Home</button>
+    <button class="lang-toggle" onclick="toggleLanguage()">العربية</button>
 
     <header>
-        <h1>BTEC Resources</h1>
+        <h1 data-en="BTEC Resources" data-ar="موارد BTEC">BTEC Resources</h1>
+        <div class="stream-nav">
+            <a href="#it" class="nav-btn" data-en="IT" data-ar="تكنولوجيا المعلومات">IT</a>
+            <a href="#engineering" class="nav-btn" data-en="Engineering" data-ar="الهندسة">Engineering</a>
+            <a href="#beauty" class="nav-btn" data-en="Beauty" data-ar="التجميل">Beauty</a>
+            <a href="#business" class="nav-btn" data-en="Business" data-ar="إدارة الأعمال">Business</a>
+        </div>
     </header>
 
     <div class="main-content">
-        <div class="category-column">
-            <div class="section-title">10th Grade</div>
-            <div class="resources-grid">
 
-                <div class="resource-card"
-                    onclick="window.open('BTEC/Books%2810th%29/Using%20Information%20Technology%20to%20Support%20Information%20and%20Communication%20in%20Organizations%20-%20Tenth%281%29.pdf', '_blank')">
-                    <div class="card-header">
-                        <h2 class="resource-title">IT in Organizations</h2>
-                        <span class="unit-badge">Unit 1</span>
-                    </div>
-                    <p class="resource-desc">Using Information Technology to Support Information and Communication in
-                        Organizations</p>
-                    <div class="card-actions" onclick="event.stopPropagation()">
-                        <div onclick="window.open('BTEC/Books%2810th%29/assignment%201.pdf', '_blank')"
-                            class="action-btn secondary">Download Assignment 1</div>
+        <div class="stream-section" id="it">
+            <h2 class="stream-title-text" data-en="Information Technology" data-ar="تكنولوجيا المعلومات">Information
+                Technology</h2>
+            <div class="stream-grid">
+                <div class="category-column">
+                    <div class="section-title" data-en="10th Grade" data-ar="الصف العاشر">10th Grade</div>
+                    <div class="resources-grid">
+
+                        <div class="resource-card"
+                            onclick="window.open('BTEC/Books%2810th%29/Using%20Information%20Technology%20to%20Support%20Information%20and%20Communication%20in%20Organizations%20-%20Tenth%281%29.pdf', '_blank')">
+                            <div class="card-header">
+                                <h2 class="resource-title" data-en="IT in Organizations"
+                                    data-ar="تكنولوجيا المعلومات في المؤسسات">IT in Organizations</h2>
+                                <span class="unit-badge" data-en="Unit 1" data-ar="الوحدة 1">Unit 1</span>
+                            </div>
+                            <p class="resource-desc"
+                                data-en="Using Information Technology to Support Information and Communication in Organizations"
+                                data-ar="استخدام تكنولوجيا المعلومات لدعم المعلومات والاتصالات في المؤسسات">Using
+                                Information
+                                Technology to Support Information and Communication in
+                                Organizations</p>
+                            <div class="card-actions" onclick="event.stopPropagation()">
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2810th%29/assignment%201.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 1" data-ar="واجب 1">Assgn 1</div>
+                                    <div onclick="window.open('BTEC/Books%2810th%29/Teacher%27s%20Guide%2010th%281%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Guide 1" data-ar="دليل 1">Guide 1</div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="resource-card"
+                            onclick="window.open('BTEC/Books%2810th%29/Data%20Modeling%20and%20Spreadsheets%20-%2010th%20Grade%282%29.pdf', '_blank')">
+                            <div class="card-header">
+                                <h2 class="resource-title" data-en="Data Modeling" data-ar="نمذجة البيانات">Data
+                                    Modeling</h2>
+                                <span class="unit-badge" data-en="Unit 2" data-ar="الوحدة 2">Unit 2</span>
+                            </div>
+                            <p class="resource-desc" data-en="Data Modeling and Spreadsheets"
+                                data-ar="نمذجة البيانات وجداول البيانات">Data Modeling and Spreadsheets</p>
+                            <div class="card-actions" onclick="event.stopPropagation()">
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2810th%29/assignment%202.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 2" data-ar="واجب 2">Assgn 2</div>
+                                    <div onclick="window.open('BTEC/Books%2810th%29/Teacher%27s%20Guide%2010th%282%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Guide 2" data-ar="دليل 2">Guide 2</div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="resource-card"
+                            onclick="window.open('BTEC/Books%2810th%29/Introduction%20to%20Computer%20Networks%20-%2010th%20Grade%283%29.pdf', '_blank')">
+                            <div class="card-header">
+                                <h2 class="resource-title" data-en="Computer Networks" data-ar="شبكات الحاسوب">Computer
+                                    Networks
+                                </h2>
+                                <span class="unit-badge" data-en="Unit 3" data-ar="الوحدة 3">Unit 3</span>
+                            </div>
+                            <p class="resource-desc" data-en="Introduction to Computer Networks"
+                                data-ar="مقدمة في شبكات الحاسوب">Introduction to Computer Networks</p>
+                            <div class="card-actions" onclick="event.stopPropagation()">
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2810th%29/assignment%203p1.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 3 (P1)" data-ar="واجب 3 (ج1)">Assgn
+                                        3 (P1)
+                                    </div>
+                                    <div onclick="window.open('BTEC/Books%2810th%29/Teacher%27s%20Guide%2010th%283p1%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Guide 3 (P1)" data-ar="دليل 3 (ج1)">Guide
+                                        3 (P1)
+                                    </div>
+                                </div>
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2810th%29/assignment%203p2.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 3 (P2)" data-ar="واجب 3 (ج2)">Assgn
+                                        3 (P2)
+                                    </div>
+                                    <div onclick="window.open('BTEC/Books%2810th%29/Teacher%27s%20Guide%2010th%283p2%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Guide 3 (P2)" data-ar="دليل 3 (ج2)">Guide
+                                        3 (P2)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="resource-card"
+                            onclick="window.open('BTEC/Books%2810th%29/Introduction%20to%20Programming%2010th%20grade%284%29.pdf', '_blank')">
+                            <div class="card-header">
+                                <h2 class="resource-title" data-en="Programming" data-ar="البرمجة">Programming</h2>
+                                <span class="unit-badge" data-en="Unit 4" data-ar="الوحدة 4">Unit 4</span>
+                            </div>
+                            <p class="resource-desc" data-en="Introduction to Programming" data-ar="مقدمة في البرمجة">
+                                Introduction to Programming</p>
+                            <div class="card-actions" onclick="event.stopPropagation()">
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2810th%29/assignment%204p1.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 4 (P1)" data-ar="واجب 4 (ج1)">Assgn
+                                        4 (P1)
+                                    </div>
+                                    <div onclick="window.open('BTEC/Books%2810th%29/Teacher%27s%20Guide%2010th%284%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Guide 4" data-ar="دليل 4">Guide 4</div>
+                                </div>
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2810th%29/assignment%204p2.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 4 (P2)" data-ar="واجب 4 (ج2)">Assgn
+                                        4 (P2)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="resource-card"
+                            onclick="window.open('BTEC/Books%2810th%29/Introduction%20to%20Digital%20Graphics%20and%20Animation%20-%2010th%20grade%285%29.pdf', '_blank')">
+                            <div class="card-header">
+                                <h2 class="resource-title" data-en="Digital Graphics" data-ar="الرسوميات الرقمية">
+                                    Digital
+                                    Graphics</h2>
+                                <span class="unit-badge" data-en="Unit 5" data-ar="الوحدة 5">Unit 5</span>
+                            </div>
+                            <p class="resource-desc" data-en="Introduction to Digital Graphics and Animation"
+                                data-ar="مقدمة في الرسوميات الرقمية والرسوم المتحركة">Introduction to Digital Graphics
+                                and
+                                Animation</p>
+                            <div class="card-actions" onclick="event.stopPropagation()">
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2810th%29/assignment%205p1.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 5 (P1)" data-ar="واجب 5 (ج1)">Assgn
+                                        5 (P1)
+                                    </div>
+                                    <div onclick="window.open('BTEC/Books%2810th%29/Teacher%27s%20Guide%2010th%285p1%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Guide 5 (P1)" data-ar="دليل 5 (ج1)">Guide
+                                        5 (P1)
+                                    </div>
+                                </div>
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2810th%29/assignment%205p2.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 5 (P2)" data-ar="واجب 5 (ج2)">Assgn
+                                        5 (P2)
+                                    </div>
+                                    <div onclick="window.open('BTEC/Books%2810th%29/Teacher%27s%20Guide%2010th%285p2%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Guide 5 (P2)" data-ar="دليل 5 (ج2)">Guide
+                                        5 (P2)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="resource-card"
+                            onclick="window.open('BTEC/Books%2810th%29/Introduction%20to%20Web%20Development%20-%2010th%20grade%286%29.pdf', '_blank')">
+                            <div class="card-header">
+                                <h2 class="resource-title" data-en="Web Development" data-ar="تطوير الويب">Web
+                                    Development</h2>
+                                <span class="unit-badge" data-en="Unit 6" data-ar="الوحدة 6">Unit 6</span>
+                            </div>
+                            <p class="resource-desc" data-en="Introduction to Web Development"
+                                data-ar="مقدمة في تطوير الويب">
+                                Introduction to Web Development</p>
+                            <div class="card-actions" onclick="event.stopPropagation()">
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2810th%29/assignment%206p1.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 6 (P1)" data-ar="واجب 6 (ج1)">Assgn
+                                        6 (P1)
+                                    </div>
+                                    <div onclick="window.open('BTEC/Books%2810th%29/Teacher%27s%20Guide%2010th%286%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Guide 6" data-ar="دليل 6">Guide 6</div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="resource-card"
+                            onclick="window.open('BTEC/Books%2810th%29/Introduction%20to%20Applications%20-%2010th%20grade%287%29.pdf', '_blank')">
+                            <div class="card-header">
+                                <h2 class="resource-title" data-en="Apps" data-ar="التطبيقات">Apps</h2>
+                                <span class="unit-badge" data-en="Unit 7" data-ar="الوحدة 7">Unit 7</span>
+                            </div>
+                            <p class="resource-desc" data-en="Introduction to Applications"
+                                data-ar="مقدمة في التطبيقات">
+                                Introduction to Applications</p>
+                            <div class="card-actions" onclick="event.stopPropagation()">
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2810th%29/assignment%207p1.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 7 (P1)" data-ar="واجب 7 (ج1)">Assgn
+                                        7 (P1)
+                                    </div>
+                                    <div onclick="window.open('BTEC/Books%2810th%29/Teacher%27s%20Guide%2010th%287%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Guide 7" data-ar="دليل 7">Guide 7</div>
+                                </div>
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2810th%29/assignment%207p2.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 7 (P2)" data-ar="واجب 7 (ج2)">Assgn
+                                        7 (P2)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="resource-card"
+                            onclick="window.open('BTEC/Books%2810th%29/Introduction%20to%20Game%20Design%20-%2010th%20grade%288%29.pdf', '_blank')">
+                            <div class="card-header">
+                                <h2 class="resource-title" data-en="Game Design" data-ar="تصميم الألعاب">Game Design
+                                </h2>
+                                <span class="unit-badge" data-en="Unit 8" data-ar="الوحدة 8">Unit 8</span>
+                            </div>
+                            <p class="resource-desc" data-en="Introduction to Game Design"
+                                data-ar="مقدمة في تصميم الألعاب">
+                                Introduction to Game Design</p>
+                            <div class="card-actions" onclick="event.stopPropagation()">
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2810th%29/assignment%208p1.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 8 (P1)" data-ar="واجب 8 (ج1)">Assgn
+                                        8 (P1)
+                                    </div>
+                                    <div onclick="window.open('BTEC/Books%2810th%29/Teacher%27s%20Guide%2010th%288p1%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Guide 8 (P1)" data-ar="دليل 8 (ج1)">Guide
+                                        8 (P1)
+                                    </div>
+                                </div>
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2810th%29/assignment%208p2.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 8 (P2)" data-ar="واجب 8 (ج2)">Assgn
+                                        8 (P2)
+                                    </div>
+                                    <div onclick="window.open('BTEC/Books%2810th%29/Teacher%27s%20Guide%2010th%288p2%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Guide 8 (P2)" data-ar="دليل 8 (ج2)">Guide
+                                        8 (P2)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                <div class="category-column">
+                    <div class="section-title" data-en="11th Grade" data-ar="الصف الحادي عشر">11th Grade</div>
+                    <div class="resources-grid">
+
+                        <div class="resource-card"
+                            onclick="window.open('BTEC/Books%2811th%29/Strategic%20Information%20Technology%20Systems%20book%20-%2011th%20grade%281%29.pdf', '_blank')">
+                            <div class="card-header">
+                                <h2 class="resource-title" data-en="Strategic IT Systems" data-ar="نظم IT الاستراتيجية">
+                                    Strategic IT Systems</h2>
+                                <span class="unit-badge" data-en="Unit 1" data-ar="الوحدة 1">Unit 1</span>
+                            </div>
+                            <p class="resource-desc" data-en="Strategic Information Technology Systems"
+                                data-ar="نظم تكنولوجيا المعلومات الاستراتيجية">Strategic Information Technology Systems
+                            </p>
+                            <div class="card-actions" onclick="event.stopPropagation()">
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2811th%29/assignment%2011th%281%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 1" data-ar="واجب 1">Assgn 1</div>
+                                </div>
+                            </div>
+                        </div>
 
 
-                <div class="resource-card"
-                    onclick="window.open('BTEC/Books%2810th%29/Data%20Modeling%20and%20Spreadsheets%20-%2010th%20Grade%282%29.pdf', '_blank')">
-                    <div class="card-header">
-                        <h2 class="resource-title">Data Modeling</h2>
-                        <span class="unit-badge">Unit 2</span>
-                    </div>
-                    <p class="resource-desc">Data Modeling and Spreadsheets</p>
-                    <div class="card-actions" onclick="event.stopPropagation()">
-                        <div onclick="window.open('BTEC/Books%2810th%29/assignment%202.pdf', '_blank')"
-                            class="action-btn secondary">Download Assignment 2</div>
+                        <div class="resource-card"
+                            onclick="window.open('BTEC/Books%2811th%29/Website%20Development%20-%2011th%20grade%282%29.pdf', '_blank')">
+                            <div class="card-header">
+                                <h2 class="resource-title" data-en="Website Development" data-ar="تطوير المواقع">Website
+                                    Development</h2>
+                                <span class="unit-badge" data-en="Unit 2" data-ar="الوحدة 2">Unit 2</span>
+                            </div>
+                            <p class="resource-desc" data-en="Website Development" data-ar="تطوير المواقع الإلكترونية">
+                                Website
+                                Development</p>
+                            <div class="card-actions" onclick="event.stopPropagation()">
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2811th%29/assignment%2011th%282%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 2" data-ar="واجب 2">Assgn 2</div>
+                                    <div onclick="window.open('BTEC/Books%2811th%29/Teacher%27s%20Guide%2011th%282%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Guide 2" data-ar="دليل 2">Guide 2</div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="resource-card"
+                            onclick="window.open('BTEC/Books%2811th%29/Mobile%20application%20development%20-%2011th%20grade%20%283%29.pdf', '_blank')">
+                            <div class="card-header">
+                                <h2 class="resource-title" data-en="Mobile App Dev" data-ar="تطوير تطبيقات الجوال">
+                                    Mobile App
+                                    Dev</h2>
+                                <span class="unit-badge" data-en="Unit 3" data-ar="الوحدة 3">Unit 3</span>
+                            </div>
+                            <p class="resource-desc" data-en="Mobile application development"
+                                data-ar="تطوير تطبيقات الجوال">
+                                Mobile application development</p>
+                            <div class="card-actions" onclick="event.stopPropagation()">
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2811th%29/assignment%2011th%283p1%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 3 (P1)" data-ar="واجب 3 (ج1)">Assgn
+                                        3 (P1)
+                                    </div>
+                                    <div onclick="window.open('BTEC/Books%2811th%29/Teacher%27s%20Guide%2011th%283p1%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Guide 3 (P1)" data-ar="دليل 3 (ج1)">Guide
+                                        3 (P1)
+                                    </div>
+                                </div>
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2811th%29/assignment%2011th%283p2%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 3 (P2)" data-ar="واجب 3 (ج2)">Assgn
+                                        3 (P2)
+                                    </div>
+                                    <div onclick="window.open('BTEC/Books%2811th%29/Teacher%27s%20Guide%2011th%283p2%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Guide 3 (P2)" data-ar="دليل 3 (ج2)">Guide
+                                        3 (P2)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="resource-card"
+                            onclick="window.open('BTEC/Books%2811th%29/Technical%20support%20and%20IT%20management%20-%2011th%20grade%284%29.pdf', '_blank')">
+                            <div class="card-header">
+                                <h2 class="resource-title" data-en="Tech Support & IT Mgmt"
+                                    data-ar="الدعم الفني وإدارة IT">Tech
+                                    Support & IT Mgmt</h2>
+                                <span class="unit-badge" data-en="Unit 4" data-ar="الوحدة 4">Unit 4</span>
+                            </div>
+                            <p class="resource-desc" data-en="Technical support and IT management"
+                                data-ar="الدعم الفني وإدارة تكنولوجيا المعلومات">Technical support and IT management</p>
+                            <div class="card-actions" onclick="event.stopPropagation()">
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2811th%29/assignment%2011th%284p1%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 4 (P1)" data-ar="واجب 4 (ج1)">Assgn
+                                        4 (P1)
+                                    </div>
+                                    <div onclick="window.open('BTEC/Books%2811th%29/Teacher%27s%20Guide%2011th%284%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Guide 4" data-ar="دليل 4">Guide 4</div>
+                                </div>
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2811th%29/assignment%2011th%284p2%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 4 (P2)" data-ar="واجب 4 (ج2)">Assgn
+                                        4 (P2)
+                                    </div>
+                                </div>
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2811th%29/assignment%2011th%284p3%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 4 (P3)" data-ar="واجب 4 (ج3)">Assgn
+                                        4 (P3)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="resource-card"
+                            onclick="window.open('BTEC/Books%2811th%29/Computer%20game%20development%2011th%20grade%285%29.pdf', '_blank')">
+                            <div class="card-header">
+                                <h2 class="resource-title" data-en="Game Development" data-ar="تطوير الألعاب">Game
+                                    Development
+                                </h2>
+                                <span class="unit-badge" data-en="Unit 5" data-ar="الوحدة 5">Unit 5</span>
+                            </div>
+                            <p class="resource-desc" data-en="Computer game development" data-ar="تطوير ألعاب الحاسوب">
+                                Computer
+                                game development</p>
+                            <div class="card-actions" onclick="event.stopPropagation()">
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2811th%29/assignment%2011th%20%285p1%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 5 (P1)" data-ar="واجب 5 (ج1)">Assgn
+                                        5 (P1)
+                                    </div>
+                                    <div onclick="window.open('BTEC/Books%2811th%29/Teacher%27s%20Guide%2011th%285%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Guide 5" data-ar="دليل 5">Guide 5</div>
+                                </div>
+                                <div class="btn-row">
+                                    <div onclick="window.open('BTEC/Books%2811th%29/assignment%2011th%285p2%29.pdf', '_blank')"
+                                        class="action-btn secondary" data-en="Assgn 5 (P2)" data-ar="واجب 5 (ج2)">Assgn
+                                        5 (P2)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                <div class="category-column">
+                    <div class="section-title" data-en="12th Grade" data-ar="الصف الثاني عشر">12th Grade</div>
+                    <div class="resources-grid">
+
+                        <div onclick="window.open('BTEC/Books%2812th%29/Cybersecurity%20and%20Incident%20Management%20Book%20-%2012th%20grade%281%29.pdf', '_blank')"
+                            class="resource-card">
+                            <div class="card-header">
+                                <h2 class="resource-title" data-en="Cybersecurity" data-ar="الأمن السيبراني">
+                                    Cybersecurity</h2>
+                                <span class="unit-badge" data-en="Unit 1" data-ar="الوحدة 1">Unit 1</span>
+                            </div>
+                            <p class="resource-desc" data-en="Cybersecurity and Incident Management"
+                                data-ar="الأمن السيبراني وإدارة الحوادث">Cybersecurity and Incident Management</p>
+                        </div>
 
 
-                <div class="resource-card"
-                    onclick="window.open('BTEC/Books%2810th%29/Introduction%20to%20Computer%20Networks%20-%2010th%20Grade%283%29.pdf', '_blank')">
-                    <div class="card-header">
-                        <h2 class="resource-title">Computer Networks</h2>
-                        <span class="unit-badge">Unit 3</span>
-                    </div>
-                    <p class="resource-desc">Introduction to Computer Networks</p>
-                    <div class="card-actions" onclick="event.stopPropagation()">
-                        <div onclick="window.open('BTEC/Books%2810th%29/assignment%203p1.pdf', '_blank')"
-                            class="action-btn secondary">Download Assignment 3 (Part 1)</div>
-                        <div onclick="window.open('BTEC/Books%2810th%29/assignment%203p2.pdf', '_blank')"
-                            class="action-btn secondary">Download Assignment 3 (Part 2)</div>
-                    </div>
-                </div>
+                        <div onclick="window.open('BTEC/Books%2812th%29/Programming%20book%20-%2012th%20grade%20%282%29.pdf', '_blank')"
+                            class="resource-card">
+                            <div class="card-header">
+                                <h2 class="resource-title" data-en="Programming" data-ar="البرمجة">Programming</h2>
+                                <span class="unit-badge" data-en="Unit 2" data-ar="الوحدة 2">Unit 2</span>
+                            </div>
+                            <p class="resource-desc" data-en="Programming" data-ar="البرمجة">Programming</p>
+                        </div>
 
 
-                <div class="resource-card"
-                    onclick="window.open('BTEC/Books%2810th%29/Introduction%20to%20Programming%2010th%20grade%284%29.pdf', '_blank')">
-                    <div class="card-header">
-                        <h2 class="resource-title">Programming</h2>
-                        <span class="unit-badge">Unit 4</span>
-                    </div>
-                    <p class="resource-desc">Introduction to Programming</p>
-                    <div class="card-actions" onclick="event.stopPropagation()">
-                        <div onclick="window.open('BTEC/Books%2810th%29/assignment%204p1.pdf', '_blank')"
-                            class="action-btn secondary">Download Assignment 4 (Part 1)</div>
-                        <div onclick="window.open('BTEC/Books%2810th%29/assignment%204p2.pdf', '_blank')"
-                            class="action-btn secondary">Download Assignment 4 (Part 2)</div>
-                    </div>
-                </div>
+                        <div onclick="window.open('BTEC/Books%2812th%29/Information%20Technology%20Project%20Management%20book%20-%2012th%20grade%20%283%29.pdf', '_blank')"
+                            class="resource-card">
+                            <div class="card-header">
+                                <h2 class="resource-title" data-en="IT Project Mgmt" data-ar="إدارة مشاريع IT">IT
+                                    Project Mgmt
+                                </h2>
+                                <span class="unit-badge" data-en="Unit 3" data-ar="الوحدة 3">Unit 3</span>
+                            </div>
+                            <p class="resource-desc" data-en="Information Technology Project Management"
+                                data-ar="إدارة مشاريع تكنولوجيا المعلومات">Information Technology Project Management</p>
+                        </div>
 
 
-                <div class="resource-card"
-                    onclick="window.open('BTEC/Books%2810th%29/Introduction%20to%20Digital%20Graphics%20and%20Animation%20-%2010th%20grade%285%29.pdf', '_blank')">
-                    <div class="card-header">
-                        <h2 class="resource-title">Digital Graphics</h2>
-                        <span class="unit-badge">Unit 5</span>
-                    </div>
-                    <p class="resource-desc">Introduction to Digital Graphics and Animation</p>
-                    <div class="card-actions" onclick="event.stopPropagation()">
-                        <div onclick="window.open('BTEC/Books%2810th%29/assignment%205p1.pdf', '_blank')"
-                            class="action-btn secondary">Download Assignment 5 (Part 1)</div>
-                        <div onclick="window.open('BTEC/Books%2810th%29/assignment%205p2.pdf', '_blank')"
-                            class="action-btn secondary">Download Assignment 5 (Part 2)</div>
-                    </div>
-                </div>
-
-
-                <div class="resource-card"
-                    onclick="window.open('BTEC/Books%2810th%29/Introduction%20to%20Web%20Development%20-%2010th%20grade%286%29.pdf', '_blank')">
-                    <div class="card-header">
-                        <h2 class="resource-title">Web Development</h2>
-                        <span class="unit-badge">Unit 6</span>
-                    </div>
-                    <p class="resource-desc">Introduction to Web Development</p>
-                    <div class="card-actions" onclick="event.stopPropagation()">
-                        <div onclick="window.open('BTEC/Books%2810th%29/assignment%206p1.pdf', '_blank')"
-                            class="action-btn secondary">Download Assignment 6 (Part 1)</div>
-                    </div>
-                </div>
-
-
-                <div class="resource-card"
-                    onclick="window.open('BTEC/Books%2810th%29/Introduction%20to%20Applications%20-%2010th%20grade%287%29.pdf', '_blank')">
-                    <div class="card-header">
-                        <h2 class="resource-title">Apps</h2>
-                        <span class="unit-badge">Unit 7</span>
-                    </div>
-                    <p class="resource-desc">Introduction to Applications</p>
-                    <div class="card-actions" onclick="event.stopPropagation()">
-                        <div onclick="window.open('BTEC/Books%2810th%29/assignment%207p1.pdf', '_blank')"
-                            class="action-btn secondary">Download Assignment 7 (Part 1)</div>
-                        <div onclick="window.open('BTEC/Books%2810th%29/assignment%207p2.pdf', '_blank')"
-                            class="action-btn secondary">Download Assignment 7 (Part 2)</div>
-                    </div>
-                </div>
-
-
-                <div class="resource-card"
-                    onclick="window.open('BTEC/Books%2810th%29/Introduction%20to%20Game%20Design%20-%2010th%20grade%288%29.pdf', '_blank')">
-                    <div class="card-header">
-                        <h2 class="resource-title">Game Design</h2>
-                        <span class="unit-badge">Unit 8</span>
-                    </div>
-                    <p class="resource-desc">Introduction to Game Design</p>
-                    <div class="card-actions" onclick="event.stopPropagation()">
-                        <div onclick="window.open('BTEC/Books%2810th%29/assignment%208p1.pdf', '_blank')"
-                            class="action-btn secondary">Download Assignment 8 (Part 1)</div>
-                        <div onclick="window.open('BTEC/Books%2810th%29/assignment%208p2.pdf', '_blank')"
-                            class="action-btn secondary">Download Assignment 8 (Part 2)</div>
+                        <div onclick="window.open('BTEC/Books%2812th%29/Introduction%20to%20Artificial%20Intelligence%2012th%20grade%284%29.pdf', '_blank')"
+                            class="resource-card">
+                            <div class="card-header">
+                                <h2 class="resource-title" data-en="Intro to AI" data-ar="مقدمة في الذكاء الاصطناعي">
+                                    Intro to AI
+                                </h2>
+                                <span class="unit-badge" data-en="Unit 4" data-ar="الوحدة 4">Unit 4</span>
+                            </div>
+                            <p class="resource-desc" data-en="Introduction to Artificial Intelligence"
+                                data-ar="مقدمة في الذكاء الاصطناعي">Introduction to Artificial Intelligence</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="category-column">
-            <div class="section-title">11th Grade</div>
-            <div class="resources-grid">
+    </div>
 
-                <div onclick="window.open('BTEC/Books%2811th%29/Strategic%20Information%20Technology%20Systems%20book%20-%2011th%20grade%281%29.pdf', '_blank')"
-                    class="resource-card">
-                    <div class="card-header">
-                        <h2 class="resource-title">Strategic IT Systems</h2>
-                        <span class="unit-badge">Unit 1</span>
+
+    <div class="stream-section" id="engineering">
+        <h2 class="stream-title-text" data-en="Engineering" data-ar="الهندسة">Engineering</h2>
+        <div class="stream-grid">
+            <div class="category-column">
+                <div class="section-title" data-en="10th Grade" data-ar="الصف العاشر">10th Grade</div>
+                <div class="resources-grid">
+
+                    <div onclick="window.open('BTEC/Engineering/Books%2810th%29/A%20book%20on%20working%20safely%20and%20effectively%20in%20the%20engineering%20workshop(1).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Working Safely" data-ar="العمل بأمان">Working Safely
+                            </h2>
+                            <span class="unit-badge" data-en="Unit 1" data-ar="الوحدة 1">Unit 1</span>
+                        </div>
+                        <p class="resource-desc" data-en="Working Safely in Engineering Workshop"
+                            data-ar="العمل بأمان في ورشة الهندسة">Working Safely in Engineering Workshop</p>
                     </div>
-                    <p class="resource-desc">Strategic Information Technology Systems</p>
+                    <!-- Unit 2 -->
+                    <div onclick="window.open('BTEC/Engineering/Books%2810th%29/A%20book%20on%20skills%20in%20engineering%20problems%20for%20creating%20solutions(2).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Engineering Skills" data-ar="مهارات هندسية">Engineering
+                                Skills</h2>
+                            <span class="unit-badge" data-en="Unit 2" data-ar="الوحدة 2">Unit 2</span>
+                        </div>
+                        <p class="resource-desc" data-en="Engineering Problem Solving" data-ar="حل المشكلات الهندسية">
+                            Engineering Problem Solving</p>
+                    </div>
+                    <!-- Unit 3 -->
+                    <div onclick="window.open('BTEC/Engineering/Books%2810th%29/Engineering%20Product%20Verification%20Book(3).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Product Verification" data-ar="التحقق من المنتج">Product
+                                Verification</h2>
+                            <span class="unit-badge" data-en="Unit 3" data-ar="الوحدة 3">Unit 3</span>
+                        </div>
+                        <p class="resource-desc" data-en="Engineering Product Verification"
+                            data-ar="التحقق من المنتجات الهندسية">Engineering Product Verification</p>
+                    </div>
+                    <!-- Unit 4 -->
+                    <div onclick="window.open('BTEC/Engineering/Books%2810th%29/Engineering%20Maintenance%20Book(4).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Maintenance" data-ar="الصيانة">Maintenance</h2>
+                            <span class="unit-badge" data-en="Unit 4" data-ar="الوحدة 4">Unit 4</span>
+                        </div>
+                        <p class="resource-desc" data-en="Engineering Maintenance" data-ar="الصيانة الهندسية">
+                            Engineering Maintenance</p>
+                    </div>
+                    <!-- Unit 5 -->
+                    <div onclick="window.open('BTEC/Engineering/Books%2810th%29/Mathematics%20book%20for%20engineering%20technicians(5).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Mathematics" data-ar="الرياضيات">Mathematics</h2>
+                            <span class="unit-badge" data-en="Unit 5" data-ar="الوحدة 5">Unit 5</span>
+                        </div>
+                        <p class="resource-desc" data-en="Maths for Technicians" data-ar="الرياضيات للفنيين">Maths for
+                            Technicians</p>
+                    </div>
+                    <!-- Unit 6 -->
+                    <div onclick="window.open('BTEC/Engineering/Books%2810th%29/Engineering%20Materials%20Book(6).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Materials" data-ar="المواد">Materials</h2>
+                            <span class="unit-badge" data-en="Unit 6" data-ar="الوحدة 6">Unit 6</span>
+                        </div>
+                        <p class="resource-desc" data-en="Engineering Materials" data-ar="المواد الهندسية">Engineering
+                            Materials</p>
+                    </div>
+                    <!-- Unit 7 -->
+                    <div onclick="window.open('BTEC/Engineering/Books%2810th%29/A%20book%20on%20the%20design%20and%20testing%20of%20electrical%20and%20electronic%20circuits(7).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Circuits" data-ar="الدوائر">Circuits</h2>
+                            <span class="unit-badge" data-en="Unit 7" data-ar="الوحدة 7">Unit 7</span>
+                        </div>
+                        <p class="resource-desc" data-en="Circuit Design & Testing" data-ar="تصميم واختبار الدوائر">
+                            Circuit Design & Testing</p>
+                    </div>
+                    <!-- Unit 8 -->
+                    <div onclick="window.open('BTEC/Engineering/Books%2810th%29/General%20Programming%20Book(8).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="General Programming" data-ar="البرمجة العامة">General
+                                Programming</h2>
+                            <span class="unit-badge" data-en="Unit 8" data-ar="الوحدة 8">Unit 8</span>
+                        </div>
+                        <p class="resource-desc" data-en="General Programming" data-ar="البرمجة العامة">General
+                            Programming</p>
+                    </div>
+                    <!-- Unit 9 -->
+                    <div onclick="window.open('BTEC/Engineering/Books%2810th%29/Vehicle%20Maintenance%20Techniques%20Book(9).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Vehicle Maintenance" data-ar="صيانة المركبات">Vehicle
+                                Maintenance</h2>
+                            <span class="unit-badge" data-en="Unit 9" data-ar="الوحدة 9">Unit 9</span>
+                        </div>
+                        <p class="resource-desc" data-en="Vehicle Maintenance Techniques"
+                            data-ar="تقنيات صيانة المركبات">Vehicle Maintenance Techniques</p>
+                    </div>
+                    <!-- Unit 10 -->
+                    <div onclick="window.open('BTEC/Engineering/Books%2810th%29/Engineering%20drawing%20book(10).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Engineering Drawing" data-ar="الرسم الهندسي">Engineering
+                                Drawing</h2>
+                            <span class="unit-badge" data-en="Unit 10" data-ar="الوحدة 10">Unit 10</span>
+                        </div>
+                        <p class="resource-desc" data-en="Engineering Drawing" data-ar="الرسم الهندسي">Engineering
+                            Drawing</p>
+                    </div>
+                    <!-- Unit 11 -->
+                    <div onclick="window.open('BTEC/Engineering/Books%2810th%29/Management%20Improvement%20Techniques%20book(11).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Mgmt Improvement" data-ar="تحسين الإدارة">Mgmt
+                                Improvement</h2>
+                            <span class="unit-badge" data-en="Unit 11" data-ar="الوحدة 11">Unit 11</span>
+                        </div>
+                        <p class="resource-desc" data-en="Management Improvement Techniques"
+                            data-ar="تقنيات تحسين الإدارة">Management Improvement Techniques</p>
+                    </div>
+                    <!-- Unit 12 -->
+                    <div onclick="window.open('BTEC/Engineering/Books%2810th%29/Manufacturing%20Techniques%20Book(12).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Manufacturing" data-ar="التصنيع">Manufacturing</h2>
+                            <span class="unit-badge" data-en="Unit 12" data-ar="الوحدة 12">Unit 12</span>
+                        </div>
+                        <p class="resource-desc" data-en="Manufacturing Techniques" data-ar="تقنيات التصنيع">
+                            Manufacturing Techniques</p>
+                    </div>
+
+                    <div onclick="window.open('BTEC/Engineering/Books%2810th%29/Electrical%20and%20Mechanical%20Engineering%20Sciences%20Book(13).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Elec & Mech Sci" data-ar="علوم الكهرباء والميكانيكا">
+                                Elec & Mech Sci</h2>
+                            <span class="unit-badge" data-en="Unit 13" data-ar="الوحدة 13">Unit 13</span>
+                        </div>
+                        <p class="resource-desc" data-en="Electrical & Mech Eng Sciences"
+                            data-ar="علوم الهندسة الكهربائية والميكانيكية">Electrical & Mech Eng Sciences</p>
+                    </div>
+
+                    <div onclick="window.open('BTEC/Engineering/Books%2810th%29/Book%20on%20Operation%20and%20Maintenance%20of%20Electrical%20and%20Electronic%20Systems%20and%20Components(14).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Ops & Maintenance" data-ar="التشغيل والصيانة">Ops &
+                                Maintenance</h2>
+                            <span class="unit-badge" data-en="Unit 14" data-ar="الوحدة 14">Unit 14</span>
+                        </div>
+                        <p class="resource-desc" data-en="Ops & Maint of Elec Systems"
+                            data-ar="تشغيل وصيانة الأنظمة الكهربائية">Ops & Maint of Elec Systems</p>
+                    </div>
                 </div>
+            </div>
 
+            <div class="category-column">
+                <div class="section-title" data-en="11th Grade" data-ar="الصف الحادي عشر">11th Grade</div>
+                <div class="resources-grid">
 
-                <div onclick="window.open('BTEC/Books%2811th%29/Website%20Development%20-%2011th%20grade%282%29.pdf', '_blank')"
-                    class="resource-card">
-                    <div class="card-header">
-                        <h2 class="resource-title">Website Development</h2>
-                        <span class="unit-badge">Unit 2</span>
+                    <div onclick="window.open('BTEC/Engineering/Books%2811th%29/Principles%20of%20Mechanical%20Engineering(1).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Mech Principles" data-ar="مبادئ الميكانيكا">Mech
+                                Principles</h2>
+                            <span class="unit-badge" data-en="Unit 1" data-ar="الوحدة 1">Unit 1</span>
+                        </div>
+                        <p class="resource-desc" data-en="Principles of Mech Engineering"
+                            data-ar="مبادئ الهندسة الميكانيكية">Principles of Mech Engineering</p>
                     </div>
-                    <p class="resource-desc">Website Development</p>
+                    <!-- Unit 2 -->
+                    <div onclick="window.open('BTEC/Engineering/Books%2811th%29/Book%20of%20Electrical%20and%20Electronic%20Principles(2).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Elec Principles" data-ar="مبادئ الكهرباء">Elec
+                                Principles</h2>
+                            <span class="unit-badge" data-en="Unit 2" data-ar="الوحدة 2">Unit 2</span>
+                        </div>
+                        <p class="resource-desc" data-en="Electrical & Electronic Principles"
+                            data-ar="المبادئ الكهربائية والإلكترونية">Electrical & Electronic Principles</p>
+                    </div>
+                    <!-- Unit 3 -->
+                    <div onclick="window.open('BTEC/Engineering/Books%2811th%29/Principles%20of%20Commerce%20and%20Applied%20Quality%20Engineering(3).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Commerce & Quality" data-ar="التجارة والجودة">Commerce &
+                                Quality</h2>
+                            <span class="unit-badge" data-en="Unit 3" data-ar="الوحدة 3">Unit 3</span>
+                        </div>
+                        <p class="resource-desc" data-en="Principles of Commerce & Quality"
+                            data-ar="مبادئ التجارة والجودة">Principles of Commerce & Quality</p>
+                    </div>
+                    <!-- Unit 4 -->
+                    <div onclick="window.open('BTEC/Engineering/Books%2811th%29/A%20book%20on%20delivering%20engineering%20operations%20safely%20as%20a%20team(4).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Safety Team" data-ar="فريق السلامة">Safety Team</h2>
+                            <span class="unit-badge" data-en="Unit 4" data-ar="الوحدة 4">Unit 4</span>
+                        </div>
+                        <p class="resource-desc" data-en="Delivering Operations Safely" data-ar="تنفيذ العمليات بأمان">
+                            Delivering Operations Safely</p>
+                    </div>
+                    <!-- Unit 5 -->
+                    <div onclick="window.open('BTEC/Engineering/Books%2811th%29/A%20book%20on%20product%20design%20and%20manufacturing%20in%20the%20field%20of%20engineering(5).pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Design & Mfg" data-ar="التصميم والتصنيع">Design & Mfg
+                            </h2>
+                            <span class="unit-badge" data-en="Unit 5" data-ar="الوحدة 5">Unit 5</span>
+                        </div>
+                        <p class="resource-desc" data-en="Product Design & Manufacturing"
+                            data-ar="تصميم وتصنيع المنتجات">Product Design & Manufacturing</p>
+                    </div>
                 </div>
+            </div>
 
+            <div class="category-column">
+                <div class="section-title" data-en="12th Grade" data-ar="الصف 12">12th Grade</div>
+                <div class="resources-grid">
 
-                <div onclick="window.open('BTEC/Books%2811th%29/Mobile%20application%20development%20-%2011th%20grade%20%283%29.pdf', '_blank')"
-                    class="resource-card">
-                    <div class="card-header">
-                        <h2 class="resource-title">Mobile App Dev</h2>
-                        <span class="unit-badge">Unit 3</span>
+                    <div class="resource-card" onclick="event.stopPropagation()">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Engines & Devices" data-ar="المحركات والأجهزة">Engines &
+                                Devices</h2>
+                            <span class="unit-badge" data-en="Unit 1" data-ar="الوحدة 1">Unit 1</span>
+                        </div>
+                        <p class="resource-desc" data-en="Electric Engines • Welding • Electronic Devices"
+                            data-ar="محركات كهربائية • لحام • أجهزة إلكترونية">Electric Engines • Welding • Electronic
+                            Devices</p>
+                        <div class="card-actions">
+                            <div class="btn-row">
+                                <div onclick="window.open('BTEC/Engineering/Books%2812th%29/Book%20on%20Electric%20and%20Hybrid%20Vehicle%20Engines%281p1%29.pdf', '_blank')"
+                                    class="action-btn secondary" data-en="Part 1" data-ar="جزء 1">Part 1</div>
+                                <div onclick="window.open('BTEC/Engineering/Books%2812th%29/Welding%20Technology%20Book%281p2%29.pdf', '_blank')"
+                                    class="action-btn secondary" data-en="Part 2" data-ar="جزء 2">Part 2</div>
+                                <div onclick="window.open('BTEC/Engineering/Books%2812th%29/Book%20on%20Electronic%20Devices%20and%20Circuits%281p3%29.pdf', '_blank')"
+                                    class="action-btn secondary" data-en="Part 3" data-ar="جزء 3">Part 3</div>
+                            </div>
+                        </div>
                     </div>
-                    <p class="resource-desc">Mobile application development</p>
-                </div>
-
-
-                <div onclick="window.open('BTEC/Books%2811th%29/Technical%20support%20and%20IT%20management%20-%2011th%20grade%284%29.pdf', '_blank')"
-                    class="resource-card">
-                    <div class="card-header">
-                        <h2 class="resource-title">Tech Support & IT Mgmt</h2>
-                        <span class="unit-badge">Unit 4</span>
+                    <!-- Unit 2 -->
+                    <div class="resource-card" onclick="event.stopPropagation()">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Systems & Circuits" data-ar="الأنظمة والدوائر">Systems &
+                                Circuits</h2>
+                            <span class="unit-badge" data-en="Unit 2" data-ar="الوحدة 2">Unit 2</span>
+                        </div>
+                        <p class="resource-desc" data-en="EV Drive • Maintenance • Analog Circuits"
+                            data-ar="قيادة كهربائية • صيانة • دوائر تناظرية">EV Drive • Maintenance • Analog Circuits
+                        </p>
+                        <div class="card-actions">
+                            <div class="btn-row">
+                                <div onclick="window.open('BTEC/Engineering/Books%2812th%29/Electric%20Vehicle%20Drive%20Systems%20Book%282p1%29.pdf', '_blank')"
+                                    class="action-btn secondary" data-en="Part 1" data-ar="جزء 1">Part 1</div>
+                                <div onclick="window.open('BTEC/Engineering/Books%2812th%29/Mechanical%20Systems%20Maintenance%20Book%282p2%29.pdf', '_blank')"
+                                    class="action-btn secondary" data-en="Part 2" data-ar="جزء 2">Part 2</div>
+                                <div onclick="window.open('BTEC/Engineering/Books%2812th%29/Analog%20Electronic%20Circuits%20Book%282p3%29.pdf', '_blank')"
+                                    class="action-btn secondary" data-en="Part 3" data-ar="جزء 3">Part 3</div>
+                            </div>
+                        </div>
                     </div>
-                    <p class="resource-desc">Technical support and IT management</p>
-                </div>
-
-
-                <div onclick="window.open('BTEC/Books%2811th%29/Computer%20game%20development%2011th%20grade%285%29.pdf', '_blank')"
-                    class="resource-card">
-                    <div class="card-header">
-                        <h2 class="resource-title">Game Development</h2>
-                        <span class="unit-badge">Unit 5</span>
+                    <!-- Unit 3 -->
+                    <div class="resource-card" onclick="event.stopPropagation()">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Materials & Measurement" data-ar="المواد والقياس">
+                                Materials & Measurement</h2>
+                            <span class="unit-badge" data-en="Unit 3" data-ar="الوحدة 3">Unit 3</span>
+                        </div>
+                        <p class="resource-desc" data-en="Mobility • Metallic Mat. • Measurement"
+                            data-ar="تنقل • مواد معدنية • قياس">Mobility • Metallic Mat. • Measurement</p>
+                        <div class="card-actions">
+                            <div class="btn-row">
+                                <div onclick="window.open('BTEC/Engineering/Books%2812th%29/Electric%20Mobility%20Book%283p1%29.pdf', '_blank')"
+                                    class="action-btn secondary" data-en="Part 1" data-ar="جزء 1">Part 1</div>
+                                <div onclick="window.open('BTEC/Engineering/Books%2812th%29/Book%20on%20the%20Mechanical%20Behavior%20of%20Metallic%20Materials%283p2%29.pdf', '_blank')"
+                                    class="action-btn secondary" data-en="Part 2" data-ar="جزء 2">Part 2</div>
+                                <div onclick="window.open('BTEC/Engineering/Books%2812th%29/Electronic%20Measurement%20and%20Testing%20Book%20for%20Circuits%283p3%29.pdf', '_blank')"
+                                    class="action-btn secondary" data-en="Part 3" data-ar="جزء 3">Part 3</div>
+                            </div>
+                        </div>
                     </div>
-                    <p class="resource-desc">Computer game development</p>
+                    <!-- Unit 4 -->
+                    <div class="resource-card" onclick="event.stopPropagation()">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Ignition & Digital" data-ar="الإشعال والرقمية">Ignition
+                                & Digital</h2>
+                            <span class="unit-badge" data-en="Unit 4" data-ar="الوحدة 4">Unit 4</span>
+                        </div>
+                        <p class="resource-desc" data-en="Ignition • Non-Metallic • Analog/Digital"
+                            data-ar="إشعال • غير معدنية • تناظري/رقمي">Ignition • Non-Metallic • Analog/Digital</p>
+                        <div class="card-actions">
+                            <div class="btn-row">
+                                <div onclick="window.open('BTEC/Engineering/Books%2812th%29/A%20book%20on%20operating%20and%20testing%20electronic%20ignition%20systems%20in%20vehicles%284p1%29.pdf', '_blank')"
+                                    class="action-btn secondary" data-en="Part 1" data-ar="جزء 1">Part 1</div>
+                                <div onclick="window.open('BTEC/Engineering/Books%2812th%29/Book%20on%20the%20Mechanical%20Behavior%20of%20Non-Metallic%20Materials%284p2%29.pdf', '_blank')"
+                                    class="action-btn secondary" data-en="Part 2" data-ar="جزء 2">Part 2</div>
+                                <div onclick="window.open('BTEC/Engineering/Books%2812th%29/Book%20on%20Analog%20and%20Digital%20Electronic%20Systems%284p3%29.pdf', '_blank')"
+                                    class="action-btn secondary" data-en="Part 3" data-ar="جزء 3">Part 3</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Unit 5 -->
+                    <div class="resource-card" onclick="event.stopPropagation()">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Auto., PLCs & Robots" data-ar="الأتمتة والروبوتات">
+                                Auto., PLCs & Robots</h2>
+                            <span class="unit-badge" data-en="Unit 5" data-ar="الوحدة 5">Unit 5</span>
+                        </div>
+                        <p class="resource-desc" data-en="Suspension • Auto. Proc. • PLCs • Robotics"
+                            data-ar="تعليق • معالجة آلية • PLCs • روبوتات">Suspension • Auto. Proc. • PLCs • Robotics
+                        </p>
+                        <div class="card-actions">
+                            <div class="btn-row">
+                                <div onclick="window.open('BTEC/Engineering/Books%2812th%29/Book%20on%20Suspension,%20Steering,%20and%20Braking%20Systems%20in%20Light%20Vehicles%285p1%29.pdf', '_blank')"
+                                    class="action-btn secondary" data-en="Part 1" data-ar="جزء 1">P1</div>
+                                <div onclick="window.open('BTEC/Engineering/Books%2812th%29/Book%20on%20secondary%20automated%20processing%20operations%20used%20in%20manufacturing%285p2%29.pdf', '_blank')"
+                                    class="action-btn secondary" data-en="Part 2" data-ar="جزء 2">P2</div>
+                            </div>
+                            <div class="btn-row">
+                                <div onclick="window.open('BTEC/Engineering/Books%2812th%29/Programmable%20Logic%20Controllers%20(PLCs)%20Book%285p3%29.pdf', '_blank')"
+                                    class="action-btn secondary" data-en="Part 3 (PLC)" data-ar="جزء 3 (PLC)">P3 (PLC)
+                                </div>
+                                <div onclick="window.open('BTEC/Engineering/Books%2812th%29/Industrial%20Robotics%20Book%285p3%29.pdf', '_blank')"
+                                    class="action-btn secondary" data-en="Part 3 (Robot)" data-ar="جزء 3 (روبوت)">P3
+                                    (Robot)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Unit 6 -->
+                    <div class="resource-card" onclick="event.stopPropagation()">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Transmission & Mfg." data-ar="النقل والتصنيع">
+                                Transmission & Mfg.</h2>
+                            <span class="unit-badge" data-en="Unit 6" data-ar="الوحدة 6">Unit 6</span>
+                        </div>
+                        <p class="resource-desc" data-en="Transmission • Manufacturing" data-ar="نقل الحركة • التصنيع">
+                            Transmission • Manufacturing</p>
+                        <div class="card-actions">
+                            <div class="btn-row">
+                                <div onclick="window.open('BTEC/Engineering/Books%2812th%29/Operation%20and%20Maintenance%20of%20Light%20Vehicle%20Transmission%20Systems%286p1%29.pdf', '_blank')"
+                                    class="action-btn secondary" data-en="Part 1" data-ar="جزء 1">Part 1</div>
+                                <div onclick="window.open('BTEC/Engineering/Books%2812th%29/Manufacturing%20and%20Assembly%20Processes%20Book%286p2%29.pdf', '_blank')"
+                                    class="action-btn secondary" data-en="Part 2" data-ar="جزء 2">Part 2</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Unit 7 -->
+                    <div onclick="window.open('BTEC/Engineering/Books%2812th%29/Book%20on%20secondary%20automated%20processing%20operations%20used%20in%20manufacturing%287%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Secondary Proc." data-ar="المعالجة الثانوية">Secondary
+                                Proc.</h2>
+                            <span class="unit-badge" data-en="Unit 7" data-ar="الوحدة 7">Unit 7</span>
+                        </div>
+                        <p class="resource-desc" data-en="Secondary Automated Processing Operations"
+                            data-ar="عمليات المعالجة الآلية الثانوية">Secondary Automated Processing Operations</p>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="category-column">
-            <div class="section-title">12th Grade</div>
-            <div class="resources-grid">
+    </div>
 
-                <div onclick="window.open('BTEC/Books%2812th%29/Cybersecurity%20and%20Incident%20Management%20Book%20-%2012th%20grade%281%29.pdf', '_blank')"
-                    class="resource-card">
-                    <div class="card-header">
-                        <h2 class="resource-title">Cybersecurity</h2>
-                        <span class="unit-badge">Unit 1</span>
+
+    <div class="stream-section" id="beauty">
+        <h2 class="stream-title-text" data-en="Beauty" data-ar="التجميل">Beauty</h2>
+        <div class="stream-grid">
+            <div class="category-column">
+                <div class="section-title" data-en="10th Grade" data-ar="الصف العاشر">10th Grade</div>
+                <div class="resources-grid">
+
+                    <div onclick="window.open('BTEC/Beauty/Books%2810th%29/Exploring%20the%20Field%20of%20Cosmetic%20Hair%20Care%281%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Hair Care Field" data-ar="مجال العناية بالشعر">Hair Care
+                                Field</h2>
+                            <span class="unit-badge" data-en="Unit 1" data-ar="الوحدة 1">Unit 1</span>
+                        </div>
+                        <p class="resource-desc" data-en="Exploring Cosmetic Hair Care"
+                            data-ar="استكشاف العناية بالشعر التجميلي">Exploring Cosmetic Hair Care</p>
                     </div>
-                    <p class="resource-desc">Cybersecurity and Incident Management</p>
+                    <!-- Unit 2 -->
+                    <div onclick="window.open('BTEC/Beauty/Books%2810th%29/The%20Book%20of%20Skin,%20Hair,%20and%20Nails%282%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Skin, Hair, Nails" data-ar="البشرة والشعر والأظافر">
+                                Skin, Hair, Nails</h2>
+                            <span class="unit-badge" data-en="Unit 2" data-ar="الوحدة 2">Unit 2</span>
+                        </div>
+                        <p class="resource-desc" data-en="The Book of Skin, Hair, and Nails"
+                            data-ar="كتاب البشرة والشعر والأظافر">The Book of Skin, Hair, and Nails</p>
+                    </div>
+                    <!-- Unit 3 -->
+                    <div onclick="window.open('BTEC/Beauty/Books%2810th%29/Salon%20Reception%20Tasks%20Manual%283%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Reception Tasks" data-ar="مهام الاستقبال">Reception
+                                Tasks</h2>
+                            <span class="unit-badge" data-en="Unit 3" data-ar="الوحدة 3">Unit 3</span>
+                        </div>
+                        <p class="resource-desc" data-en="Salon Reception Tasks Manual"
+                            data-ar="دليل مهام استقبال الصالون">Salon Reception Tasks Manual</p>
+                    </div>
+                    <!-- Unit 4 -->
+                    <div onclick="window.open('BTEC/Beauty/Books%2810th%29/A%20book%20on%20promoting%20and%20selling%20products%20and%20services%20to%20customers%20in%20a%20salon.%284%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Promoting & Selling" data-ar="الترويج والبيع">Promoting
+                                & Selling</h2>
+                            <span class="unit-badge" data-en="Unit 4" data-ar="الوحدة 4">Unit 4</span>
+                        </div>
+                        <p class="resource-desc" data-en="Promoting & Selling in Salon"
+                            data-ar="الترويج والبيع في الصالون">Promoting & Selling in Salon</p>
+                    </div>
+                    <!-- Unit 5 -->
+                    <div onclick="window.open('BTEC/Beauty/Books%2810th%29/Shampoo%20and%20Hair%20Conditioner%20Book%285%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Shampoo & Cond." data-ar="الشامبو والبلسم">Shampoo &
+                                Cond.</h2>
+                            <span class="unit-badge" data-en="Unit 5" data-ar="الوحدة 5">Unit 5</span>
+                        </div>
+                        <p class="resource-desc" data-en="Shampoo and Hair Conditioner"
+                            data-ar="كتاب الشامبو وبلسم الشعر">Shampoo and Hair Conditioner</p>
+                    </div>
+                    <!-- Unit 6 -->
+                    <div onclick="window.open('BTEC/Beauty/Books%2810th%29/The%20Art%20of%20Hairstyling%286%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Hairstyling" data-ar="تصفيف الشعر">Hairstyling</h2>
+                            <span class="unit-badge" data-en="Unit 6" data-ar="الوحدة 6">Unit 6</span>
+                        </div>
+                        <p class="resource-desc" data-en="The Art of Hairstyling" data-ar="فن تصفيف الشعر">The Art of
+                            Hairstyling</p>
+                    </div>
+                    <!-- Unit 7 -->
+                    <div onclick="window.open('BTEC/Beauty/Books%2810th%29/The%20Art%20of%20Nail%20Art%287%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Nail Art" data-ar="فن الأظافر">Nail Art</h2>
+                            <span class="unit-badge" data-en="Unit 7" data-ar="الوحدة 7">Unit 7</span>
+                        </div>
+                        <p class="resource-desc" data-en="The Art of Nail Art" data-ar="فن فن الأظافر">The Art of Nail
+                            Art</p>
+                    </div>
+                    <!-- Unit 8 -->
+                    <div onclick="window.open('BTEC/Beauty/Books%2810th%29/A%20book%20on%20providing%20facial%20skincare%20services%288%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Facial Skincare" data-ar="العناية بالوجه">Facial
+                                Skincare</h2>
+                            <span class="unit-badge" data-en="Unit 8" data-ar="الوحدة 8">Unit 8</span>
+                        </div>
+                        <p class="resource-desc" data-en="Providing Facial Skincare"
+                            data-ar="تقديم خدمات العناية بالوجه">Providing Facial Skincare</p>
+                    </div>
+                    <!-- Unit 9 -->
+                    <div onclick="window.open('BTEC/Beauty/Books%2810th%29/Cosmetic%20Application%20Book%289%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Cosmetic App" data-ar="تطبيق مستحضرات التجميل">Cosmetic
+                                App</h2>
+                            <span class="unit-badge" data-en="Unit 9" data-ar="الوحدة 9">Unit 9</span>
+                        </div>
+                        <p class="resource-desc" data-en="Cosmetic Application Book"
+                            data-ar="كتاب تطبيق مستحضرات التجميل">Cosmetic Application Book</p>
+                    </div>
+                    <!-- Unit 10 -->
+                    <div onclick="window.open('BTEC/Beauty/Books%2810th%29/A%20book%20on%20applying%20manicure%20and%20pedicure%20techniques%2810%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Manicure & Pedicure" data-ar="المانيكير والباديكير">
+                                Manicure & Pedicure</h2>
+                            <span class="unit-badge" data-en="Unit 10" data-ar="الوحدة 10">Unit 10</span>
+                        </div>
+                        <p class="resource-desc" data-en="Applying Manicure and Pedicure"
+                            data-ar="تطبيق تقنيات المانيكير والباديكير">Applying Manicure and Pedicure</p>
+                    </div>
+                    <!-- Unit 11 -->
+                    <div onclick="window.open('BTEC/Beauty/Books%2810th%29/The%20Commercial%20Establishment%20Book%2811%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Commercial Est." data-ar="المؤسسة التجارية">Commercial
+                                Est.</h2>
+                            <span class="unit-badge" data-en="Unit 11" data-ar="الوحدة 11">Unit 11</span>
+                        </div>
+                        <p class="resource-desc" data-en="The Commercial Establishment" data-ar="كتاب المؤسسة التجارية">
+                            The Commercial Establishment</p>
+                    </div>
+                    <!-- Unit 12 -->
+                    <div onclick="window.open('BTEC/Beauty/Books%2810th%29/Hair%20Removal%20Techniques%20Book%2812%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Hair Removal" data-ar="إزالة الشعر">Hair Removal</h2>
+                            <span class="unit-badge" data-en="Unit 12" data-ar="الوحدة 12">Unit 12</span>
+                        </div>
+                        <p class="resource-desc" data-en="Hair Removal Techniques" data-ar="تقنيات إزالة الشعر">Hair
+                            Removal Techniques</p>
+                    </div>
                 </div>
+            </div>
 
+            <div class="category-column">
+                <div class="section-title" data-en="11th Grade" data-ar="الصف 11">11th Grade</div>
+                <div class="resources-grid">
 
-                <div onclick="window.open('BTEC/Books%2812th%29/Programming%20book%20-%2012th%20grade%20%282%29.pdf', '_blank')"
-                    class="resource-card">
-                    <div class="card-header">
-                        <h2 class="resource-title">Programming</h2>
-                        <span class="unit-badge">Unit 2</span>
+                    <div onclick="window.open('BTEC/Beauty/Books%2811th%29/Professional%20Beauty%20Salon%20Training%20Book%281%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Salon Training" data-ar="تدريب الصالون">Salon Training
+                            </h2>
+                            <span class="unit-badge" data-en="Unit 1" data-ar="الوحدة 1">Unit 1</span>
+                        </div>
+                        <p class="resource-desc" data-en="Professional Beauty Salon Training"
+                            data-ar="تدريب صالون التجميل المحترف">Professional Beauty Salon Training</p>
                     </div>
-                    <p class="resource-desc">Programming</p>
+
+                    <div onclick="window.open('BTEC/Beauty/Books%2811th%29/Health%20and%20Recovery%20Book%282%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Health & Recovery" data-ar="الصحة والتعافي">Health &
+                                Recovery</h2>
+                            <span class="unit-badge" data-en="Unit 2" data-ar="الوحدة 2">Unit 2</span>
+                        </div>
+                        <p class="resource-desc" data-en="Health and Recovery" data-ar="الصحة والتعافي">Health and
+                            Recovery</p>
+                    </div>
+
+                    <div onclick="window.open('BTEC/Beauty/Books%2811th%29/Advanced%20nail%20care%20and%20beautification%20techniques%20book%283%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Advanced Nail Care" data-ar="عناية متقدمة بالأظافر">
+                                Advanced Nail Care</h2>
+                            <span class="unit-badge" data-en="Unit 3" data-ar="الوحدة 3">Unit 3</span>
+                        </div>
+                        <p class="resource-desc" data-en="Advanced Nail Care Techniques"
+                            data-ar="تقنيات العناية بالأظافر المتقدمة">Advanced Nail Care Techniques</p>
+                    </div>
+
+                    <div onclick="window.open('BTEC/Beauty/Books%2811th%29/Advanced%20Skin%20Treatments%20Book%284%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Adv. Skin Treatments" data-ar="علاجات البشرة المتقدمة">
+                                Adv. Skin Treatments</h2>
+                            <span class="unit-badge" data-en="Unit 4" data-ar="الوحدة 4">Unit 4</span>
+                        </div>
+                        <p class="resource-desc" data-en="Advanced Skin Treatments" data-ar="علاجات البشرة المتقدمة">
+                            Advanced Skin Treatments</p>
+                    </div>
+
+                    <div onclick="window.open('BTEC/Beauty/Books%2811th%29/Creative%20Makeup%20and%20Henna%20Art%20Book%285%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Makeup & Henna" data-ar="مكياج وحناء">Makeup & Henna
+                            </h2>
+                            <span class="unit-badge" data-en="Unit 5" data-ar="الوحدة 5">Unit 5</span>
+                        </div>
+                        <p class="resource-desc" data-en="Creative Makeup and Henna Art"
+                            data-ar="فن المكياج والحناء الإبداعي">Creative Makeup and Henna Art</p>
+                    </div>
+
+                    <div onclick="window.open('BTEC/Beauty/Books%2811th%29/Hair%20coloring,%20lightening,%20and%20highlighting%20techniques%20book%286%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Hair Coloring" data-ar="صبغ الشعر">Hair Coloring</h2>
+                            <span class="unit-badge" data-en="Unit 6" data-ar="الوحدة 6">Unit 6</span>
+                        </div>
+                        <p class="resource-desc" data-en="Hair Coloring & Lightening" data-ar="تقنيات صبغ وتفتيح الشعر">
+                            Hair Coloring & Lightening</p>
+                    </div>
+
+                    <div onclick="window.open('BTEC/Beauty/Books%2811th%29/A%20book%20providing%20an%20overview%20of%20sales%20and%20promotion.%287%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Sales & Promotion" data-ar="المبيعات والترويج">Sales &
+                                Promotion</h2>
+                            <span class="unit-badge" data-en="Unit 7" data-ar="الوحدة 7">Unit 7</span>
+                        </div>
+                        <p class="resource-desc" data-en="Sales and Promotion Overview"
+                            data-ar="نظرة عامة على المبيعات والترويج">Sales and Promotion Overview</p>
+                    </div>
                 </div>
+            </div>
 
+            <div class="category-column">
+                <div class="section-title" data-en="12th Grade" data-ar="الصف 12">12th Grade</div>
+                <div class="resources-grid">
 
-                <div onclick="window.open('BTEC/Books%2812th%29/Information%20Technology%20Project%20Management%20book%20-%2012th%20grade%20%283%29.pdf', '_blank')"
-                    class="resource-card">
-                    <div class="card-header">
-                        <h2 class="resource-title">IT Project Mgmt</h2>
-                        <span class="unit-badge">Unit 3</span>
+                    <div onclick="window.open('BTEC/Beauty/Books%2812th%29/Haircutting%20and%20Styling%20Book%281%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Haircutting" data-ar="قص الشعر">Haircutting</h2>
+                            <span class="unit-badge" data-en="Unit 1" data-ar="الوحدة 1">Unit 1</span>
+                        </div>
+                        <p class="resource-desc" data-en="Haircutting and Styling" data-ar="قص وتصفيف الشعر">Haircutting
+                            and Styling</p>
                     </div>
-                    <p class="resource-desc">Information Technology Project Management</p>
-                </div>
 
-
-                <div onclick="window.open('BTEC/Books%2812th%29/Introduction%20to%20Artificial%20Intelligence%2012th%20grade%284%29.pdf', '_blank')"
-                    class="resource-card">
-                    <div class="card-header">
-                        <h2 class="resource-title">Intro to AI</h2>
-                        <span class="unit-badge">Unit 4</span>
+                    <div onclick="window.open('BTEC/Beauty/Books%2812th%29/A%20book%20on%20massage%20and%20aromatherapy%282%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Massage & Aroma" data-ar="التدليك والروائح">Massage &
+                                Aroma</h2>
+                            <span class="unit-badge" data-en="Unit 2" data-ar="الوحدة 2">Unit 2</span>
+                        </div>
+                        <p class="resource-desc" data-en="Massage and Aromatherapy" data-ar="التدليك والعلاج بالروائح">
+                            Massage and Aromatherapy</p>
                     </div>
-                    <p class="resource-desc">Introduction to Artificial Intelligence</p>
+
+                    <div onclick="window.open('BTEC/Beauty/Books%2812th%29/Book%20on%20Starting%20and%20Managing%20a%20Project%283%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Starting a Project" data-ar="بدء مشروع">Starting a
+                                Project</h2>
+                            <span class="unit-badge" data-en="Unit 3" data-ar="الوحدة 3">Unit 3</span>
+                        </div>
+                        <p class="resource-desc" data-en="Starting and Managing a Project" data-ar="بدء وإدارة مشروع">
+                            Starting and Managing a Project</p>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+
+
+    <div class="stream-section" id="business">
+        <h2 class="stream-title-text" data-en="Business Management" data-ar="إدارة الأعمال">Business Management</h2>
+        <div class="stream-grid">
+
+            <div class="category-column">
+                <div class="section-title" data-en="10th Grade" data-ar="الصف العاشر">10th Grade</div>
+                <div class="resources-grid">
+
+                    <div onclick="window.open('BTEC/BM/Books%2810th%29/Company%20Purpose%20Book%281%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Company Purpose" data-ar="غرض الشركة">Company Purpose
+                            </h2>
+                            <span class="unit-badge" data-en="Unit 1" data-ar="الوحدة 1">Unit 1</span>
+                        </div>
+                        <p class="resource-desc" data-en="Company Purpose Book" data-ar="كتاب غرض الشركة">Company
+                            Purpose Book</p>
+                    </div>
+                    <!-- Unit 2 -->
+                    <div onclick="window.open('BTEC/BM/Books%2810th%29/Business%20Institutions%20Book%282%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Business Inst." data-ar="مؤسسات الأعمال">Business Inst.
+                            </h2>
+                            <span class="unit-badge" data-en="Unit 2" data-ar="الوحدة 2">Unit 2</span>
+                        </div>
+                        <p class="resource-desc" data-en="Business Institutions Book" data-ar="كتاب مؤسسات الأعمال">
+                            Business Institutions Book</p>
+                    </div>
+                    <!-- Unit 3 -->
+                    <div onclick="window.open('BTEC/BM/Books%2810th%29/Book%20on%20Forecasting%20Company%20Financial%20Performance%283%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Financial Perf." data-ar="الأداء المالي">Financial Perf.
+                            </h2>
+                            <span class="unit-badge" data-en="Unit 3" data-ar="الوحدة 3">Unit 3</span>
+                        </div>
+                        <p class="resource-desc" data-en="Forecasting Company Financial Performance"
+                            data-ar="توقعات الأداء المالي للشركة">Forecasting Company Financial Performance</p>
+                    </div>
+                    <!-- Unit 4 -->
+                    <div onclick="window.open('BTEC/BM/Books%2810th%29/Marketing%20Plan%20Book%284%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Marketing Plan" data-ar="خطة التسويق">Marketing Plan
+                            </h2>
+                            <span class="unit-badge" data-en="Unit 4" data-ar="الوحدة 4">Unit 4</span>
+                        </div>
+                        <p class="resource-desc" data-en="Marketing Plan Book" data-ar="كتاب خطة التسويق">Marketing Plan
+                            Book</p>
+                    </div>
+                    <!-- Unit 5 -->
+                    <div onclick="window.open('BTEC/BM/Books%2810th%29/Book%20on%20Starting%20a%20Small%20Business%285%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Small Business" data-ar="المشاريع الصغيرة">Small
+                                Business</h2>
+                            <span class="unit-badge" data-en="Unit 5" data-ar="الوحدة 5">Unit 5</span>
+                        </div>
+                        <p class="resource-desc" data-en="Starting a Small Business" data-ar="بدء مشروع صغير">Starting a
+                            Small Business</p>
+                    </div>
+                    <!-- Unit 6 -->
+                    <div onclick="window.open('BTEC/BM/Books%2810th%29/Working%20as%20a%20Team%20Book%286%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Teamwork" data-ar="العمل الجماعي">Teamwork</h2>
+                            <span class="unit-badge" data-en="Unit 6" data-ar="الوحدة 6">Unit 6</span>
+                        </div>
+                        <p class="resource-desc" data-en="Working as a Team" data-ar="العمل كفريق">Working as a Team</p>
+                    </div>
+                    <!-- Unit 7 -->
+                    <div onclick="window.open('BTEC/BM/Books%2810th%29/Personal%20Finance%20Management%20Book%287%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Personal Finance" data-ar="التمويل الشخصي">Personal
+                                Finance</h2>
+                            <span class="unit-badge" data-en="Unit 7" data-ar="الوحدة 7">Unit 7</span>
+                        </div>
+                        <p class="resource-desc" data-en="Personal Finance Management" data-ar="إدارة التمويل الشخصي">
+                            Personal Finance Management</p>
+                    </div>
+                    <!-- Unit 8 -->
+                    <div onclick="window.open('BTEC/BM/Books%2810th%29/A%20book%20on%20visual%20display%20and%20promotion%20techniques%20for%20retail%20companies%288%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Visual Display" data-ar="العرض المرئي">Visual Display
+                            </h2>
+                            <span class="unit-badge" data-en="Unit 8" data-ar="الوحدة 8">Unit 8</span>
+                        </div>
+                        <p class="resource-desc" data-en="Visual Display & Promotion Techniques"
+                            data-ar="تقنيات العرض المرئي والترويج">Visual Display & Promotion Techniques</p>
+                    </div>
+                    <!-- Unit 9 -->
+                    <div onclick="window.open('BTEC/BM/Books%2810th%29/Employees%27%20Book%20for%20Companies%289%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Employees" data-ar="الموظفين">Employees</h2>
+                            <span class="unit-badge" data-en="Unit 9" data-ar="الوحدة 9">Unit 9</span>
+                        </div>
+                        <p class="resource-desc" data-en="Employees' Book for Companies"
+                            data-ar="كتاب الموظفين للشركات">Employees' Book for Companies</p>
+                    </div>
+                    <!-- Unit 10 -->
+                    <div onclick="window.open('BTEC/BM/Books%2810th%29/Online%20Business%20Book%2810%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Online Business" data-ar="الأعمال عبر الإنترنت">Online
+                                Business</h2>
+                            <span class="unit-badge" data-en="Unit 10" data-ar="الوحدة 10">Unit 10</span>
+                        </div>
+                        <p class="resource-desc" data-en="Online Business Book" data-ar="كتاب الأعمال عبر الإنترنت">
+                            Online Business Book</p>
+                    </div>
+                    <!-- Unit 11 -->
+                    <div onclick="window.open('BTEC/BM/Books%2810th%29/Book%20of%20Business%20Ethics%2811%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Business Ethics" data-ar="أخلاقيات العمل">Business
+                                Ethics</h2>
+                            <span class="unit-badge" data-en="Unit 11" data-ar="الوحدة 11">Unit 11</span>
+                        </div>
+                        <p class="resource-desc" data-en="Book of Business Ethics" data-ar="كتاب أخلاقيات العمل">Book of
+                            Business Ethics</p>
+                    </div>
+                    <!-- Unit 12 -->
+                    <div onclick="window.open('BTEC/BM/Books%2810th%29/Small%20Business%20Management%20Book%2812%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Small Bus. Mgmt" data-ar="إدارة المشاريع الصغيرة">Small
+                                Bus. Mgmt</h2>
+                            <span class="unit-badge" data-en="Unit 12" data-ar="الوحدة 12">Unit 12</span>
+                        </div>
+                        <p class="resource-desc" data-en="Small Business Management" data-ar="إدارة المشاريع الصغيرة">
+                            Small Business Management</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="category-column">
+                <div class="section-title" data-en="11th Grade" data-ar="الصف 11">11th Grade</div>
+                <div class="resources-grid">
+
+                    <div onclick="window.open('BTEC/BM/Books%2811th%29/Business%20Exploration%20Book%281%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Business Explor." data-ar="استكشاف الأعمال">Business
+                                Explor.</h2>
+                            <span class="unit-badge" data-en="Unit 1" data-ar="الوحدة 1">Unit 1</span>
+                        </div>
+                        <p class="resource-desc" data-en="Business Exploration Book" data-ar="كتاب استكشاف الأعمال">
+                            Business Exploration Book</p>
+                    </div>
+                    <!-- Unit 2 -->
+                    <div onclick="window.open('BTEC/BM/Books%2811th%29/A%20book%20on%20research%20and%20planning%20for%20a%20marketing%20campaign%282%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Marketing Camp." data-ar="حملة تسويقية">Marketing Camp.
+                            </h2>
+                            <span class="unit-badge" data-en="Unit 2" data-ar="الوحدة 2">Unit 2</span>
+                        </div>
+                        <p class="resource-desc" data-en="Research & Planning for Marketing"
+                            data-ar="البحث والتخطيط للتسويق">Research & Planning for Marketing</p>
+                    </div>
+                    <!-- Unit 3 -->
+                    <div onclick="window.open('BTEC/BM/Books%2811th%29/Business%20Finance%20Book%283%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Business Finance" data-ar="تمويل الأعمال">Business
+                                Finance</h2>
+                            <span class="unit-badge" data-en="Unit 3" data-ar="الوحدة 3">Unit 3</span>
+                        </div>
+                        <p class="resource-desc" data-en="Business Finance Book" data-ar="كتاب تمويل الأعمال">Business
+                            Finance Book</p>
+                    </div>
+                    <!-- Unit 4 -->
+                    <div onclick="window.open('BTEC/BM/Books%2811th%29/Event%20Management%20Book%284%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Event Mgmt" data-ar="إدارة الفعاليات">Event Mgmt</h2>
+                            <span class="unit-badge" data-en="Unit 4" data-ar="الوحدة 4">Unit 4</span>
+                        </div>
+                        <p class="resource-desc" data-en="Event Management Book" data-ar="كتاب إدارة الفعاليات">Event
+                            Management Book</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="category-column">
+                <div class="section-title" data-en="12th Grade" data-ar="الصف 12">12th Grade</div>
+                <div class="resources-grid">
+
+                    <div onclick="window.open('BTEC/BM/Books%2812th%29/Principles%20of%20Management%20book%281%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Principles of Mgmt" data-ar="مبادئ الإدارة">Principles
+                                of Mgmt</h2>
+                            <span class="unit-badge" data-en="Unit 1" data-ar="الوحدة 1">Unit 1</span>
+                        </div>
+                        <p class="resource-desc" data-en="Principles of Management" data-ar="مبادئ الإدارة">Principles
+                            of Management</p>
+                    </div>
+                    <!-- Unit 2 -->
+                    <div onclick="window.open('BTEC/BM/Books%2812th%29/Business%20Decision%20Making%20Book%282%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Decision Making" data-ar="اتخاذ القرار">Decision Making
+                            </h2>
+                            <span class="unit-badge" data-en="Unit 2" data-ar="الوحدة 2">Unit 2</span>
+                        </div>
+                        <p class="resource-desc" data-en="Business Decision Making" data-ar="اتخاذ القرارات التجارية">
+                            Business Decision Making</p>
+                    </div>
+                    <!-- Unit 3 -->
+                    <div onclick="window.open('BTEC/BM/Books%2812th%29/Human%20Resources%20Book%283%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Human Resources" data-ar="الموارد البشرية">Human
+                                Resources</h2>
+                            <span class="unit-badge" data-en="Unit 3" data-ar="الوحدة 3">Unit 3</span>
+                        </div>
+                        <p class="resource-desc" data-en="Human Resources Book" data-ar="كتاب الموارد البشرية">Human
+                            Resources Book</p>
+                    </div>
+                    <!-- Unit 4 -->
+                    <div onclick="window.open('BTEC/BM/Books%2812th%29/Customer%20Service%20Study%20Book%284%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Customer Service" data-ar="خدمة العملاء">Customer
+                                Service</h2>
+                            <span class="unit-badge" data-en="Unit 4" data-ar="الوحدة 4">Unit 4</span>
+                        </div>
+                        <p class="resource-desc" data-en="Customer Service Study Book"
+                            data-ar="كتاب دراسة خدمة العملاء">Customer Service Study Book</p>
+                    </div>
+                    <!-- Unit 5 -->
+                    <div onclick="window.open('BTEC/BM/Books%2812th%29/Business%20Ethics%20Book%285%29.pdf', '_blank')"
+                        class="resource-card">
+                        <div class="card-header">
+                            <h2 class="resource-title" data-en="Business Ethics" data-ar="أخلاقيات العمل">Business
+                                Ethics</h2>
+                            <span class="unit-badge" data-en="Unit 5" data-ar="الوحدة 5">Unit 5</span>
+                        </div>
+                        <p class="resource-desc" data-en="Business Ethics Book" data-ar="كتاب أخلاقيات العمل">Business
+                            Ethics Book</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 
     <div class="scroll-hint">
@@ -684,6 +2007,95 @@
 
         document.querySelectorAll('.resource-card').forEach(card => {
             observer.observe(card);
+        });
+
+
+        const langToggle = document.querySelector('.lang-toggle');
+        let currentLang = localStorage.getItem('lang') || 'en';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('lang', lang);
+
+
+            if (lang === 'ar') {
+                document.body.classList.add('rtl');
+                langToggle.textContent = 'English';
+            } else {
+                document.body.classList.remove('rtl');
+                langToggle.textContent = 'العربية';
+            }
+
+
+            document.querySelectorAll('[data-en]').forEach(el => {
+                if (lang === 'ar') {
+                    if (el.dataset.ar) el.textContent = el.dataset.ar;
+                } else {
+                    if (el.dataset.en) el.textContent = el.dataset.en;
+                }
+            });
+        }
+
+
+        setLanguage(currentLang);
+
+        function toggleLanguage() {
+            document.body.classList.add('fading');
+
+            setTimeout(() => {
+                const newLang = currentLang === 'en' ? 'ar' : 'en';
+                setLanguage(newLang);
+                document.body.classList.remove('fading');
+            }, 300);
+        }
+
+        document.querySelectorAll('.category-column').forEach(column => {
+            const grid = column.querySelector('.resources-grid');
+            const cards = Array.from(grid.querySelectorAll('.resource-card'));
+            const maxItems = 5;
+
+            if (cards.length > maxItems) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'expand-wrapper';
+
+                const inner = document.createElement('div');
+                inner.className = 'expand-inner';
+
+                wrapper.appendChild(inner);
+
+                const hiddenCards = cards.slice(maxItems);
+                hiddenCards.forEach(card => {
+                    grid.removeChild(card);
+                    inner.appendChild(card);
+                    card.classList.add('visible');
+                    card.style.display = 'flex';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                });
+
+                grid.appendChild(wrapper);
+
+                let timeoutId;
+
+                column.addEventListener('mouseenter', () => {
+                    clearTimeout(timeoutId);
+                    wrapper.classList.add('expanded');
+
+                    timeoutId = setTimeout(() => {
+                        if (wrapper.classList.contains('expanded')) {
+                            inner.classList.add('overflow-visible');
+                        }
+                    }, 500);
+                });
+
+                column.addEventListener('mouseleave', () => {
+                    clearTimeout(timeoutId);
+                    inner.classList.remove('overflow-visible');
+                    // Trigger reflow to restart CSS animation if needed, though usually not strictly necessary for this simple case
+                    void inner.offsetWidth;
+                    wrapper.classList.remove('expanded');
+                });
+            }
         });
     </script>
 </body>
