@@ -90,11 +90,13 @@
         {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://termnh.link"},
         {"@type": "ListItem", "position": 2, "name": "BTEC Resources", "item": "https://termnh.link/btec"}
       ]
-    }
     </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&family=Cairo:wght@400;600;800&display=swap"
+        rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&family=Roboto:wght@400;500;700&family=Cairo:wght@400;600;800&display=swap');
-
         * {
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -295,6 +297,7 @@
             border-radius: 20px;
             padding: 1.5rem;
             width: 100%;
+            min-height: 180px;
             box-sizing: border-box;
             transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
@@ -302,12 +305,15 @@
             color: inherit;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
             position: relative;
             overflow: hidden;
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 0.6s ease-out, transform 0.6s ease-out, box-shadow 0.2s;
+            will-change: transform, opacity;
+            contain: layout style paint;
         }
 
         .resource-card.visible {
@@ -884,6 +890,152 @@
 
         body.search-mode .search-container {
             transform: scale(1.02);
+        }
+
+        body.low-performance .bg-overlay,
+        body.low-performance .bg-grid {
+            display: none;
+        }
+
+        body.low-performance * {
+            animation-duration: 0s !important;
+            transition-duration: 0.1s !important;
+        }
+
+        body.low-performance .resource-card {
+            backdrop-filter: none;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        body.low-performance .stream-nav,
+        body.low-performance .lang-toggle,
+        body.low-performance .search-input {
+            backdrop-filter: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0s !important;
+                transition-duration: 0s !important;
+            }
+        }
+
+        .settings-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(45deg);
+        }
+
+        .settings-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #ccc;
+        }
+
+        .settings-popup {
+            position: fixed;
+            bottom: 90px;
+            left: 30px;
+            background: rgba(30, 30, 30, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            z-index: 1001;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transform: translateY(10px) scale(0.95);
+            pointer-events: none;
+            transition: all 0.3s ease;
+            min-width: 280px;
+        }
+
+        .settings-popup.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .settings-popup h3 {
+            margin: 0 0 1rem 0;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .setting-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            color: #ccc;
+            flex: 1;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch.active {
+            background: var(--primary);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(22px);
+        }
+
+        body.rtl .settings-btn {
+            left: 30px;
+            right: auto;
+        }
+
+        body.rtl .settings-popup {
+            left: 30px;
+            right: auto;
+        }
+
+        body.rtl .setting-label {
+            font-family: 'Cairo', sans-serif !important;
         }
 
         .support-btn {
@@ -2533,6 +2685,27 @@
 
     </script>
 
+    <button class="settings-btn" onclick="toggleSettings()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <path fill="#ccc"
+                d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z" />
+        </svg>
+    </button>
+
+    <div class="settings-popup" id="settingsPopup">
+        <h3 data-en="Settings" data-ar="الإعدادات">الإعدادات</h3>
+        <div class="setting-row">
+            <span class="setting-label" data-en="Force enable optimizations" data-ar="تفعيل التحسينات إجبارياً">تفعيل
+                التحسينات إجبارياً</span>
+            <div class="toggle-switch" id="forceOptToggle" onclick="toggleForceOptimizations()"></div>
+        </div>
+        <div class="setting-row" style="margin-top: 0.75rem;">
+            <span class="setting-label" data-en="Disable auto optimizations" data-ar="تعطيل التحسينات التلقائية">تعطيل
+                التحسينات التلقائية</span>
+            <div class="toggle-switch" id="perfToggle" onclick="togglePerformanceMode()"></div>
+        </div>
+    </div>
+
     <button class="support-btn" onclick="toggleSupportModal()">
         <span data-en="Having an issue?" data-ar="هل تواجه مشكلة؟">هل تواجه مشكلة؟</span>
     </button>
@@ -2566,6 +2739,84 @@
             const modal = document.getElementById('supportModal');
             modal.classList.toggle('visible');
         }
+
+        function toggleSettings() {
+            const popup = document.getElementById('settingsPopup');
+            popup.classList.toggle('visible');
+        }
+
+        function togglePerformanceMode() {
+            const toggle = document.getElementById('perfToggle');
+            const forceToggle = document.getElementById('forceOptToggle');
+            const isDisabled = toggle.classList.toggle('active');
+            localStorage.setItem('disableAutoPerf', isDisabled ? 'true' : 'false');
+
+            if (isDisabled) {
+                forceToggle.classList.remove('active');
+                localStorage.setItem('forceOptimizations', 'false');
+                document.body.classList.remove('low-performance');
+            } else {
+                checkHardwarePerformance();
+            }
+        }
+
+        function toggleForceOptimizations() {
+            const toggle = document.getElementById('forceOptToggle');
+            const disableToggle = document.getElementById('perfToggle');
+            const isForced = toggle.classList.toggle('active');
+            localStorage.setItem('forceOptimizations', isForced ? 'true' : 'false');
+
+            if (isForced) {
+                disableToggle.classList.remove('active');
+                localStorage.setItem('disableAutoPerf', 'false');
+                document.body.classList.add('low-performance');
+            } else {
+                document.body.classList.remove('low-performance');
+                checkHardwarePerformance();
+            }
+        }
+
+        function checkHardwarePerformance() {
+            const disableAutoPerf = localStorage.getItem('disableAutoPerf') === 'true';
+            const forceOpt = localStorage.getItem('forceOptimizations') === 'true';
+            if (disableAutoPerf || forceOpt) return;
+
+            const cores = navigator.hardwareConcurrency || 4;
+            const memory = navigator.deviceMemory || 4;
+            const connection = navigator.connection?.effectiveType || '4g';
+            const slowConnection = ['slow-2g', '2g', '3g'].includes(connection);
+
+            if (cores <= 2 || memory <= 2 || slowConnection) {
+                document.body.classList.add('low-performance');
+            }
+        }
+
+        (function initPerformance() {
+            const disableAutoPerf = localStorage.getItem('disableAutoPerf') === 'true';
+            const forceOpt = localStorage.getItem('forceOptimizations') === 'true';
+            const perfToggle = document.getElementById('perfToggle');
+            const forceToggle = document.getElementById('forceOptToggle');
+
+            if (perfToggle && disableAutoPerf) {
+                perfToggle.classList.add('active');
+            }
+            if (forceToggle && forceOpt) {
+                forceToggle.classList.add('active');
+                document.body.classList.add('low-performance');
+            }
+
+            if (!forceOpt) {
+                checkHardwarePerformance();
+            }
+        })();
+
+        document.addEventListener('click', (e) => {
+            const popup = document.getElementById('settingsPopup');
+            const btn = document.querySelector('.settings-btn');
+            if (!popup.contains(e.target) && !btn.contains(e.target)) {
+                popup.classList.remove('visible');
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', () => {
             const storedLang = localStorage.getItem('lang');
@@ -2609,51 +2860,54 @@
                     }
                 }, 200);
             });
-
+            let searchTimeout;
             searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase().trim();
-                searchResultsGrid.innerHTML = '';
-                let hasResults = false;
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    const query = e.target.value.toLowerCase().trim();
+                    searchResultsGrid.innerHTML = '';
+                    let hasResults = false;
 
-                if (query === '') {
-                    noResults.classList.remove('visible');
-                    return;
-                }
-
-                cards.forEach(card => {
-                    const title = card.querySelector('.resource-title');
-                    const desc = card.querySelector('.resource-desc');
-
-                    const titleEn = (title?.getAttribute('data-en') || '').toLowerCase();
-                    const titleAr = (title?.getAttribute('data-ar') || '').toLowerCase();
-                    const titleText = (title?.textContent || '').toLowerCase();
-
-                    const descEn = (desc?.getAttribute('data-en') || '').toLowerCase();
-                    const descAr = (desc?.getAttribute('data-ar') || '').toLowerCase();
-                    const descText = (desc?.textContent || '').toLowerCase();
-
-                    const matches =
-                        titleEn.includes(query) ||
-                        titleAr.includes(query) ||
-                        titleText.includes(query) ||
-                        descEn.includes(query) ||
-                        descAr.includes(query) ||
-                        descText.includes(query);
-
-                    if (matches) {
-                        const clone = card.cloneNode(true);
-                        clone.classList.add('visible');
-                        clone.classList.remove('hidden');
-                        searchResultsGrid.appendChild(clone);
-                        hasResults = true;
+                    if (query === '') {
+                        noResults.classList.remove('visible');
+                        return;
                     }
-                });
 
-                if (hasResults) {
-                    noResults.classList.remove('visible');
-                } else {
-                    noResults.classList.add('visible');
-                }
+                    cards.forEach(card => {
+                        const title = card.querySelector('.resource-title');
+                        const desc = card.querySelector('.resource-desc');
+
+                        const titleEn = (title?.getAttribute('data-en') || '').toLowerCase();
+                        const titleAr = (title?.getAttribute('data-ar') || '').toLowerCase();
+                        const titleText = (title?.textContent || '').toLowerCase();
+
+                        const descEn = (desc?.getAttribute('data-en') || '').toLowerCase();
+                        const descAr = (desc?.getAttribute('data-ar') || '').toLowerCase();
+                        const descText = (desc?.textContent || '').toLowerCase();
+
+                        const matches =
+                            titleEn.includes(query) ||
+                            titleAr.includes(query) ||
+                            titleText.includes(query) ||
+                            descEn.includes(query) ||
+                            descAr.includes(query) ||
+                            descText.includes(query);
+
+                        if (matches) {
+                            const clone = card.cloneNode(true);
+                            clone.classList.add('visible');
+                            clone.classList.remove('hidden');
+                            searchResultsGrid.appendChild(clone);
+                            hasResults = true;
+                        }
+                    });
+
+                    if (hasResults) {
+                        noResults.classList.remove('visible');
+                    } else {
+                        noResults.classList.add('visible');
+                    }
+                }, 150);
             });
         });
     </script>
