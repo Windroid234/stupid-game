@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Disallow: /*.pdf$
+
+User-agent: Googlebot
+Disallow: /*.pdf$
+
+Sitemap: https://termnh.link/sitemap.xml
