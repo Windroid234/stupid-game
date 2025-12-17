@@ -276,12 +276,7 @@
             margin: 0;
             padding-left: 1rem;
             border-left: 4px solid var(--secondary);
-            position: sticky;
-            top: 85px;
-            z-index: 10;
-            background: var(--bg);
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
+            z-index: 5;
         }
 
         .resources-grid {
@@ -716,6 +711,181 @@
             box-shadow: 0 0 15px var(--primary);
         }
 
+        .search-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto 1rem auto;
+            padding: 0 1rem;
+            box-sizing: border-box;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+            box-sizing: border-box;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.3);
+        }
+
+        body.rtl .search-input {
+            font-family: 'Cairo', sans-serif !important;
+            text-align: right;
+        }
+
+        .resource-card.hidden {
+            display: none;
+        }
+
+        .no-results {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            padding: 2rem;
+            display: none;
+        }
+
+        .no-results.visible {
+            display: block;
+        }
+
+        body.search-mode .stream-nav,
+        body.search-mode .stream-section,
+        body.search-mode .scroll-hint {
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .stream-nav,
+        .stream-section,
+        .scroll-hint {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        body:not(.search-mode) .stream-nav,
+        body:not(.search-mode) .stream-section {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .search-results {
+            display: block;
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 2rem 4rem 2rem;
+            box-sizing: border-box;
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+        }
+
+        body.search-mode .search-results {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+            position: relative;
+            left: 0;
+            transform: translateY(0);
+        }
+
+        .search-results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .search-results .resource-card {
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            animation: searchCardIn 0.4s ease forwards;
+        }
+
+        @keyframes searchCardIn {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .search-results .resource-card:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .search-results .resource-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .search-results .resource-card:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .search-results .resource-card:nth-child(4) {
+            animation-delay: 0.2s;
+        }
+
+        .search-results .resource-card:nth-child(5) {
+            animation-delay: 0.25s;
+        }
+
+        .search-results .resource-card:nth-child(6) {
+            animation-delay: 0.3s;
+        }
+
+        .search-results .resource-card:nth-child(n+7) {
+            animation-delay: 0.35s;
+        }
+
+        .no-results {
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .no-results.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.4);
+            transform: scale(1.02);
+        }
+
+        .search-input {
+            transition: all 0.3s ease;
+        }
+
+        .search-container {
+            transition: transform 0.3s ease;
+        }
+
+        body.search-mode .search-container {
+            transform: scale(1.02);
+        }
+
         .support-btn {
             position: fixed;
             bottom: 30px;
@@ -839,6 +1009,11 @@
         <h1 data-en="BTEC Resources" data-ar="موارد BTEC">BTEC Resources</h1>
     </header>
 
+    <div class="search-container">
+        <input type="text" class="search-input" id="searchInput" data-en-placeholder="Search resources..."
+            data-ar-placeholder="ابحث عن الموارد..." placeholder="ابحث عن الموارد...">
+    </div>
+
     <div class="stream-nav">
         <a href="#it" class="nav-btn" data-en="IT" data-ar="تكنولوجيا المعلومات">IT</a>
         <a href="#engineering" class="nav-btn" data-en="Engineering" data-ar="الهندسة">Engineering</a>
@@ -849,6 +1024,12 @@
     </div>
 
     <div class="main-content">
+
+        <div class="search-results" id="searchResults">
+            <div class="search-results-grid" id="searchResultsGrid"></div>
+            <p class="no-results" id="noResults" data-en="No results found" data-ar="لم يتم العثور على نتائج">لم يتم
+                العثور على نتائج</p>
+        </div>
 
         <div class="stream-section" id="it">
             <h2 class="stream-title-text" data-en="Information Technology" data-ar="تكنولوجيا المعلومات">Information
@@ -2268,6 +2449,11 @@
                     if (el.dataset.en) el.textContent = el.dataset.en;
                 }
             });
+
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.placeholder = lang === 'ar' ? searchInput.dataset.arPlaceholder : searchInput.dataset.enPlaceholder;
+            }
         }
 
 
@@ -2404,6 +2590,71 @@
             });
 
             sections.forEach(section => observer.observe(section));
+
+            const searchInput = document.getElementById('searchInput');
+            const cards = document.querySelectorAll('.resource-card');
+            const searchResults = document.getElementById('searchResults');
+            const searchResultsGrid = document.getElementById('searchResultsGrid');
+            const noResults = document.getElementById('noResults');
+
+            searchInput.addEventListener('focus', () => {
+                document.body.classList.add('search-mode');
+            });
+
+            searchInput.addEventListener('blur', (e) => {
+                setTimeout(() => {
+                    if (searchInput.value.trim() === '') {
+                        document.body.classList.remove('search-mode');
+                        noResults.classList.remove('visible');
+                    }
+                }, 200);
+            });
+
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                searchResultsGrid.innerHTML = '';
+                let hasResults = false;
+
+                if (query === '') {
+                    noResults.classList.remove('visible');
+                    return;
+                }
+
+                cards.forEach(card => {
+                    const title = card.querySelector('.resource-title');
+                    const desc = card.querySelector('.resource-desc');
+
+                    const titleEn = (title?.getAttribute('data-en') || '').toLowerCase();
+                    const titleAr = (title?.getAttribute('data-ar') || '').toLowerCase();
+                    const titleText = (title?.textContent || '').toLowerCase();
+
+                    const descEn = (desc?.getAttribute('data-en') || '').toLowerCase();
+                    const descAr = (desc?.getAttribute('data-ar') || '').toLowerCase();
+                    const descText = (desc?.textContent || '').toLowerCase();
+
+                    const matches =
+                        titleEn.includes(query) ||
+                        titleAr.includes(query) ||
+                        titleText.includes(query) ||
+                        descEn.includes(query) ||
+                        descAr.includes(query) ||
+                        descText.includes(query);
+
+                    if (matches) {
+                        const clone = card.cloneNode(true);
+                        clone.classList.add('visible');
+                        clone.classList.remove('hidden');
+                        searchResultsGrid.appendChild(clone);
+                        hasResults = true;
+                    }
+                });
+
+                if (hasResults) {
+                    noResults.classList.remove('visible');
+                } else {
+                    noResults.classList.add('visible');
+                }
+            });
         });
     </script>
 </body>
